@@ -35,6 +35,9 @@ jobs:
           yarn build:components
           yarn typecheck
 
+      - name: Minify stylesheets
+        run: yarn minify:css
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -88,7 +91,7 @@ jobs:
 
       - name: Upload stylesheets to S3
         run: |
-          aws s3 sync ./src/stylesheets/ s3://${{ steps.stack-outputs.outputs.bucket_name }}/stylesheets/ \
+          aws s3 sync ./dist/stylesheets/ s3://${{ steps.stack-outputs.outputs.bucket_name }}/stylesheets/ \
             --exclude "*" \
             --include "*.css" \
             --delete \

@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:components": "node build-components.ts",
+    "minify:css": "node -e \"require('fs').mkdirSync('dist/stylesheets',{recursive:true})\" && postcss src/stylesheets/*.css --dir dist/stylesheets --no-map",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "cdk": "yarn workspace cdn cdk",
@@ -37,6 +38,9 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
+    "cssnano": "^6.1.2",
+    "postcss": "^8.4.49",
+    "postcss-cli": "^11.0.0",
     "typescript": "^5.9.3",
     "vite": "^7.2.4",
     "vite-plugin-dts": "^4.5.4"
