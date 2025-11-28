@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web Component playground</title>
+    <link rel="stylesheet" href="/src/stylesheets/main.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <h1>web component
+        <button class="base-button base-button--ghost base-button--md float-right" id="theme-toggle">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="theme-icon" aria-hidden="true">
+            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+          </svg>
+        </button></h1>
+      </header>
+
+      <section>
+        <cals-auth
+          id="cals-auth"
+          logo-url="https://csm.codes/direct-market.svg"
+          api-domain="https://api.dev.marketplace.csm.codes"
+          oauth-domain="%VITE_COGNITO_DOMAIN%"
+          oauth-region="%VITE_COGNITO_REGION%"
+          oauth-user-pool-id="%VITE_COGNITO_USER_POOL_ID%"
+          oauth-client-id="%VITE_COGNITO_CLIENT_ID%"
+        ></cals-auth>
+        <div class="base-card base-card--elevated base-card--padding-md panel">
+          <div class="controls">
+            <button class="base-button base-button--primary base-button--md open-modal">Open Drawer</button>
+            <button class="base-button base-button--outline base-button--md" id="logout-button">Logout</button>
+            <button class="base-button base-button--outline base-button--md" id="refresh-button">Refresh Tokens</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script type="module" src="/playground/main.ts"></script>
+  </body>
+</html>

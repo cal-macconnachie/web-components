@@ -1,0 +1,44 @@
+{
+  "name": "cals-web-components",
+  "version": "0.0.1",
+  "description": "Web components hosted on a CDN",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:components": "node build-components.ts",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "cdk": "yarn workspace cdn cdk",
+    "cdk:deploy": "yarn workspace cdn cdk deploy",
+    "cdk:synth": "yarn workspace cdn cdk synth",
+    "cdk:diff": "yarn workspace cdn cdk diff",
+    "cdk:destroy": "yarn workspace cdn cdk destroy"
+  },
+  "keywords": [
+    "lit",
+    "web-components",
+    "auth",
+    "lit"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
+  "workspaces": [
+    ".",
+    "cdn"
+  ],
+  "dependencies": {
+    "lit": "^3.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.4",
+    "vite-plugin-dts": "^4.5.4"
+  }
+}

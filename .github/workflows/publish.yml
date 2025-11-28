@@ -1,0 +1,102 @@
+name: deploy cdn and publish web components
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org/
+          cache: 'yarn'
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build and typecheck
+        run: |
+          yarn build
+          yarn build:components
+          yarn typecheck
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy CDN infrastructure
+        run: yarn cdk:deploy --require-approval never --outputs-file cdk-outputs.json
+
+      - name: Get stack outputs
+        id: stack-outputs
+        run: |
+          BUCKET_NAME=$(node -e "console.log(require('./cdk-outputs.json')[Object.keys(require('./cdk-outputs.json'))[0]].BucketName)")
+          DISTRIBUTION_ID=$(node -e "console.log(require('./cdk-outputs.json')[Object.keys(require('./cdk-outputs.json'))[0]].DistributionId)")
+          echo "bucket_name=$BUCKET_NAME" >> $GITHUB_OUTPUT
+          echo "distribution_id=$DISTRIBUTION_ID" >> $GITHUB_OUTPUT
+
+      - name: Upload main bundle to S3
+        run: |
+          aws s3 cp ./dist/index s3://${{ steps.stack-outputs.outputs.bucket_name }}/index \
+            --content-type "application/javascript; charset=utf-8" \
+            --cache-control "public, max-age=31536000, immutable"
+
+      - name: Upload TypeScript definitions to S3
+        run: |
+          aws s3 sync ./dist/ s3://${{ steps.stack-outputs.outputs.bucket_name }}/ \
+            --exclude "*" \
+            --include "*.d.ts" \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable"
+
+      - name: Upload component JavaScript files to S3
+        run: |
+          for file in ./dist/components/*; do
+            if [ -f "$file" ] && [[ ! "$file" =~ \. ]]; then
+              basename_file=$(basename "$file")
+              aws s3 cp "$file" s3://${{ steps.stack-outputs.outputs.bucket_name }}/components/$basename_file \
+                --content-type "application/javascript; charset=utf-8" \
+                --cache-control "public, max-age=31536000, immutable"
+            fi
+          done
+
+      - name: Upload component TypeScript definitions to S3
+        run: |
+          aws s3 sync ./dist/components/ s3://${{ steps.stack-outputs.outputs.bucket_name }}/components/ \
+            --exclude "*" \
+            --include "*.d.ts" \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable"
+
+      - name: Upload stylesheets to S3
+        run: |
+          aws s3 sync ./src/stylesheets/ s3://${{ steps.stack-outputs.outputs.bucket_name }}/stylesheets/ \
+            --exclude "*" \
+            --include "*.css" \
+            --delete \
+            --content-type "text/css; charset=utf-8" \
+            --cache-control "public, max-age=31536000, immutable"
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ steps.stack-outputs.outputs.distribution_id }} \
+            --paths "/*"
