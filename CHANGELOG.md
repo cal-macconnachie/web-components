@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.7](https://github.com/cal-macconnachie/web-components/compare/v0.0.6...v0.0.7) (2025-11-28)
+
+
+### Bug Fixes
+
+* build in prod mode and no external ([081d45b](https://github.com/cal-macconnachie/web-components/commit/081d45b41e6302b8742427d42e78cbe620d12559))
+
 ### [0.0.6](https://github.com/cal-macconnachie/web-components/compare/v0.0.5...v0.0.6) (2025-11-28)
 
 
