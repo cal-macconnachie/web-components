@@ -21,8 +21,8 @@ export class CdnStack extends cdk.Stack {
     super(scope, id, props);
 
     // S3 bucket with CORS configuration
-    const bucket = new Bucket(this, 'cals-web-components', {
-      bucketName: 'cals-web-components',
+    const bucket = new Bucket(this, 'cals-wcl', {
+      bucketName: 'cals-wcl',
       versioned: true,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL, // Keep bucket private
       cors: [
@@ -37,7 +37,7 @@ export class CdnStack extends cdk.Stack {
 
     // Create Origin Access Identity for CloudFront to access S3
     const originAccessIdentity = new OriginAccessIdentity(this, 'OAI', {
-      comment: 'OAI for cals-web-components',
+      comment: 'OAI for cals-wcl',
     })
 
     // Grant CloudFront read access to the bucket
@@ -45,7 +45,7 @@ export class CdnStack extends cdk.Stack {
 
     // Create Cache Policy for aggressive caching of static web components
     const cachePolicy = new CachePolicy(this, 'CachePolicy', {
-      cachePolicyName: 'cals-web-components-cache',
+      cachePolicyName: 'cals-wcl-cache',
       comment: 'Aggressive caching for static web components',
       defaultTtl: cdk.Duration.days(30),
       maxTtl: cdk.Duration.days(365),
@@ -58,7 +58,7 @@ export class CdnStack extends cdk.Stack {
 
     // Create Response Headers Policy for CORS and security headers
     const responseHeadersPolicy = new ResponseHeadersPolicy(this, 'ResponseHeadersPolicy', {
-      responseHeadersPolicyName: 'cals-web-components-headers',
+      responseHeadersPolicyName: 'cals-wcl-headers',
       comment: 'CORS and security headers for web components',
       corsBehavior: {
         accessControlAllowOrigins: ['*'], // Adjust to specific domains if needed
@@ -85,7 +85,7 @@ export class CdnStack extends cdk.Stack {
       validation: CertificateValidation.fromDns(),
     })
 
-    const distribution = new Distribution(this, 'cals-web-components-distribution', {
+    const distribution = new Distribution(this, 'cals-wcl-distribution', {
       defaultBehavior: {
         origin: S3BucketOrigin.withOriginAccessIdentity(bucket, {
           originAccessIdentity,
@@ -104,13 +104,13 @@ export class CdnStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'BucketName', {
       value: bucket.bucketName,
       description: 'S3 bucket name for web components',
-      exportName: 'cals-web-components-bucket-name',
+      exportName: 'cals-wcl-bucket-name',
     })
 
     new cdk.CfnOutput(this, 'DistributionId', {
       value: distribution.distributionId,
       description: 'CloudFront distribution ID',
-      exportName: 'cals-web-components-distribution-id',
+      exportName: 'cals-wcl-distribution-id',
     })
   }
 }
