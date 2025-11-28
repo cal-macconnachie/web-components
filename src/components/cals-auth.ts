@@ -54,6 +54,7 @@ export class CalsAuth extends LitElement {
   @property({ type: String, attribute: 'oauth-client-id' }) oauthClientId = ''
   @property({ type: String, attribute: 'oauth-redirect-uri' }) oauthRedirectUri = ''
   @property({ type: String, attribute: 'size' }) size: 'sm' | 'md' | 'lg' = 'sm'
+  @property({ type: String, attribute: 'data-theme', reflect: true }) theme: 'light' | 'dark' = 'light'
 
   // State
   @state() private mode: AuthMode = 'signin'

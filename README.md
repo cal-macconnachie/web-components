@@ -21,6 +21,71 @@ Load only the components you need:
 <script type="module" src="https://cdn.cals-api.com/components/cals-auth"></script>
 ```
 
+### Option 3: Using with Vue, React, or other frameworks
+
+For framework projects (Vue, React, etc.), load the component via script tag in your `index.html`:
+
+```html
+<!-- index.html -->
+<script type="module" src="https://cdn.cals-api.com/components/cals-auth"></script>
+```
+
+Then create a type declaration file for TypeScript support:
+
+```typescript
+// src/types/cals-auth.d.ts
+export interface CalsAuth extends HTMLElement {
+  openModal(): void;
+  logout(): void;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cals-auth': CalsAuth;
+  }
+}
+```
+
+Now you can use it with full type safety in your components:
+
+**Vue:**
+```vue
+<template>
+  <cals-auth ref="authRef" app-name="Marketplace"></cals-auth>
+  <button @click="openAuth">Login / Sign up</button>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue';
+import type { CalsAuth } from '@/types/cals-auth';
+
+const authRef = ref<CalsAuth>();
+
+const openAuth = () => {
+  authRef.value?.openModal();
+};
+</script>
+```
+
+**React:**
+```tsx
+import { useRef } from 'react';
+import type { CalsAuth } from '@/types/cals-auth';
+
+function App() {
+  const authRef = useRef<CalsAuth>(null);
+
+  return (
+    <>
+      <cals-auth ref={authRef} app-name="Marketplace"></cals-auth>
+      <button onClick={() => authRef.current?.openModal()}>
+        Login / Sign up
+      </button>
+    </>
+  );
+}
+```
+
 ### Usage Example
 
 HTML:
@@ -32,8 +97,24 @@ HTML:
 <button id="logout-auth">Logout</button>
 ```
 
+JavaScript:
 ```js
 const auth = document.querySelector('cals-auth');
+
+document.getElementById('open-auth')?.addEventListener('click', () => {
+  auth?.openModal();
+});
+
+document.getElementById('logout-auth')?.addEventListener('click', () => {
+  auth?.logout();
+});
+```
+
+TypeScript:
+```typescript
+import type { CalsAuth } from 'https://cdn.cals-api.com/components/cals-auth';
+
+const auth = document.querySelector<CalsAuth>('cals-auth');
 
 document.getElementById('open-auth')?.addEventListener('click', () => {
   auth?.openModal();
