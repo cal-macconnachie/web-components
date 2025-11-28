@@ -75,7 +75,7 @@ jobs:
 
       - name: Upload main bundle to S3
         run: |
-          aws s3 cp ./dist/index s3://${{ steps.stack-outputs.outputs.bucket_name }}/index \
+          aws s3 cp ./dist/index.js s3://${{ steps.stack-outputs.outputs.bucket_name }}/index.js \
             --content-type "application/javascript; charset=utf-8" \
             --cache-control "public, max-age=31536000, immutable"
 
@@ -89,14 +89,12 @@ jobs:
 
       - name: Upload component JavaScript files to S3
         run: |
-          for file in ./dist/components/*; do
+          for file in ./dist/components/*.js; do
             if [ -f "$file" ]; then
               basename_file=$(basename "$file")
-              if [[ ! "$basename_file" =~ \. ]]; then
-                aws s3 cp "$file" s3://${{ steps.stack-outputs.outputs.bucket_name }}/components/$basename_file \
-                  --content-type "application/javascript; charset=utf-8" \
-                  --cache-control "public, max-age=31536000, immutable"
-              fi
+              aws s3 cp "$file" s3://${{ steps.stack-outputs.outputs.bucket_name }}/components/$basename_file \
+                --content-type "application/javascript; charset=utf-8" \
+                --cache-control "public, max-age=31536000, immutable"
             fi
           done
 
