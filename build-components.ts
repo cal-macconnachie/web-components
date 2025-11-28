@@ -37,10 +37,8 @@ for (const component of components) {
         formats: ['es']
       },
       rollupOptions: {
-        external: ['lit'],
         output: {
           entryFileNames: componentName,
-          globals: { lit: 'Lit' },
           compact: true,
           generatedCode: {
             constBindings: true
