@@ -1,5 +1,5 @@
 {
-  "name": "@cals-auth/cdn",
+  "name": "cdn",
   "version": "0.1.0",
   "private": true,
   "bin": {
