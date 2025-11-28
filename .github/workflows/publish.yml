@@ -73,11 +73,13 @@ jobs:
       - name: Upload component JavaScript files to S3
         run: |
           for file in ./dist/components/*; do
-            if [ -f "$file" ] && [[ ! "$file" =~ \. ]]; then
+            if [ -f "$file" ]; then
               basename_file=$(basename "$file")
-              aws s3 cp "$file" s3://${{ steps.stack-outputs.outputs.bucket_name }}/components/$basename_file \
-                --content-type "application/javascript; charset=utf-8" \
-                --cache-control "public, max-age=31536000, immutable"
+              if [[ ! "$basename_file" =~ \. ]]; then
+                aws s3 cp "$file" s3://${{ steps.stack-outputs.outputs.bucket_name }}/components/$basename_file \
+                  --content-type "application/javascript; charset=utf-8" \
+                  --cache-control "public, max-age=31536000, immutable"
+              fi
             fi
           done
 
