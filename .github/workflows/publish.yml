@@ -48,8 +48,8 @@ jobs:
       - name: Get stack outputs
         id: stack-outputs
         run: |
-          BUCKET_NAME=$(node -e "console.log(require('./cdk-outputs.json')[Object.keys(require('./cdk-outputs.json'))[0]].BucketName)")
-          DISTRIBUTION_ID=$(node -e "console.log(require('./cdk-outputs.json')[Object.keys(require('./cdk-outputs.json'))[0]].DistributionId)")
+          BUCKET_NAME=$(node -e "console.log(require('./cdn/cdk-outputs.json')[Object.keys(require('./cdn/cdk-outputs.json'))[0]].BucketName)")
+          DISTRIBUTION_ID=$(node -e "console.log(require('./cdn/cdk-outputs.json')[Object.keys(require('./cdn/cdk-outputs.json'))[0]].DistributionId)")
           echo "bucket_name=$BUCKET_NAME" >> $GITHUB_OUTPUT
           echo "distribution_id=$DISTRIBUTION_ID" >> $GITHUB_OUTPUT
 
