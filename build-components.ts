@@ -25,6 +25,9 @@ for (const component of components) {
   await build({
     configFile: false,
     envPrefix: ['VITE_', 'COGNITO_'],
+    define: {
+      'process.env.NODE_ENV': JSON.stringify('production')
+    },
     build: {
       outDir: `dist/components`,
       emptyOutDir: false,

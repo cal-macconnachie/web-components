@@ -2,6 +2,9 @@ import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 
 export default defineConfig({
+  define: {
+    'process.env.NODE_ENV': JSON.stringify('production')
+  },
   build: {
     minify: 'esbuild',
     target: 'esnext',
@@ -12,10 +15,8 @@ export default defineConfig({
       formats: ['es']
     },
     rollupOptions: {
-      external: ['lit'],
       output: {
-        entryFileNames: 'index.js',
-        globals: { lit: 'Lit' }
+        entryFileNames: 'index.js'
       },
       treeshake: {
         moduleSideEffects: false,
