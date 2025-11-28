@@ -2,6 +2,7 @@
   "name": "@cal.macconnachie/web-components",
   "version": "0.0.3",
   "description": "Web components hosted on a CDN",
+  "private": true,
   "keywords": [
     "lit",
     "web-components",
@@ -35,6 +36,9 @@
   "files": [
     "dist"
   ],
+  "workspaces": [
+    "cdn"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -47,11 +51,11 @@
     "release:minor": "standard-version --release-as minor && git push --follow-tags",
     "release:major": "standard-version --release-as major && git push --follow-tags",
     "release:first": "standard-version --first-release && git push --follow-tags",
-    "cdk": "yarn --cwd cdn cdk",
-    "cdk:deploy": "yarn --cwd cdn cdk deploy",
-    "cdk:synth": "yarn --cwd cdn cdk synth",
-    "cdk:diff": "yarn --cwd cdn cdk diff",
-    "cdk:destroy": "yarn --cwd cdn cdk destroy"
+    "cdk": "yarn workspace cdn cdk",
+    "cdk:deploy": "yarn workspace cdn cdk deploy",
+    "cdk:synth": "yarn workspace cdn cdk synth",
+    "cdk:diff": "yarn workspace cdn cdk diff",
+    "cdk:destroy": "yarn workspace cdn cdk destroy"
   },
   "dependencies": {
     "lit": "^3.3.1"

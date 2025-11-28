@@ -55,6 +55,12 @@ jobs:
       - name: Minify stylesheets
         run: yarn minify:css
 
+      - name: Prepare package for publishing
+        run: |
+          # Remove "private": true from package.json to allow publishing
+          node -e "const pkg = require('./package.json'); delete pkg.private; require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');"
+          echo "✓ Removed private field from package.json"
+
       - name: Publish to npm
         run: npm publish --provenance --access public
 
