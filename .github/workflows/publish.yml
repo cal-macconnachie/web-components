@@ -55,15 +55,6 @@ jobs:
       - name: Minify stylesheets
         run: yarn minify:css
 
-      - name: Prepare package for publishing
-        run: |
-          # Remove "private": true from package.json to allow publishing
-          node -e "const pkg = require('./package.json'); delete pkg.private; require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');"
-          echo "✓ Removed private field from package.json"
-
-      - name: Publish to npm
-        run: npm publish --provenance --access public
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -131,3 +122,12 @@ jobs:
           aws cloudfront create-invalidation \
             --distribution-id ${{ steps.stack-outputs.outputs.distribution_id }} \
             --paths "/*"
+
+      - name: Prepare package for publishing
+        run: |
+          # Remove "private": true from package.json to allow publishing
+          node -e "const pkg = require('./package.json'); delete pkg.private; require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');"
+          echo "✓ Removed private field from package.json"
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public
