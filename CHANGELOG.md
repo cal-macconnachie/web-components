@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/cal-macconnachie/web-components/compare/v0.0.3...v0.0.4) (2025-11-28)
+
+
+### Bug Fixes
+
+* workspace hack ([956f560](https://github.com/cal-macconnachie/web-components/commit/956f5605ea5aae47b9d5a265b1f63166ef188f3e))
+
 ### 0.0.3 (2025-11-28)
 
 
