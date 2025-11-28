@@ -63,7 +63,7 @@ export const appStyles = () => {
       box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06);
       width: 100vw;
       max-width: 100vw;
-      height: 90dvh;
+      height: 85dvh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -139,6 +139,19 @@ export const appStyles = () => {
     .auth-logo {
       display: block;
     }
+    .auth-logo {
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .auth-logo[src] {
+      opacity: 1;
+      position: relative;
+      z-index: 1;
+    }
+    :host([data-theme='dark']) .auth-header {
+      filter: brightness(0) saturate(100%) invert(98%) sepia(4%) saturate(346%)
+              hue-rotate(183deg) brightness(106%) contrast(93%);
+    }
 
     .modal-body {
       padding: var(--space-4) var(--space-6);
@@ -156,7 +169,7 @@ export const appStyles = () => {
     .field {
       display: flex;
       flex-direction: column;
-      gap: var(--space-2);
+      gap: var(--space-1);
     }
 
     .field-label {

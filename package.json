@@ -1,9 +1,40 @@
 {
-  "name": "cals-web-components",
-  "version": "0.0.1",
+  "name": "@cal.macconnachie/web-components",
+  "version": "0.0.2",
   "description": "Web components hosted on a CDN",
+  "keywords": [
+    "lit",
+    "web-components",
+    "auth",
+    "lit"
+  ],
+  "homepage": "https://github.com/cal-macconnachie/web-components#readme",
+  "bugs": {
+    "url": "https://github.com/cal-macconnachie/web-components/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cal-macconnachie/web-components.git"
+  },
+  "license": "MIT",
+  "author": "cal macconnachie",
   "type": "module",
-  "private": true,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./components/*": {
+      "types": "./dist/components/*.d.ts",
+      "import": "./dist/components/*"
+    },
+    "./stylesheets/*": "./dist/stylesheets/*.css"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -11,28 +42,17 @@
     "minify:css": "node -e \"require('fs').mkdirSync('dist/stylesheets',{recursive:true})\" && postcss src/stylesheets/*.css --dir dist/stylesheets --no-map",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "cdk": "yarn workspace cdn cdk",
-    "cdk:deploy": "yarn workspace cdn cdk deploy",
-    "cdk:synth": "yarn workspace cdn cdk synth",
-    "cdk:diff": "yarn workspace cdn cdk diff",
-    "cdk:destroy": "yarn workspace cdn cdk destroy"
+    "prepublishOnly": "yarn build && yarn build:components && yarn typecheck && yarn minify:css",
+    "release": "standard-version && git push --follow-tags",
+    "release:minor": "standard-version --release-as minor && git push --follow-tags",
+    "release:major": "standard-version --release-as major && git push --follow-tags",
+    "release:first": "standard-version --first-release && git push --follow-tags",
+    "cdk": "yarn --cwd cdn cdk",
+    "cdk:deploy": "yarn --cwd cdn cdk deploy",
+    "cdk:synth": "yarn --cwd cdn cdk synth",
+    "cdk:diff": "yarn --cwd cdn cdk diff",
+    "cdk:destroy": "yarn --cwd cdn cdk destroy"
   },
-  "keywords": [
-    "lit",
-    "web-components",
-    "auth",
-    "lit"
-  ],
-  "author": "",
-  "license": "MIT",
-  "engines": {
-    "node": ">=18"
-  },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
-  "workspaces": [
-    ".",
-    "cdn"
-  ],
   "dependencies": {
     "lit": "^3.3.1"
   },
@@ -41,8 +61,14 @@
     "cssnano": "^6.1.2",
     "postcss": "^8.4.49",
     "postcss-cli": "^11.0.0",
+    "standard-version": "^9.5.0",
     "typescript": "^5.9.3",
     "vite": "^7.2.4",
     "vite-plugin-dts": "^4.5.4"
-  }
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "module": "./dist/index.js",
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

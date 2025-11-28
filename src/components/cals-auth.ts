@@ -1041,6 +1041,7 @@ export class CalsAuth extends LitElement {
         ${this.logoUrl.length > 0
           ? html`
               <header class="modal-header">
+                <div class="auth-header">
                 <img
                   src="${this.logoUrl}"
                   width="48"
@@ -1048,6 +1049,7 @@ export class CalsAuth extends LitElement {
                   alt="Logo"
                   class="auth-logo"
                 />
+                </div>
               </header>
             `
           : nothing}
@@ -1068,6 +1070,7 @@ export class CalsAuth extends LitElement {
         ${this.logoUrl.length > 0
           ? html`
               <header class="modal-header">
+                <div class="auth-header">
                 <img
                   src="${this.logoUrl}"
                   width="48"
@@ -1075,6 +1078,7 @@ export class CalsAuth extends LitElement {
                   alt="Logo"
                   class="auth-logo"
                 />
+                </div>
               </header>
             `
           : nothing}
@@ -1096,6 +1100,8 @@ export class CalsAuth extends LitElement {
       ${(!this.mode || this.resetStep === 'none') && this.logoUrl.length > 0 && this.mode === 'signin'
         ? html`
             <header class="modal-header">
+
+                <div class="auth-header">
               <img
                 src="${this.logoUrl}"
                 width="48"
@@ -1103,6 +1109,7 @@ export class CalsAuth extends LitElement {
                 alt="Logo"
                 class="auth-logo"
               />
+                </div>
             </header>
           `
         : nothing}

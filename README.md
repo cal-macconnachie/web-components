@@ -18,7 +18,7 @@ Load only the components you need:
 
 ```html
 <!-- Load just the auth component -->
-<script type="module" src="https://cdn.cals-api.com/components/cals-auth"></script>
+<script type="module" src="https://cdn.cals-api.com/components/cals-auth.js"></script>
 ```
 
 ### Option 3: Using with Vue, React, or other frameworks
@@ -27,7 +27,7 @@ For framework projects (Vue, React, etc.), load the component via script tag in 
 
 ```html
 <!-- index.html -->
-<script type="module" src="https://cdn.cals-api.com/components/cals-auth"></script>
+<script type="module" src="https://cdn.cals-api.com/components/cals-auth.js"></script>
 ```
 
 Then create a type declaration file for TypeScript support:
@@ -112,7 +112,7 @@ document.getElementById('logout-auth')?.addEventListener('click', () => {
 
 TypeScript:
 ```typescript
-import type { CalsAuth } from 'https://cdn.cals-api.com/components/cals-auth';
+import type { CalsAuth } from 'https://cdn.cals-api.com/components/cals-auth.js';
 
 const auth = document.querySelector<CalsAuth>('cals-auth');
 

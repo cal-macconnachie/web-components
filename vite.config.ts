@@ -8,13 +8,13 @@ export default defineConfig({
     lib: {
       entry: 'src/index.ts',
       name: 'LitWebComponent',
-      fileName: 'index',
+      fileName: 'index.js',
       formats: ['es']
     },
     rollupOptions: {
       external: ['lit'],
       output: {
-        entryFileNames: 'index',
+        entryFileNames: 'index.js',
         globals: { lit: 'Lit' }
       },
       treeshake: {

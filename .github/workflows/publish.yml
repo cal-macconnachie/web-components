@@ -2,8 +2,8 @@ name: deploy cdn and publish web components
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*.*.*'
 
 permissions:
   contents: read
@@ -15,6 +15,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Validate version tag
+        id: version
+        run: |
+          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+
+          echo "Tag version: $TAG_VERSION"
+          echo "Package version: $PACKAGE_VERSION"
+
+          if [ "$TAG_VERSION" != "$PACKAGE_VERSION" ]; then
+            echo "Error: Tag version ($TAG_VERSION) does not match package.json version ($PACKAGE_VERSION)"
+            exit 1
+          fi
+
+          echo "version=$TAG_VERSION" >> $GITHUB_OUTPUT
+          echo "✓ Version validation passed: $TAG_VERSION"
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -37,6 +54,9 @@ jobs:
 
       - name: Minify stylesheets
         run: yarn minify:css
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

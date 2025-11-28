@@ -33,12 +33,12 @@ for (const component of components) {
       lib: {
         entry: componentPath,
         name: componentName,
-        fileName: componentName,
+        fileName: `${componentName}.js`,
         formats: ['es']
       },
       rollupOptions: {
         output: {
-          entryFileNames: componentName,
+          entryFileNames: `${componentName}.js`,
           compact: true,
           generatedCode: {
             constBindings: true
