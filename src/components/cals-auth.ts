@@ -39,7 +39,17 @@ interface OAuthProvider {
   provider: 'google' | 'apple'
 }
 
-const OAUTH_QUERY_PARAMS = ['code', 'state', 'error', 'error_description'] as const
+const OAUTH_QUERY_PARAMS = [
+  'code',
+  'state',
+  'error',
+  'error_description',
+  'access_token',
+  'id_token',
+  'refresh_token',
+  'token_type',
+  'expires_in',
+] as const
 
 @customElement('cals-auth')
 export class CalsAuth extends LitElement {
@@ -53,6 +63,7 @@ export class CalsAuth extends LitElement {
   @property({ type: String, attribute: 'oauth-user-pool-id' }) oauthUserPoolId = ''
   @property({ type: String, attribute: 'oauth-client-id' }) oauthClientId = ''
   @property({ type: String, attribute: 'oauth-redirect-uri' }) oauthRedirectUri = ''
+  @property({ type: String, attribute: 'oauth-spa-domain' }) oauthSpaDomain = ''
   @property({ type: String, attribute: 'size' }) size: 'sm' | 'md' | 'lg' = 'sm'
   @property({ type: String, attribute: 'data-theme', reflect: true }) theme: 'light' | 'dark' = 'light'
 
@@ -675,21 +686,21 @@ export class CalsAuth extends LitElement {
 
   private async handleOAuthCallbackIfPresent() {
     const urlParams = new URLSearchParams(window.location.search)
+    const accessToken = urlParams.get('access_token')
+    const idToken = urlParams.get('id_token')
+    const refreshToken = urlParams.get('refresh_token')
     const code = urlParams.get('code')
     const state = urlParams.get('state')
     const error = urlParams.get('error')
     const errorDescription = urlParams.get('error_description')
 
-    if (!code && !error) {
+    // Check if we have OAuth-related params
+    const hasOAuthParams = accessToken || idToken || code || error
+    if (!hasOAuthParams) {
       return
     }
 
     if (this.hasHandledOAuthCallback) return
-
-    if (!this.isOAuthConfigured()) {
-      log('OAuth params detected but OAuth config is incomplete.')
-      return
-    }
 
     if (!this.hasApiBaseUrl()) {
       this.error = this.baseUrlErrorMessage
@@ -706,27 +717,49 @@ export class CalsAuth extends LitElement {
         throw new Error(errorDescription || `OAuth error: ${error}`)
       }
 
-      if (!code || !state) {
-        throw new Error('Missing authorization code or state parameter')
+      // NEW FLOW: If we have tokens directly in URL (from oauth-spa)
+      if (accessToken && idToken && refreshToken) {
+        log('OAuth tokens received from oauth-spa, logging in...')
+
+        // Call API to exchange oauth-spa tokens for our tokens
+        const { accessToken: apiAccessToken, idToken: apiIdToken, refreshToken: apiRefreshToken } =
+          await this.getApiService().login({
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            idToken: idToken,
+          })
+
+        this.setAuthTokens(apiAccessToken, apiIdToken, apiRefreshToken ?? refreshToken)
       }
+      // LEGACY FLOW: If we have authorization code (direct OAuth)
+      else if (code && state) {
+        if (!this.isOAuthConfigured()) {
+          log('OAuth code detected but OAuth config is incomplete.')
+          throw new Error('OAuth is not configured correctly. Please try again later.')
+        }
 
-      const oauthService = this.getOAuthService()
-      if (!oauthService) {
-        throw new Error('OAuth is not configured correctly. Please try again later.')
+        const oauthService = this.getOAuthService()
+        if (!oauthService) {
+          throw new Error('OAuth is not configured correctly. Please try again later.')
+        }
+
+        if (!oauthService.validateState(state)) {
+          throw new Error('Invalid state parameter. Please try signing in again.')
+        }
+
+        log('Exchanging authorization code for tokens...')
+        const tokens = await oauthService.exchangeCodeForTokens(code)
+        const { accessToken: apiAccessToken, idToken: apiIdToken, refreshToken: apiRefreshToken } =
+          await this.getApiService().login({
+            accessToken: tokens.access_token,
+            refreshToken: tokens.refresh_token,
+            idToken: tokens.id_token,
+          })
+
+        this.setAuthTokens(apiAccessToken, apiIdToken, apiRefreshToken ?? tokens.refresh_token)
+      } else {
+        throw new Error('Missing required OAuth parameters')
       }
-
-      if (!oauthService.validateState(state)) {
-        throw new Error('Invalid state parameter. Please try signing in again.')
-      }
-
-      const tokens = await oauthService.exchangeCodeForTokens(code)
-      const { accessToken, idToken, refreshToken } = await this.getApiService().login({
-        accessToken: tokens.access_token,
-        refreshToken: tokens.refresh_token,
-        idToken: tokens.id_token,
-      })
-
-      this.setAuthTokens(accessToken, idToken, refreshToken ?? tokens.refresh_token)
     } catch (err) {
       log('OAuth callback error:', err)
       this.error =
@@ -845,11 +878,44 @@ export class CalsAuth extends LitElement {
   // OAuth handlers
   private handleGoogleSignIn() {
     console.log('Google sign-in clicked')
-    this.getOAuthService()?.redirectToGoogleAuth()
+    this.handleOAuthSignIn('google')
   }
 
   private handleAppleSignIn() {
-    this.getOAuthService()?.redirectToAppleAuth()
+    this.handleOAuthSignIn('apple')
+  }
+
+  private handleOAuthSignIn(provider: 'google' | 'apple') {
+    // If oauth-spa-domain is configured, use centralized oauth-spa
+    if (this.oauthSpaDomain?.trim()) {
+      const spaDomain = this.oauthSpaDomain.trim()
+      // Ensure it starts with https://
+      const normalizedSpaDomain = spaDomain.startsWith('http://') || spaDomain.startsWith('https://')
+        ? spaDomain
+        : `https://${spaDomain}`
+
+      // Remove trailing slash
+      const baseDomain = normalizedSpaDomain.endsWith('/')
+        ? normalizedSpaDomain.slice(0, -1)
+        : normalizedSpaDomain
+
+      // Build current page URL as return_url
+      const returnUrl = window.location.href
+
+      // Build oauth-spa redirect URL
+      const oauthUrl = `${baseDomain}?return_url=${encodeURIComponent(returnUrl)}&provider=${provider}`
+
+      console.log('Redirecting to oauth-spa:', oauthUrl)
+      window.location.href = oauthUrl
+      return
+    }
+
+    // Fall back to direct OAuth service (legacy behavior)
+    if (provider === 'google') {
+      this.getOAuthService()?.redirectToGoogleAuth()
+    } else {
+      this.getOAuthService()?.redirectToAppleAuth()
+    }
   }
 
   // OTP input handlers
