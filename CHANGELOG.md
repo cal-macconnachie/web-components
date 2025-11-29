@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.10](https://github.com/cal-macconnachie/web-components/compare/v0.0.9...v0.0.10) (2025-11-29)
+
+
+### Features
+
+* add api ([fc126d7](https://github.com/cal-macconnachie/web-components/commit/fc126d729ee93a3967273b0492072f7a440d1a4c))
+
 ### [0.0.9](https://github.com/cal-macconnachie/web-components/compare/v0.0.8...v0.0.9) (2025-11-29)
 
 
