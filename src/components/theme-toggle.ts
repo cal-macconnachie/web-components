@@ -1,7 +1,7 @@
 import { css, html, LitElement } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 
-@customElement('cals-theme-toggle')
+@customElement('theme-toggle')
 export class ThemeToggle extends LitElement {
   @property({ type: String, reflect: true }) theme: 'light' | 'dark' = 'light'
   @property({ type: String, attribute: 'storage-key' }) storageKey = 'theme-preference'
@@ -228,6 +228,6 @@ export class ThemeToggle extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cals-theme-toggle': ThemeToggle
+    'theme-toggle': ThemeToggle
   }
 }

@@ -8,8 +8,8 @@ if (!authElement) {
   throw new Error('auth element not found in the document')
 }
 
-await customElements.whenDefined('cals-theme-toggle');
-const themeToggleElement = document.querySelector('cals-theme-toggle')
+await customElements.whenDefined('theme-toggle');
+const themeToggleElement = document.querySelector('theme-toggle')
 
 const env = import.meta.env as Record<string, string | undefined>
 const applyEnvAttribute = (attr: string, envKey: string) => {
