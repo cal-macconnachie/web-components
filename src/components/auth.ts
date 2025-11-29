@@ -51,7 +51,7 @@ const OAUTH_QUERY_PARAMS = [
   'expires_in',
 ] as const
 
-@customElement('auth')
+@customElement('auth-drawer')
 export class Auth extends LitElement {
   // Main properties
   @property({ type: Boolean, reflect: true }) open = false
