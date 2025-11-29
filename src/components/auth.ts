@@ -51,7 +51,7 @@ const OAUTH_QUERY_PARAMS = [
   'expires_in',
 ] as const
 
-@customElement('cals-auth')
+@customElement('auth')
 export class CalsAuth extends LitElement {
   // Main properties
   @property({ type: Boolean, reflect: true }) open = false

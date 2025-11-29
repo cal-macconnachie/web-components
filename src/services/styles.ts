@@ -6,24 +6,24 @@ export const appStyles = () => {
       display: inline-block;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       box-sizing: border-box;
-      --color-primary: var(--cals-auth-color-primary, #2563eb);
-      --color-bg-primary: var(--cals-auth-color-bg-primary, #ffffff);
-      --color-bg-secondary: var(--cals-auth-color-bg-secondary, #f8fafc);
-      --color-text-primary: var(--cals-auth-color-text-primary, #0f172a);
-      --color-text-secondary: var(--cals-auth-color-text-secondary, #64748b);
-      --color-text-muted: var(--cals-auth-color-text-muted, #94a3b8);
-      --color-border: var(--cals-auth-color-border, #e2e8f0);
-      --color-error: var(--cals-auth-color-error, #dc2626);
-      --color-success: var(--cals-auth-color-success, #16a34a);
-      --transition-slow: var(--cals-auth-transition-slow, 300ms);
-      --radius-md: var(--cals-auth-radius-md, 0.5rem);
-      --radius-lg: var(--cals-auth-radius-lg, 0.75rem);
-      --radius-xl: var(--cals-auth-radius-xl, 1.25rem);
-      --space-2: var(--cals-auth-space-2, 0.5rem);
-      --space-3: var(--cals-auth-space-3, 0.75rem);
-      --space-4: var(--cals-auth-space-4, 1rem);
-      --space-5: var(--cals-auth-space-5, 1.25rem);
-      --space-6: var(--cals-auth-space-6, 1.5rem);
+      --color-primary: var(--auth-color-primary, #2563eb);
+      --color-bg-primary: var(--auth-color-bg-primary, #ffffff);
+      --color-bg-secondary: var(--auth-color-bg-secondary, #f8fafc);
+      --color-text-primary: var(--auth-color-text-primary, #0f172a);
+      --color-text-secondary: var(--auth-color-text-secondary, #64748b);
+      --color-text-muted: var(--auth-color-text-muted, #94a3b8);
+      --color-border: var(--auth-color-border, #e2e8f0);
+      --color-error: var(--auth-color-error, #dc2626);
+      --color-success: var(--auth-color-success, #16a34a);
+      --transition-slow: var(--auth-transition-slow, 300ms);
+      --radius-md: var(--auth-radius-md, 0.5rem);
+      --radius-lg: var(--auth-radius-lg, 0.75rem);
+      --radius-xl: var(--auth-radius-xl, 1.25rem);
+      --space-2: var(--auth-space-2, 0.5rem);
+      --space-3: var(--auth-space-3, 0.75rem);
+      --space-4: var(--auth-space-4, 1rem);
+      --space-5: var(--auth-space-5, 1.25rem);
+      --space-6: var(--auth-space-6, 1.5rem);
     }
 
     *,

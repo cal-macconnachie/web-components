@@ -18,7 +18,7 @@ Load only the components you need:
 
 ```html
 <!-- Load just the auth component -->
-<script type="module" src="https://cdn.cals-api.com/components/cals-auth.js"></script>
+<script type="module" src="https://cdn.cals-api.com/components/auth.js"></script>
 ```
 
 ### Option 3: Using with Vue, React, or other frameworks
@@ -27,13 +27,13 @@ For framework projects (Vue, React, etc.), load the component via script tag in 
 
 ```html
 <!-- index.html -->
-<script type="module" src="https://cdn.cals-api.com/components/cals-auth.js"></script>
+<script type="module" src="https://cdn.cals-api.com/components/auth.js"></script>
 ```
 
 Then create a type declaration file for TypeScript support:
 
 ```typescript
-// src/types/cals-auth.d.ts
+// src/types/auth.d.ts
 export interface CalsAuth extends HTMLElement {
   openModal(): void;
   logout(): void;
@@ -41,7 +41,7 @@ export interface CalsAuth extends HTMLElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cals-auth': CalsAuth;
+    'auth': CalsAuth;
   }
 }
 ```
@@ -51,13 +51,13 @@ Now you can use it with full type safety in your components:
 **Vue:**
 ```vue
 <template>
-  <cals-auth ref="authRef" app-name="Marketplace"></cals-auth>
+  <auth ref="authRef" app-name="Marketplace"></auth>
   <button @click="openAuth">Login / Sign up</button>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { CalsAuth } from '@/types/cals-auth';
+import type { CalsAuth } from '@/types/auth';
 
 const authRef = ref<CalsAuth>();
 
@@ -70,14 +70,14 @@ const openAuth = () => {
 **React:**
 ```tsx
 import { useRef } from 'react';
-import type { CalsAuth } from '@/types/cals-auth';
+import type { CalsAuth } from '@/types/auth';
 
 function App() {
   const authRef = useRef<CalsAuth>(null);
 
   return (
     <>
-      <cals-auth ref={authRef} app-name="Marketplace"></cals-auth>
+      <auth ref={authRef} app-name="Marketplace"></auth>
       <button onClick={() => authRef.current?.openModal()}>
         Login / Sign up
       </button>
@@ -91,7 +91,7 @@ function App() {
 HTML:
 
 ```html
-<cals-auth id="cals-auth" app-name="Marketplace"></cals-auth>
+<auth id="auth" app-name="Marketplace"></auth>
 
 <button id="open-auth">Login / Sign up</button>
 <button id="logout-auth">Logout</button>
@@ -99,7 +99,7 @@ HTML:
 
 JavaScript:
 ```js
-const auth = document.querySelector('cals-auth');
+const auth = document.querySelector('auth');
 
 document.getElementById('open-auth')?.addEventListener('click', () => {
   auth?.openModal();
@@ -112,9 +112,9 @@ document.getElementById('logout-auth')?.addEventListener('click', () => {
 
 TypeScript:
 ```typescript
-import type { CalsAuth } from 'https://cdn.cals-api.com/components/cals-auth.js';
+import type { CalsAuth } from 'https://cdn.cals-api.com/components/auth.js';
 
-const auth = document.querySelector<CalsAuth>('cals-auth');
+const auth = document.querySelector<CalsAuth>('auth');
 
 document.getElementById('open-auth')?.addEventListener('click', () => {
   auth?.openModal();
@@ -127,7 +127,7 @@ document.getElementById('logout-auth')?.addEventListener('click', () => {
 
 ## Available Components
 
-- `cals-auth` - Authentication component with sign in, sign up, and password reset
+- `auth` - Authentication component with sign in, sign up, and password reset
 
 ## Project Structure
 
