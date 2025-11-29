@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.11](https://github.com/cal-macconnachie/web-components/compare/v0.0.10...v0.0.11) (2025-11-29)
+
+
+### Bug Fixes
+
+* component library additions ([22d9d73](https://github.com/cal-macconnachie/web-components/commit/22d9d73765435d7d88449c7d5d538e8d6946aa38))
+* disable sign up ([cb73cc0](https://github.com/cal-macconnachie/web-components/commit/cb73cc069f32134c73c0ddaf1f8ce99364b481ac))
+
 ### [0.0.10](https://github.com/cal-macconnachie/web-components/compare/v0.0.9...v0.0.10) (2025-11-29)
 
 
