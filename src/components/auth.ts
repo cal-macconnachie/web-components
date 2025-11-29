@@ -66,6 +66,7 @@ export class Auth extends LitElement {
   @property({ type: String, attribute: 'oauth-spa-domain' }) oauthSpaDomain = ''
   @property({ type: String, attribute: 'size' }) size: 'sm' | 'md' | 'lg' = 'sm'
   @property({ type: String, attribute: 'data-theme', reflect: true }) theme: 'light' | 'dark' = 'light'
+  @property({ type: Boolean, attribute: 'disable-signup' }) disableSignup = false
 
   // State
   @state() private mode: AuthMode = 'signin'
@@ -156,7 +157,7 @@ export class Auth extends LitElement {
     const authToken = this.cookies.getAuthToken('AUTH_TOKEN')
     const refreshToken = this.cookies.getAuthToken('REFRESH_TOKEN')
     this.isLoggedIn = !!(authToken && refreshToken)
-    this.mode = this.initialMode
+    this.mode = this.disableSignup && this.initialMode === 'signup' ? 'signin' : this.initialMode
     if (!this.hasApiBaseUrl()) {
       log('Warning: API domain is not set. Please set the "api-domain" attribute to the correct API base URL.')
       this.error = this.baseUrlErrorMessage
@@ -177,6 +178,13 @@ export class Auth extends LitElement {
   }
 
   updated(changed: PropertyValues) {
+    if (changed.has('disableSignup')) {
+      if (this.disableSignup && this.mode === 'signup') {
+        this.mode = 'signin'
+        this.signupStep = 'form'
+      }
+    }
+
     if (changed.has('baseUrl')) {
       this.apiService = undefined
       if (!this.hasApiBaseUrl()) {
@@ -411,6 +419,7 @@ export class Auth extends LitElement {
 
   private toggleMode() {
     if (this.resetStep !== 'none') return
+    if (this.disableSignup && this.mode === 'signin') return
     this.mode = this.mode === 'signin' ? 'signup' : 'signin'
     this.signupStep = 'form'
     this.error = ''
@@ -1550,6 +1559,10 @@ export class Auth extends LitElement {
     }
 
     if (this.resetStep === 'none' && (!this.mode || this.mode === 'signin' || this.signupStep === 'form')) {
+      // Don't show signup toggle if signup is disabled
+      if (this.disableSignup) {
+        return nothing
+      }
       return html`
         <div class="auth-footer">
           <p class="toggle-text">
