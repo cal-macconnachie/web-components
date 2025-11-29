@@ -123,11 +123,16 @@ export class ThemeToggle extends LitElement {
       font-weight: 500;
       position: relative;
       overflow: hidden;
+      color: inherit;
     }
 
     .theme-toggle:focus {
       outline: none;
-      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+    }
+
+    .theme-toggle:focus-visible {
+      outline: 2px solid transparent;
+      outline-offset: 2px;
     }
 
     .theme-toggle:hover {
@@ -151,22 +156,25 @@ export class ThemeToggle extends LitElement {
       padding: 1rem;
     }
 
-    /* Variant styles */
+    /* Variant styles - Light mode */
     .btn--ghost {
       background: transparent;
+      border: none;
     }
 
     .btn--ghost:hover {
-      background: rgba(0, 0, 0, 0.05);
+      background: transparent;
+      opacity: 0.7;
     }
 
     .btn--outline {
-      border: 1px solid currentColor;
+      border: 1px solid rgba(0, 0, 0, 0.2);
       background: transparent;
     }
 
     .btn--outline:hover {
       background: rgba(0, 0, 0, 0.05);
+      border-color: rgba(0, 0, 0, 0.3);
     }
 
     .btn--solid {
@@ -175,6 +183,29 @@ export class ThemeToggle extends LitElement {
 
     .btn--solid:hover {
       background: rgba(0, 0, 0, 0.15);
+    }
+
+    /* Dark mode adaptations */
+    :host([theme="dark"]) .btn--ghost:hover {
+      background: transparent;
+      opacity: 0.7;
+    }
+
+    :host([theme="dark"]) .btn--outline {
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    :host([theme="dark"]) .btn--outline:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    :host([theme="dark"]) .btn--solid {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    :host([theme="dark"]) .btn--solid:hover {
+      background: rgba(255, 255, 255, 0.15);
     }
 
     .theme-icon {
