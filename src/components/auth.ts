@@ -52,7 +52,7 @@ const OAUTH_QUERY_PARAMS = [
 ] as const
 
 @customElement('auth')
-export class CalsAuth extends LitElement {
+export class Auth extends LitElement {
   // Main properties
   @property({ type: Boolean, reflect: true }) open = false
   @property({ type: String, attribute: 'initial-mode' }) initialMode: AuthMode = 'signin'

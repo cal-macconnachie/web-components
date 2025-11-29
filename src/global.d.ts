@@ -3,7 +3,7 @@ declare global {
     DEBUG_LOGS?: string;
   }
   interface HTMLElementTagNameMap {
-    'auth': CalsAuth
+    'auth': Auth
   }
 
   interface HTMLElementEventMap {

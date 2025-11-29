@@ -1,8 +1,8 @@
-import { html, LitElement, css } from 'lit'
+import { css, html, LitElement } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 
 @customElement('cals-theme-toggle')
-export class CalsThemeToggle extends LitElement {
+export class ThemeToggle extends LitElement {
   @property({ type: String, reflect: true }) theme: 'light' | 'dark' = 'light'
   @property({ type: String, attribute: 'storage-key' }) storageKey = 'theme-preference'
   @property({ type: String, attribute: 'size' }) size: 'sm' | 'md' | 'lg' = 'sm'
@@ -228,6 +228,6 @@ export class CalsThemeToggle extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cals-theme-toggle': CalsThemeToggle
+    'cals-theme-toggle': ThemeToggle
   }
 }

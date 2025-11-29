@@ -34,14 +34,14 @@ Then create a type declaration file for TypeScript support:
 
 ```typescript
 // src/types/auth.d.ts
-export interface CalsAuth extends HTMLElement {
+export interface Auth extends HTMLElement {
   openModal(): void;
   logout(): void;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'auth': CalsAuth;
+    'auth': Auth;
   }
 }
 ```
@@ -57,9 +57,9 @@ Now you can use it with full type safety in your components:
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { CalsAuth } from '@/types/auth';
+import type { Auth } from '@/types/auth';
 
-const authRef = ref<CalsAuth>();
+const authRef = ref<Auth>();
 
 const openAuth = () => {
   authRef.value?.openModal();
@@ -70,10 +70,10 @@ const openAuth = () => {
 **React:**
 ```tsx
 import { useRef } from 'react';
-import type { CalsAuth } from '@/types/auth';
+import type { Auth } from '@/types/auth';
 
 function App() {
-  const authRef = useRef<CalsAuth>(null);
+  const authRef = useRef<Auth>(null);
 
   return (
     <>
@@ -112,9 +112,9 @@ document.getElementById('logout-auth')?.addEventListener('click', () => {
 
 TypeScript:
 ```typescript
-import type { CalsAuth } from 'https://cdn.cals-api.com/components/auth.js';
+import type { Auth } from 'https://cdn.cals-api.com/components/auth.js';
 
-const auth = document.querySelector<CalsAuth>('auth');
+const auth = document.querySelector<Auth>('auth');
 
 document.getElementById('open-auth')?.addEventListener('click', () => {
   auth?.openModal();
