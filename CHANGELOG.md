@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.13](https://github.com/cal-macconnachie/web-components/compare/v0.0.12...v0.0.13) (2025-11-29)
+
+
+### Bug Fixes
+
+* theme toggle ([83d1877](https://github.com/cal-macconnachie/web-components/commit/83d1877dea2f09d6d032f36a8fe905a405d35022))
+* theme toggle ([6130ee2](https://github.com/cal-macconnachie/web-components/commit/6130ee2dbb15934ee0a34e40ad463739636e60e0))
+
 ### [0.0.12](https://github.com/cal-macconnachie/web-components/compare/v0.0.11...v0.0.12) (2025-11-29)
 
 
