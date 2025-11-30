@@ -881,7 +881,7 @@ export class Auth extends LitElement {
       const url = new URL(redirectUrl)
       if (url.host !== currentHost) {
         // not new tab new window
-        window.open(redirectUrl, 'newWindow', 'width=400,height=400,resizable=yes,scrollbars=yes,status=yes')
+        window.open(redirectUrl, 'newWindow', 'width=400,height=500,resizable=yes,scrollbars=yes,status=yes')
       } else {
         window.location.href = redirectUrl
       }
