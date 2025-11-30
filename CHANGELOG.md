@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.15](https://github.com/cal-macconnachie/web-components/compare/v0.0.14...v0.0.15) (2025-11-30)
+
+
+### Bug Fixes
+
+* 500 ([ce34dd1](https://github.com/cal-macconnachie/web-components/commit/ce34dd1fcbbf30654fe7ddc4f738e4b9729bc927))
+* auth event ([c068433](https://github.com/cal-macconnachie/web-components/commit/c068433f750f4fe226887d5d5001725458a43a14))
+
 ### [0.0.14](https://github.com/cal-macconnachie/web-components/compare/v0.0.13...v0.0.14) (2025-11-30)
 
 
