@@ -636,6 +636,14 @@ export class Auth extends LitElement {
     this.cookies.setAuthToken('AUTH_TOKEN', idToken)
     this.cookies.setAuthToken('REFRESH_TOKEN', refreshToken)
     this.isLoggedIn = true
+
+    // Dispatch login success event
+    this.dispatchEvent(
+      new CustomEvent('auth-success', {
+        bubbles: true,
+        composed: true,
+      })
+    )
   }
 
   private async handleSignIn() {
