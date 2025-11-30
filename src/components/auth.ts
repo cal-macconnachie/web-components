@@ -847,6 +847,10 @@ export class Auth extends LitElement {
     await this.handleSignIn()
   }
 
+  public isUserLoggedIn(): boolean {
+    return this.isLoggedIn
+  }
+
   public async logout() {
     const accessToken = this.cookies.getAuthToken('ACCESS_TOKEN')
     const authToken = this.cookies.getAuthToken('AUTH_TOKEN')
