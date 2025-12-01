@@ -1,6 +1,6 @@
-import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios'
-import { cookies as cookiesService } from './cookies'
+import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 import { api } from './api'
+import { cookies as cookiesService } from './cookies'
 import { log } from './logger'
 
 export class AuthRefreshError extends Error {
@@ -33,8 +33,10 @@ export const createApiClient = ({ baseUrl, apiBaseUrl }: ApiClientConfig): Axios
   client.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
       const authToken = cookies.getAuthToken('AUTH_TOKEN')
+      const accessToken = cookies.getAuthToken('ACCESS_TOKEN')
       if (authToken && config.headers) {
         config.headers.Authorization = `Bearer ${authToken}`
+        config.headers['X-Access-Token'] = accessToken
       }
       return config
     },
