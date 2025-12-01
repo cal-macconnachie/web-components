@@ -871,36 +871,43 @@ export class Auth extends LitElement {
     const accessToken = this.cookies.getAuthToken('ACCESS_TOKEN')
     const authToken = this.cookies.getAuthToken('AUTH_TOKEN')
     const refreshToken = this.cookies.getAuthToken('REFRESH_TOKEN')
-    if (accessToken == null || refreshToken == null || authToken == null) {
+
+    try {
+      if (accessToken == null || refreshToken == null || authToken == null) {
+        return
+      }
+      if (!this.hasApiBaseUrl()) {
+        this.error = this.baseUrlErrorMessage
+        return
+      }
+      const apiService = this.getApiService()
+      const {
+        redirectUrl,
+        requiresRedirect
+      } = await apiService.logout({
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        authToken: authToken,
+      })
+
+      if (requiresRedirect && redirectUrl) {
+        // open new window unless redirectUrl has a query param logout_uri that is the same host as current. logout_uri is encodeURIComponent
+        const currentHost = window.location.host
+        const url = new URL(redirectUrl)
+        if (url.host !== currentHost) {
+          // not new tab new window
+          window.open(redirectUrl, 'newWindow', 'width=400,height=500,resizable=yes,scrollbars=yes,status=yes')
+        } else {
+          window.location.href = redirectUrl
+        }
+      }
+    } catch (err) {
+      log('Logout error:', err)
+      // Continue to clear tokens even if API call fails
+    } finally {
+      // Always clear tokens and set isLoggedIn to false, no matter what happens
       this.cookies.clearAllAuthTokens()
       this.isLoggedIn = false
-      return
-    }
-    if (!this.hasApiBaseUrl()) {
-      this.error = this.baseUrlErrorMessage
-      return
-    }
-    const apiService = this.getApiService()
-    const {
-      redirectUrl,
-      requiresRedirect
-    } = await apiService.logout({
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-      authToken: authToken,
-    })
-    this.cookies.clearAllAuthTokens()
-    this.isLoggedIn = false
-    if (requiresRedirect && redirectUrl) {
-      // open new window unless redirectUrl has a query param logout_uri that is the same host as current. logout_uri is encodeURIComponent
-      const currentHost = window.location.host
-      const url = new URL(redirectUrl)
-      if (url.host !== currentHost) {
-        // not new tab new window
-        window.open(redirectUrl, 'newWindow', 'width=400,height=500,resizable=yes,scrollbars=yes,status=yes')
-      } else {
-        window.location.href = redirectUrl
-      }
     }
   }
 
