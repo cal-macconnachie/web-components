@@ -1166,6 +1166,38 @@ export class Auth extends LitElement {
       `
     }
 
+    // Show loading state during OAuth callback processing
+    if (this.isLoading && this.hasHandledOAuthCallback) {
+      return html`
+        ${this.logoUrl.length > 0
+          ? html`
+              <header class="modal-header">
+                <div class="auth-header">
+                <img
+                  src="${this.logoUrl}"
+                  width="48"
+                  height="48"
+                  alt="Logo"
+                  class="auth-logo"
+                />
+                </div>
+              </header>
+            `
+          : nothing}
+
+        <div class="modal-body">
+          <div class="auth-form">
+            <div class="form-actions">
+              <button type="button" class="cta" disabled>
+                Signing in...
+              </button>
+            </div>
+            ${this.renderAlerts()}
+          </div>
+        </div>
+      `
+    }
+
     if (this.isLoggedIn) {
       return html`
         <!-- Header -->
