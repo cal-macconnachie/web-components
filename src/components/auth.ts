@@ -864,7 +864,7 @@ export class Auth extends LitElement {
   }
 
   public isUserLoggedIn(): boolean {
-    return this.isLoggedIn
+    return this.isLoggedIn || (!!this.cookies.getAuthToken('ACCESS_TOKEN') && !!this.cookies.getAuthToken('REFRESH_TOKEN') && !!this.cookies.getAuthToken('AUTH_TOKEN'))
   }
 
   public async logout() {
