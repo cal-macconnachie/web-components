@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.16](https://github.com/cal-macconnachie/web-components/compare/v0.0.15...v0.0.16) (2025-12-01)
+
+
+### Bug Fixes
+
+* logout should reset no matter what ([4f61565](https://github.com/cal-macconnachie/web-components/commit/4f61565fa0b2c8e7f6f60036a6e94b1e008cd612))
+* open and close drawer for oauth flow ([b9644f7](https://github.com/cal-macconnachie/web-components/commit/b9644f74b7b78c22950dc660113fd872959aa375))
+
 ### [0.0.15](https://github.com/cal-macconnachie/web-components/compare/v0.0.14...v0.0.15) (2025-11-30)
 
 
