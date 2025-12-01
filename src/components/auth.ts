@@ -725,6 +725,10 @@ export class Auth extends LitElement {
       return
     }
 
+    // Open drawer to show loading state
+    this.open = true
+    this.isVisible = true
+
     this.hasHandledOAuthCallback = true
     this.isLoading = true
     this.error = ''
@@ -747,6 +751,8 @@ export class Auth extends LitElement {
           })
 
         this.setAuthTokens(apiAccessToken, apiIdToken, apiRefreshToken ?? refreshToken)
+        // Close drawer after successful login
+        this.handleClose()
       }
       // LEGACY FLOW: If we have authorization code (direct OAuth)
       else if (code && state) {
@@ -774,6 +780,8 @@ export class Auth extends LitElement {
           })
 
         this.setAuthTokens(apiAccessToken, apiIdToken, apiRefreshToken ?? tokens.refresh_token)
+        // Close drawer after successful login
+        this.handleClose()
       } else {
         throw new Error('Missing required OAuth parameters')
       }
@@ -924,7 +932,7 @@ export class Auth extends LitElement {
       const returnUrl = window.location.href
 
       // Build oauth-spa redirect URL
-      const oauthUrl = `${baseDomain}?return_url=${encodeURIComponent(returnUrl)}&provider=${provider}`
+      const oauthUrl = `${baseDomain}?return_url=${encodeURIComponent(returnUrl)}&provider=${provider}&theme=${this.theme}`
 
       console.log('Redirecting to oauth-spa:', oauthUrl)
       window.location.href = oauthUrl
