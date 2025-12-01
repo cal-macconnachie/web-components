@@ -631,10 +631,13 @@ export class Auth extends LitElement {
     }
   }
 
-  private setAuthTokens(accessToken: string, idToken: string, refreshToken: string) {
+  private setAuthTokens(accessToken: string, idToken: string, refreshToken: string, user: {
+    email: string
+  }) {
     this.cookies.setAuthToken('ACCESS_TOKEN', accessToken)
     this.cookies.setAuthToken('AUTH_TOKEN', idToken)
     this.cookies.setAuthToken('REFRESH_TOKEN', refreshToken)
+    this.cookies.setCookie('USER_EMAIL', user.email)
     this.isLoggedIn = true
 
     // Dispatch login success event
@@ -652,8 +655,8 @@ export class Auth extends LitElement {
       password: this.password,
     }
 
-    const { accessToken, idToken, refreshToken } = await this.getApiService().login(detail)
-    this.setAuthTokens(accessToken, idToken, refreshToken)
+    const { accessToken, idToken, refreshToken, user } = await this.getApiService().login(detail)
+    this.setAuthTokens(accessToken, idToken, refreshToken, user)
     // close drawer
     this.handleClose()
   }
@@ -743,14 +746,14 @@ export class Auth extends LitElement {
         log('OAuth tokens received from oauth-spa, logging in...')
 
         // Call API to exchange oauth-spa tokens for our tokens
-        const { accessToken: apiAccessToken, idToken: apiIdToken, refreshToken: apiRefreshToken } =
+        const { accessToken: apiAccessToken, idToken: apiIdToken, refreshToken: apiRefreshToken, user } =
           await this.getApiService().login({
             accessToken: accessToken,
             refreshToken: refreshToken,
             idToken: idToken,
           })
 
-        this.setAuthTokens(apiAccessToken, apiIdToken, apiRefreshToken ?? refreshToken)
+        this.setAuthTokens(apiAccessToken, apiIdToken, apiRefreshToken ?? refreshToken, user)
         // Close drawer after successful login
         this.handleClose()
       }
@@ -772,14 +775,14 @@ export class Auth extends LitElement {
 
         log('Exchanging authorization code for tokens...')
         const tokens = await oauthService.exchangeCodeForTokens(code)
-        const { accessToken: apiAccessToken, idToken: apiIdToken, refreshToken: apiRefreshToken } =
+        const { accessToken: apiAccessToken, idToken: apiIdToken, refreshToken: apiRefreshToken, user } =
           await this.getApiService().login({
             accessToken: tokens.access_token,
             refreshToken: tokens.refresh_token,
             idToken: tokens.id_token,
           })
 
-        this.setAuthTokens(apiAccessToken, apiIdToken, apiRefreshToken ?? tokens.refresh_token)
+        this.setAuthTokens(apiAccessToken, apiIdToken, apiRefreshToken ?? tokens.refresh_token, user)
         // Close drawer after successful login
         this.handleClose()
       } else {
@@ -1710,6 +1713,10 @@ export class Auth extends LitElement {
       this.cookies.clearAllAuthTokens()
       this.isLoggedIn = false
     }
+  }
+
+  public getUserEmail(): string | null {
+    return this.cookies.getCookie('USER_EMAIL') || null
   }
 
   static styles = appStyles()
