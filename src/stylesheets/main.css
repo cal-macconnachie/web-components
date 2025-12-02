@@ -558,6 +558,55 @@ body.modal-open {
   border-color: var(--color-error);
 }
 
+/* Ghost-hover variants */
+.base-button--ghost-danger {
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border-color: transparent;
+}
+
+.base-button--ghost-danger:hover:not(:disabled):not(.base-button--confirming) {
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
+  border-color: var(--color-error);
+}
+
+.base-button--ghost-warning {
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border-color: transparent;
+}
+
+.base-button--ghost-warning:hover:not(:disabled):not(.base-button--confirming) {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning);
+  border-color: var(--color-warning);
+}
+
+.base-button--ghost-info {
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border-color: transparent;
+}
+
+.base-button--ghost-info:hover:not(:disabled):not(.base-button--confirming) {
+  background-color: var(--color-info-bg);
+  color: var(--color-info);
+  border-color: var(--color-info);
+}
+
+.base-button--ghost-success {
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border-color: transparent;
+}
+
+.base-button--ghost-success:hover:not(:disabled):not(.base-button--confirming) {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+  border-color: var(--color-success);
+}
+
 /* Sizes */
 .base-button--xs {
   padding: var(--space-1) var(--space-2);
