@@ -4,7 +4,6 @@ A collection of lightweight, framework-agnostic web components built with Lit.
 
 ## Components
 
-- **auth-form** - Authentication with OAuth and email/password
 - **base-button** - Customizable button component
 - **base-card** - Card container component
 - **base-date-picker** - Date selection input
@@ -27,14 +26,13 @@ Load from CDN:
 <script type="module" src="https://cdn.cals-api.com/index.js"></script>
 
 <!-- Or load individual components -->
-<script type="module" src="https://cdn.cals-api.com/components/auth-form.js"></script>
+<script type="module" src="https://cdn.cals-api.com/components/base-button.js"></script>
 ```
 
 Use in your HTML:
 
 ```html
-<base-button>Click me</base-button>
-<auth-form app-name="My App"></auth-form>
+<base-button variant="solid-primary">Primary</base-button>
 ```
 
 ## Playground

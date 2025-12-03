@@ -27,19 +27,6 @@ if (!authDrawerElement) {
   throw new Error('base-drawer element not found in the document')
 }
 
-const env = import.meta.env as Record<string, string | undefined>
-const applyEnvAttribute = (attr: string, envKey: string) => {
-  const value = env?.[envKey]
-  if (typeof value === 'string' && value.trim().length > 0) {
-    authFormElement.setAttribute(attr, value.trim())
-  }
-}
-
-applyEnvAttribute('oauth-domain', 'VITE_COGNITO_DOMAIN')
-applyEnvAttribute('oauth-region', 'VITE_COGNITO_REGION')
-applyEnvAttribute('oauth-user-pool-id', 'VITE_COGNITO_USER_POOL_ID')
-applyEnvAttribute('oauth-client-id', 'VITE_COGNITO_CLIENT_ID')
-
 const refreshButton = document.getElementById('refresh-button')
 const openDrawerButton = document.querySelector('.open-drawer')
 const logoutButton = document.getElementById('logout-button')
