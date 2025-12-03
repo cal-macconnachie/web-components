@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0](https://github.com/cal-macconnachie/web-components/compare/v0.0.21...v1.0.0) (2025-12-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* major component addition and refactoring
+
+### Features
+
+* major component addition and refactoring ([fb8cbd5](https://github.com/cal-macconnachie/web-components/commit/fb8cbd5861f166538b90613874dc5d9b5cc59078))
+
 ### [0.0.21](https://github.com/cal-macconnachie/web-components/compare/v0.0.20...v0.0.21) (2025-12-02)
 
 ### [0.0.20](https://github.com/cal-macconnachie/web-components/compare/v0.0.19...v0.0.20) (2025-12-01)
