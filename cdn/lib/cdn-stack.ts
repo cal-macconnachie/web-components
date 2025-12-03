@@ -98,6 +98,21 @@ export class CdnStack extends cdk.Stack {
       domainNames: ['cdn.cals-api.com'],
       certificate: certificate,
       priceClass: PriceClass.PRICE_CLASS_100, // US, Canada, Europe only
+      defaultRootObject: 'index.html',
+      errorResponses: [
+        {
+          httpStatus: 404,
+          responseHttpStatus: 200,
+          responsePagePath: '/index.html',
+          ttl: cdk.Duration.seconds(0), // Don't cache 404->index.html redirects
+        },
+        {
+          httpStatus: 403,
+          responseHttpStatus: 200,
+          responsePagePath: '/index.html',
+          ttl: cdk.Duration.seconds(0),
+        },
+      ],
     })
 
     // Export bucket name and distribution ID for CI/CD

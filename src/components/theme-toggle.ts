@@ -1,10 +1,9 @@
-import { css, html, LitElement } from 'lit'
+import { css, html } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
+import { BaseElement } from '../base-element'
 
 @customElement('theme-toggle')
-export class ThemeToggle extends LitElement {
-  @property({ type: String, reflect: true }) theme: 'light' | 'dark' = 'light'
-  @property({ type: String, attribute: 'storage-key' }) storageKey = 'theme-preference'
+export class ThemeToggle extends BaseElement {
   @property({ type: String, attribute: 'size' }) size: 'sm' | 'md' | 'lg' = 'sm'
   @property({ type: String, attribute: 'variant' }) variant: 'ghost' | 'outline' | 'solid' = 'ghost'
 
@@ -12,38 +11,14 @@ export class ThemeToggle extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
-    // Initialize theme from property, localStorage, or system preference
-    const storedTheme = localStorage.getItem(this.storageKey) as 'light' | 'dark' | null
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-
-    if (storedTheme) {
-      this.theme = storedTheme
-    } else if (this.theme === 'light' && prefersDark) {
-      this.theme = 'dark'
-    }
-
+    // Initialize isDark based on the current theme (which may have been set by BaseElement)
     this.isDark = this.theme === 'dark'
-    this.applyTheme()
-  }
-
-  private applyTheme() {
-    document.documentElement.setAttribute('data-theme', this.theme)
-    localStorage.setItem(this.storageKey, this.theme)
-
-    // Dispatch custom event for external listeners
-    this.dispatchEvent(
-      new CustomEvent('theme-changed', {
-        detail: { theme: this.theme },
-        bubbles: true,
-        composed: true,
-      })
-    )
   }
 
   private toggleTheme() {
     this.theme = this.isDark ? 'light' : 'dark'
     this.isDark = !this.isDark
-    this.applyTheme()
+    super.applyTheme()
   }
 
   private getSizeClass() {

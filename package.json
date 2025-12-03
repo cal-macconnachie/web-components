@@ -43,6 +43,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:components": "node build-components.ts",
+    "build:playground": "vite build --config vite.config.playground.ts",
     "minify:css": "node -e \"require('fs').mkdirSync('dist/stylesheets',{recursive:true})\" && postcss src/stylesheets/*.css --dir dist/stylesheets --no-map",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",

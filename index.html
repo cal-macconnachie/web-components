@@ -3,34 +3,695 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="/public/favicon.ico" />
     <title>Web Component playground</title>
     <link rel="stylesheet" href="/src/stylesheets/main.css" />
   </head>
   <body>
     <div class="page">
       <header>
-        <h1>web component
-        <theme-toggle class="float-right" size="md"></theme-toggle>
+        <div class="float-right" style="display: flex; gap: 0.5rem; align-items: center;">
+          <base-button
+            id="github-link"
+            variant="ghost"
+            size="sm"
+            onclick="window.open('https://github.com/cal-macconnachie/web-components', '_blank')"
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 0.25rem;">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            GitHub
+          </base-button>
+          <base-button
+            id="npm-link"
+            variant="ghost"
+            size="sm"
+            onclick="window.open('https://www.npmjs.com/package/@cal.macconnachie/web-components', '_blank')"
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 0.25rem;">
+              <path d="M0 7.334v8h6.666v1.332H12v-1.332h12v-8H0zm6.666 6.664H5.334v-4H3.999v4H1.335V8.667h5.331v5.331zm4 0v1.336H8.001V8.667h5.334v5.332h-2.669v-.001zm12.001 0h-1.33v-4h-1.336v4h-1.335v-4h-1.33v4h-2.671V8.667h8.002v5.331zM10.665 10H12v2.667h-1.335V10z"/>
+            </svg>
+            npm
+          </base-button>
+          <base-button id="toggle-tabs-layout" variant="outline" size="sm">Toggle Layout</base-button>
+          <theme-toggle size="md"></theme-toggle>
+        </div>
         </h1>
       </header>
 
       <section>
-        <auth
-          id="auth"
-          logo-url="https://csm.codes/direct-market.svg"
-          api-domain="https://api.dev.marketplace.csm.codes"
-          oauth-domain="%VITE_COGNITO_DOMAIN%"
-          oauth-region="%VITE_COGNITO_REGION%"
-          oauth-user-pool-id="%VITE_COGNITO_USER_POOL_ID%"
-          oauth-client-id="%VITE_COGNITO_CLIENT_ID%"
-        ></auth>
-        <div class="base-card base-card--elevated base-card--padding-md panel">
-          <div class="controls">
-            <button class="base-button base-button--primary base-button--md open-modal">Open Drawer</button>
-            <button class="base-button base-button--outline base-button--md" id="logout-button">Logout</button>
-            <button class="base-button base-button--outline base-button--md" id="refresh-button">Refresh Tokens</button>
+        <!-- Compose auth-form inside base-drawer for drawer auth experience -->
+        <base-drawer id="auth-drawer" size="sm">
+          <auth-form
+            id="auth-form"
+            logo-url="https://csm.codes/direct-market.svg"
+            api-domain="https://api.dev.marketplace.csm.codes"
+          ></auth-form>
+        </base-drawer>
+
+        <!-- Main Tabs Container -->
+        <base-tabs variant="sidebar" aria-label="Component showcase">
+          <!-- Buttons Tab -->
+          <base-tab id="buttons" label="Buttons" icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>'>
+            <base-card variant="elevated" padding="md" style="margin-bottom: 2rem;">
+              <h3>Buttons</h3>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+            <base-button variant="primary">Primary</base-button>
+            <base-button variant="secondary">Secondary</base-button>
+            <base-button variant="outline">Outline</base-button>
+            <base-button variant="danger">Danger</base-button>
+            <base-button variant="ghost">Ghost</base-button>
+            <base-button variant="ghost-danger">Ghost Danger</base-button>
+            <base-button variant="ghost-warning">Ghost Warning</base-button>
+            <base-button variant="ghost-info">Ghost Info</base-button>
+            <base-button variant="ghost-success">Ghost Success</base-button>
+            <base-button variant="primary" disabled>Disabled</base-button>
+            <base-button variant="primary" loading>Loading</base-button>
           </div>
-        </div>
+              <div>
+                <base-button variant="primary" full-width>Full Width Button</base-button>
+              </div>
+            </base-card>
+          </base-tab>
+
+          <!-- Inputs Tab -->
+          <base-tab id="inputs" label="Inputs" icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>'>
+            <base-card variant="elevated" padding="md" style="margin-bottom: 2rem;">
+              <h3>Inputs</h3>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+            <base-input
+              label="Email"
+              type="email"
+              placeholder="Enter your email"
+              size="md"
+            ></base-input>
+
+            <base-input
+              label="Password"
+              type="password"
+              placeholder="Enter your password"
+              required
+              size="md"
+            ></base-input>
+
+            <base-input
+              label="Phone"
+              type="tel"
+              placeholder="+1 (555) 000-0000"
+              hint="We'll never share your phone number"
+              size="md"
+            ></base-input>
+
+            <base-input
+              label="Website"
+              type="url"
+              value="https://example.com"
+              size="md"
+            ></base-input>
+
+            <base-input
+              label="Error State"
+              type="text"
+              error="This field is required"
+              size="md"
+            ></base-input>
+
+            <base-input
+              label="Disabled"
+              type="text"
+              value="Cannot edit this"
+              disabled
+              size="md"
+            ></base-input>
+
+            <base-input
+              label="Small"
+              placeholder="Small input"
+              size="sm"
+            ></base-input>
+
+                <base-input
+                  label="Large"
+                  placeholder="Large input"
+                  size="lg"
+                ></base-input>
+              </div>
+            </base-card>
+          </base-tab>
+
+          <!-- Selects Tab -->
+          <base-tab id="selects" label="Selects" icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg>'>
+            <base-card variant="elevated" padding="md" style="margin-bottom: 2rem;">
+              <h3>Selects</h3>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+            <base-select
+              id="select-country"
+              label="Country"
+              placeholder="Select a country"
+              size="md"
+            ></base-select>
+
+            <base-select
+              id="select-searchable"
+              label="Searchable Select"
+              placeholder="Search for a fruit..."
+              searchable
+              size="md"
+            ></base-select>
+
+            <base-select
+              id="select-required"
+              label="Required Field"
+              placeholder="Choose an option"
+              required
+              size="md"
+            ></base-select>
+
+            <base-select
+              id="select-error"
+              label="Error State"
+              placeholder="Select an option"
+              error="This field is required"
+              size="md"
+            ></base-select>
+
+            <base-select
+              id="select-hint"
+              label="With Hint"
+              placeholder="Select a priority"
+              hint="Choose the urgency level"
+              size="md"
+            ></base-select>
+
+            <base-select
+              id="select-disabled"
+              label="Disabled"
+              placeholder="Cannot select"
+              disabled
+              size="md"
+            ></base-select>
+
+            <base-select
+              id="select-small"
+              label="Small"
+              placeholder="Small select"
+              size="sm"
+            ></base-select>
+
+                <base-select
+                  id="select-large"
+                  label="Large"
+                  placeholder="Large select"
+                  size="lg"
+                ></base-select>
+              </div>
+            </base-card>
+          </base-tab>
+
+          <!-- Textareas Tab -->
+          <base-tab id="textareas" label="Textareas" icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h10M7 12h10M7 17h6"/></svg>'>
+            <base-card variant="elevated" padding="md" style="margin-bottom: 2rem;">
+              <h3>Textareas</h3>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+            <base-textarea
+              label="Description"
+              placeholder="Enter a description..."
+              size="md"
+              rows="4"
+            ></base-textarea>
+
+            <base-textarea
+              label="Comments"
+              placeholder="Add your comments here..."
+              hint="Maximum 500 characters"
+              maxlength="500"
+              size="md"
+              rows="4"
+            ></base-textarea>
+
+            <base-textarea
+              label="Required Field"
+              placeholder="This field is required"
+              required
+              size="md"
+              rows="4"
+            ></base-textarea>
+
+            <base-textarea
+              label="Error State"
+              error="This field cannot be empty"
+              size="md"
+              rows="4"
+            ></base-textarea>
+
+            <base-textarea
+              label="Disabled"
+              value="This content cannot be edited"
+              disabled
+              size="md"
+              rows="4"
+            ></base-textarea>
+
+                <base-textarea
+                  label="Both Resize"
+                  placeholder="Resize both ways"
+                  resize="both"
+                  size="md"
+                  rows="4"
+                ></base-textarea>
+              </div>
+            </base-card>
+          </base-tab>
+
+          <!-- Quantity Selects Tab -->
+          <base-tab id="quantity-selects" label="Quantity Selects" icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>'>
+            <base-card variant="elevated" padding="md" style="margin-bottom: 2rem;">
+              <h3>Quantity Selects</h3>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; align-items: start;">
+            <div>
+              <p style="margin-bottom: 0.5rem; font-weight: var(--font-weight-medium);">Extra Small (xs)</p>
+              <quantity-select id="quantity-xs" value="0" min="0" max="99" size="xs"></quantity-select>
+              <p id="quantity-xs-display" style="margin-top: 0.5rem; font-size: var(--font-size-sm); color: var(--color-text-secondary);">Current value: 0</p>
+            </div>
+
+            <div>
+              <p style="margin-bottom: 0.5rem; font-weight: var(--font-weight-medium);">Small (sm)</p>
+              <quantity-select id="quantity-sm" value="1" min="0" max="50" size="sm"></quantity-select>
+              <p id="quantity-sm-display" style="margin-top: 0.5rem; font-size: var(--font-size-sm); color: var(--color-text-secondary);">Current value: 1</p>
+            </div>
+
+            <div>
+              <p style="margin-bottom: 0.5rem; font-weight: var(--font-weight-medium);">Medium (md) - Default</p>
+              <quantity-select id="quantity-md" value="5" min="0" max="99" size="md"></quantity-select>
+              <p id="quantity-md-display" style="margin-top: 0.5rem; font-size: var(--font-size-sm); color: var(--color-text-secondary);">Current value: 5</p>
+            </div>
+
+            <div>
+              <p style="margin-bottom: 0.5rem; font-weight: var(--font-weight-medium);">Large (lg)</p>
+              <quantity-select id="quantity-lg" value="10" min="1" max="100" size="lg"></quantity-select>
+              <p id="quantity-lg-display" style="margin-top: 0.5rem; font-size: var(--font-size-sm); color: var(--color-text-secondary);">Current value: 10</p>
+            </div>
+
+            <div>
+              <p style="margin-bottom: 0.5rem; font-weight: var(--font-weight-medium);">Limited Range (0-10)</p>
+              <quantity-select id="quantity-limited" value="5" min="0" max="10" size="md"></quantity-select>
+              <p id="quantity-limited-display" style="margin-top: 0.5rem; font-size: var(--font-size-sm); color: var(--color-text-secondary);">Current value: 5</p>
+            </div>
+
+                <div>
+                  <p style="margin-bottom: 0.5rem; font-weight: var(--font-weight-medium);">Input Read-Only (buttons only)</p>
+                  <quantity-select id="quantity-no-input" value="3" min="0" max="20" size="md"></quantity-select>
+                  <p id="quantity-no-input-display" style="margin-top: 0.5rem; font-size: var(--font-size-sm); color: var(--color-text-secondary);">Current value: 3</p>
+                </div>
+              </div>
+            </base-card>
+          </base-tab>
+
+          <!-- Drawers Tab -->
+          <base-tab id="drawers" label="Drawers" icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g transform="rotate(-90 12 12)"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M14 8l4 4-4 4"/></g></svg>'>
+            <base-card variant="elevated" padding="md" style="margin-bottom: 2rem;">
+              <h3>Drawers</h3>
+              <p style="margin-bottom: 1rem; color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+                Click buttons to open drawers. Drag down or click overlay to close.
+              </p>
+              <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <base-button variant="primary" size="md" class="open-drawer-sm">Small Drawer</base-button>
+                <base-button variant="secondary" size="md" class="open-drawer-md">Medium Drawer</base-button>
+                <base-button variant="outline" size="md" class="open-drawer-lg">Large Drawer</base-button>
+                <base-button variant="ghost" size="md" class="open-drawer-form">Drawer with Form</base-button>
+              </div>
+            </base-card>
+          </base-tab>
+
+          <!-- Tabs Tab -->
+          <base-tab id="tabs" label="Tabs" icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v6"/></svg>'>
+            <base-card variant="elevated" padding="md" style="margin-bottom: 2rem;">
+              <h3>Tabs</h3>
+              <p style="font-size: var(--font-size-lg); color: var(--color-text-primary); margin-top: 1rem;">
+                You're clicking on them
+              </p>
+            </base-card>
+          </base-tab>
+
+          <!-- Date & Time Pickers Tab -->
+          <base-tab id="date-time-pickers" label="Date & Time" icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'>
+            <base-card variant="elevated" padding="md" style="margin-bottom: 2rem;">
+              <h3>Date Pickers</h3>
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                <base-date-picker
+                  id="date-picker-basic"
+                  label="Basic Date Picker"
+                  placeholder="Select a date"
+                  size="md"
+                ></base-date-picker>
+
+                <base-date-picker
+                  id="date-picker-required"
+                  label="Required Date"
+                  placeholder="Choose a date"
+                  required
+                  size="md"
+                ></base-date-picker>
+
+                <base-date-picker
+                  id="date-picker-hint"
+                  label="With Hint"
+                  placeholder="Select start date"
+                  hint="Choose your project start date"
+                  size="md"
+                ></base-date-picker>
+
+                <base-date-picker
+                  id="date-picker-error"
+                  label="Error State"
+                  placeholder="Select a date"
+                  error="This field is required"
+                  size="md"
+                ></base-date-picker>
+
+                <base-date-picker
+                  id="date-picker-small"
+                  label="Small Size"
+                  placeholder="Small date picker"
+                  size="sm"
+                ></base-date-picker>
+
+                <base-date-picker
+                  id="date-picker-large"
+                  label="Large Size"
+                  placeholder="Large date picker"
+                  size="lg"
+                ></base-date-picker>
+              </div>
+            </base-card>
+
+            <base-card variant="elevated" padding="md" style="margin-bottom: 2rem;">
+              <h3>Time Pickers</h3>
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                <base-time-picker
+                  id="time-picker-12h"
+                  label="12-Hour Format"
+                  placeholder="Select a time"
+                  format="12"
+                  size="md"
+                ></base-time-picker>
+
+                <base-time-picker
+                  id="time-picker-24h"
+                  label="24-Hour Format"
+                  placeholder="Select a time"
+                  format="24"
+                  size="md"
+                ></base-time-picker>
+
+                <base-time-picker
+                  id="time-picker-required"
+                  label="Required Time"
+                  placeholder="Choose a time"
+                  format="12"
+                  required
+                  size="md"
+                ></base-time-picker>
+
+                <base-time-picker
+                  id="time-picker-hint"
+                  label="With Hint"
+                  placeholder="Select meeting time"
+                  format="12"
+                  hint="Choose your preferred meeting time"
+                  size="md"
+                ></base-time-picker>
+
+                <base-time-picker
+                  id="time-picker-small"
+                  label="Small Size"
+                  placeholder="Small time picker"
+                  format="12"
+                  size="sm"
+                ></base-time-picker>
+
+                <base-time-picker
+                  id="time-picker-large"
+                  label="Large Size"
+                  placeholder="Large time picker"
+                  format="12"
+                  size="lg"
+                ></base-time-picker>
+              </div>
+            </base-card>
+
+            <base-card variant="elevated" padding="md" style="margin-bottom: 2rem;">
+              <h3>DateTime Pickers</h3>
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                <base-datetime-picker
+                  id="datetime-picker-12h"
+                  label="12-Hour Format"
+                  placeholder="Select date and time"
+                  format="12"
+                  size="md"
+                ></base-datetime-picker>
+
+                <base-datetime-picker
+                  id="datetime-picker-24h"
+                  label="24-Hour Format"
+                  placeholder="Select date and time"
+                  format="24"
+                  size="md"
+                ></base-datetime-picker>
+
+                <base-datetime-picker
+                  id="datetime-picker-required"
+                  label="Required DateTime"
+                  placeholder="Choose date and time"
+                  format="12"
+                  required
+                  size="md"
+                ></base-datetime-picker>
+
+                <base-datetime-picker
+                  id="datetime-picker-hint"
+                  label="With Hint"
+                  placeholder="Select appointment"
+                  format="12"
+                  hint="Choose your appointment date and time"
+                  size="md"
+                ></base-datetime-picker>
+
+                <base-datetime-picker
+                  id="datetime-picker-small"
+                  label="Small Size"
+                  placeholder="Small datetime picker"
+                  format="12"
+                  size="sm"
+                ></base-datetime-picker>
+
+                <base-datetime-picker
+                  id="datetime-picker-large"
+                  label="Large Size"
+                  placeholder="Large datetime picker"
+                  format="12"
+                  size="lg"
+                ></base-datetime-picker>
+              </div>
+            </base-card>
+          </base-tab>
+
+          <!-- Auth Tab -->
+          <base-tab id="auth" label="Auth" icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>'>
+            <base-card variant="elevated" padding="md" style="margin-bottom: 2rem;">
+              <h3>Auth Controls</h3>
+              <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <base-button variant="primary" size="md" class="open-drawer">Open Drawer</base-button>
+                <base-button variant="outline" size="md" id="logout-button">Logout</base-button>
+                <base-button variant="outline" size="md" id="refresh-button">Refresh Tokens</base-button>
+              </div>
+            </base-card>
+          </base-tab>
+
+          <!-- Cards Tab -->
+          <base-tab id="cards" label="Cards" icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>'>
+            <div style="display: grid; gap: 2rem;">
+              <!-- Card Variants Section -->
+              <div>
+                <h3 style="margin-bottom: 1rem;">Cards</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                  <base-card variant="default" padding="md">
+                    <h4 style="margin-top: 0;">Default Card</h4>
+                    <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+                      No border or shadow. Clean and minimal appearance.
+                    </p>
+                  </base-card>
+
+                  <base-card variant="elevated" padding="md">
+                    <h4 style="margin-top: 0;">Elevated Card</h4>
+                    <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+                      Has border and shadow for depth and separation.
+                    </p>
+                  </base-card>
+                </div>
+              </div>
+
+              <!-- Padding Variants Section -->
+              <div>
+                <h3 style="margin-bottom: 1rem;">Padding Variants</h3>
+                <div style="display: grid; gap: 1.5rem;">
+                  <base-card variant="elevated" padding="none">
+                    <div style="padding: var(--space-4); background: var(--color-bg-muted);">
+                      <h4 style="margin: 0;">No Padding</h4>
+                      <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin: 0.5rem 0 0 0;">
+                        Perfect for custom layouts or full-width content.
+                      </p>
+                    </div>
+                  </base-card>
+
+                  <base-card variant="elevated" padding="sm">
+                    <h4 style="margin-top: 0;">Small Padding</h4>
+                    <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+                      Compact spacing (var(--space-4))
+                    </p>
+                  </base-card>
+
+                  <base-card variant="elevated" padding="md">
+                    <h4 style="margin-top: 0;">Medium Padding</h4>
+                    <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+                      Default spacing (var(--space-6))
+                    </p>
+                  </base-card>
+
+                  <base-card variant="elevated" padding="lg">
+                    <h4 style="margin-top: 0;">Large Padding</h4>
+                    <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+                      Generous spacing (var(--space-8))
+                    </p>
+                  </base-card>
+                </div>
+              </div>
+
+              <!-- Interactive Cards Section -->
+              <div>
+                <h3 style="margin-bottom: 1rem;">Interactive Cards</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                  <base-card variant="elevated" padding="md" hoverable>
+                    <h4 style="margin-top: 0;">Hoverable Card</h4>
+                    <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+                      Try hovering over me! The shadow increases on hover.
+                    </p>
+                    <base-button variant="outline" size="sm" style="margin-top: 1rem;">Click Me</base-button>
+                  </base-card>
+
+                  <base-card variant="elevated" padding="md" expandable>
+                    <h4 style="margin-top: 0;">Expandable Card</h4>
+                    <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+                      Hover to see the expand button appear in the top-right corner.
+                    </p>
+                  </base-card>
+                </div>
+              </div>
+
+              <!-- Complex Card Example -->
+              <div>
+                <h3 style="margin-bottom: 1rem;">Complex Card Example</h3>
+                <base-card variant="elevated" padding="none">
+                  <div style="padding: var(--space-6); border-bottom: 1px solid var(--color-border);">
+                    <h4 style="margin: 0;">Product Card</h4>
+                    <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin: 0.5rem 0 0 0;">
+                      Demonstrates a card with custom internal structure
+                    </p>
+                  </div>
+                  <div style="padding: var(--space-6);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                      <span style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold);">$99.99</span>
+                      <span style="color: var(--color-success); font-size: var(--font-size-sm);">In Stock</span>
+                    </div>
+                    <p style="color: var(--color-text-secondary); margin-bottom: 1.5rem;">
+                      This card uses padding="none" to create custom sections with individual padding and borders.
+                    </p>
+                    <div style="display: flex; gap: 0.5rem;">
+                      <base-button variant="primary" full-width>Add to Cart</base-button>
+                    </div>
+                  </div>
+                </base-card>
+              </div>
+            </div>
+          </base-tab>
+        </base-tabs>
+
+        <!-- Drawer Examples -->
+        <base-drawer id="drawer-sm" size="sm">
+          <div style="padding: var(--space-4);">
+            <h2 style="margin-top: 0;">Small Drawer</h2>
+            <p>This is a small drawer (320px wide on desktop). Perfect for quick actions or notifications.</p>
+            <base-button variant="primary" class="close-drawer-sm" style="margin-top: var(--space-4);">
+              Close Drawer
+            </base-button>
+          </div>
+        </base-drawer>
+
+        <base-drawer id="drawer-md" size="md">
+          <div style="padding: var(--space-4);">
+            <h2 style="margin-top: 0;">Medium Drawer</h2>
+            <p>This is a medium drawer (480px wide on desktop). Good for forms and detailed content.</p>
+            <div style="display: flex; gap: 1rem; margin-top: var(--space-4);">
+              <base-button variant="primary" class="close-drawer-md">Close</base-button>
+              <base-button variant="outline" class="close-drawer-md">Cancel</base-button>
+            </div>
+          </div>
+        </base-drawer>
+
+        <base-drawer id="drawer-lg" size="lg">
+          <div style="padding: var(--space-4);">
+            <h2 style="margin-top: 0;">Large Drawer</h2>
+            <p>This is a large drawer (640px wide on desktop). Ideal for complex forms or multi-step processes.</p>
+            <div style="margin-top: var(--space-4);">
+              <h3>Example Content</h3>
+              <p>Large drawers can contain extensive content like:</p>
+              <ul>
+                <li>Multi-step wizards</li>
+                <li>Detailed forms</li>
+                <li>Rich media content</li>
+                <li>Settings panels</li>
+              </ul>
+              <base-button variant="primary" class="close-drawer-lg" style="margin-top: var(--space-4);">
+                Got it!
+              </base-button>
+            </div>
+          </div>
+        </base-drawer>
+
+        <base-drawer id="drawer-form" size="md">
+          <div style="padding: var(--space-4);">
+            <h2 style="margin-top: 0;">Contact Form</h2>
+            <div style="display: grid; gap: 1rem; margin-top: var(--space-4);">
+              <base-input
+                label="Name"
+                placeholder="Your name"
+                required
+                size="md"
+              ></base-input>
+
+              <base-input
+                label="Email"
+                type="email"
+                placeholder="your@email.com"
+                required
+                size="md"
+              ></base-input>
+
+              <base-textarea
+                label="Message"
+                placeholder="Your message..."
+                required
+                rows="6"
+                size="md"
+              ></base-textarea>
+
+              <div style="display: flex; gap: 1rem; margin-top: var(--space-2);">
+                <base-button variant="primary" full-width>Send Message</base-button>
+                <base-button variant="outline" class="close-drawer-form" full-width>Cancel</base-button>
+              </div>
+            </div>
+          </div>
+        </base-drawer>
       </section>
     </div>
 

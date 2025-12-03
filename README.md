@@ -162,3 +162,6 @@ The workflow:
    - Full bundle at root: `https://cdn.cals-api.com/index.es.js`
    - Individual components: `https://cdn.cals-api.com/components/{component-name}/index.es.js`
 4. Invalidates CloudFront cache
+
+## Playground
+View the playground at `https://cdn.cals-api.com/`

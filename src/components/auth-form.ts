@@ -1,12 +1,13 @@
-import { html, LitElement, nothing, PropertyValues } from 'lit'
+import { html, nothing, PropertyValues } from 'lit'
 import { customElement, property, query, state } from 'lit/decorators.js'
-import { classMap } from 'lit/directives/class-map.js'
 import { repeat } from 'lit/directives/repeat.js'
+import { BaseElement } from '../base-element'
 import { api } from '../services/api'
 import { cookies } from '../services/cookies'
 import { log } from '../services/logger'
 import { oauth } from '../services/oauth'
 import { appStyles } from '../services/styles'
+import { BaseInput } from './base-input'
 
 type AuthMode = 'signin' | 'signup'
 type ResetStep = 'none' | 'request' | 'confirm'
@@ -35,10 +36,6 @@ interface ResetConfirmDetail {
   otp: string
 }
 
-interface OAuthProvider {
-  provider: 'google' | 'apple'
-}
-
 const OAUTH_QUERY_PARAMS = [
   'code',
   'state',
@@ -51,10 +48,9 @@ const OAUTH_QUERY_PARAMS = [
   'expires_in',
 ] as const
 
-@customElement('auth-drawer')
-export class Auth extends LitElement {
+@customElement('auth-form')
+export class AuthForm extends BaseElement {
   // Main properties
-  @property({ type: Boolean, reflect: true }) open = false
   @property({ type: String, attribute: 'initial-mode' }) initialMode: AuthMode = 'signin'
   @property({ type: String, attribute: 'logo-url' }) logoUrl = ''
   @property({ type: String, attribute: 'api-domain' }) baseUrl = ''
@@ -64,8 +60,6 @@ export class Auth extends LitElement {
   @property({ type: String, attribute: 'oauth-client-id' }) oauthClientId = ''
   @property({ type: String, attribute: 'oauth-redirect-uri' }) oauthRedirectUri = ''
   @property({ type: String, attribute: 'oauth-spa-domain' }) oauthSpaDomain = ''
-  @property({ type: String, attribute: 'size' }) size: 'sm' | 'md' | 'lg' = 'sm'
-  @property({ type: String, attribute: 'data-theme', reflect: true }) theme: 'light' | 'dark' = 'light'
   @property({ type: Boolean, attribute: 'disable-signup' }) disableSignup = false
 
   // State
@@ -73,8 +67,6 @@ export class Auth extends LitElement {
   @state() private resetStep: ResetStep = 'none'
   @state() private signupStep: SignupStep = 'form'
   @state() private isLoading = false
-  @state() private isClosing = false
-  @state() private isVisible = false
   @state() private isLoggedIn = false
   @state() private email = ''
   @state() private password = ''
@@ -90,13 +82,6 @@ export class Auth extends LitElement {
   @state() private otpDigits: string[] = ['', '', '', '', '', '']
   @state() private signupOtpDigits: string[] = ['', '', '', '', '', '']
 
-  // Drag state
-  @state() private isDragging = false
-  @state() private dragStartY = 0
-  @state() private dragCurrentY = 0
-  @state() private dragStartTime = 0
-  @state() private lastDragEndTime = 0
-
   // cookies service
   private cookies = cookies()
 
@@ -104,19 +89,9 @@ export class Auth extends LitElement {
   private oauthService?: ReturnType<typeof oauth>
 
   // Refs
-  @query('.modal-container') private modalContainer?: HTMLElement
-  @query('#email-input') private emailInput?: HTMLInputElement
-  @query('.modal-body') private modalBody?: HTMLElement
+  @query('#email-input') private emailInput?: BaseInput
 
-  private scrollPosition = 0
-  private transitionDuration = 300
   private hasHandledOAuthCallback = false
-
-  private boundKeyHandler = (event: KeyboardEvent) => {
-    if (event.key === 'Escape' && this.isVisible) {
-      this.handleClose()
-    }
-  }
 
   private readonly baseUrlErrorMessage =
     'Authentication service is not configured correctly. Please add an API domain or contact support.'
@@ -128,12 +103,16 @@ export class Auth extends LitElement {
   private getNormalizedBaseUrl() {
     const trimmed = this.baseUrl.trim()
     if (!trimmed) return ''
-    const trimmedWithSlash = trimmed.endsWith('/') ? trimmed : `${trimmed}/`
-    const withHttps = trimmedWithSlash.startsWith('http://') || trimmedWithSlash.startsWith('https://')
-    if (!withHttps) {
-      return `https://${trimmedWithSlash}`
-    }
-    return trimmedWithSlash
+
+    // Add https:// if not present
+    const withHttps = trimmed.startsWith('http://') || trimmed.startsWith('https://')
+      ? trimmed
+      : `https://${trimmed}`
+
+    // Ensure trailing slash
+    const normalized = withHttps.endsWith('/') ? withHttps : `${withHttps}/`
+
+    return normalized
   }
 
   private getApiService() {
@@ -152,7 +131,6 @@ export class Auth extends LitElement {
 
   connectedCallback() {
     super.connectedCallback()
-    window.addEventListener('keyup', this.boundKeyHandler)
     // check to see if user is logged in
     const authToken = this.cookies.getAuthToken('AUTH_TOKEN')
     const refreshToken = this.cookies.getAuthToken('REFRESH_TOKEN')
@@ -165,16 +143,11 @@ export class Auth extends LitElement {
     void this.handleOAuthCallbackIfPresent()
   }
 
-  disconnectedCallback() {
-    window.removeEventListener('keyup', this.boundKeyHandler)
-    this.unlockBodyScroll()
-    super.disconnectedCallback()
-  }
-
   firstUpdated() {
-    if (this.open) {
-      this.isVisible = true
-    }
+    // Focus email input after component is rendered
+    setTimeout(() => {
+      this.emailInput?.focus()
+    }, 100)
   }
 
   updated(changed: PropertyValues) {
@@ -209,58 +182,9 @@ export class Auth extends LitElement {
       this.oauthService = undefined
       void this.handleOAuthCallbackIfPresent()
     }
-
-    if (changed.has('open')) {
-      if (this.open) {
-        this.isVisible = true
-        this.lockBodyScroll()
-        // Focus email input after modal is visible
-        setTimeout(() => {
-          this.emailInput?.focus()
-        }, 100)
-      } else if (this.isVisible) {
-        this.handleClose()
-      }
-    }
-
-    if (changed.has('isVisible')) {
-      if (this.isVisible) {
-        this.lockBodyScroll()
-        this.cleanupInlineStyles()
-      } else {
-        this.unlockBodyScroll()
-        this.resetState()
-      }
-    }
-  }
-
-  private lockBodyScroll() {
-    this.scrollPosition = window.scrollY
-    document.body.classList.add('modal-open')
-    document.body.style.top = `-${this.scrollPosition}px`
-  }
-
-  private unlockBodyScroll() {
-    document.body.classList.remove('modal-open')
-    document.body.style.top = ''
-    window.scrollTo(0, this.scrollPosition)
-  }
-
-  private cleanupInlineStyles() {
-    setTimeout(() => {
-      if (this.modalContainer) {
-        this.modalContainer.style.transition = ''
-        this.modalContainer.style.transform = ''
-      }
-    }, 0)
   }
 
   private resetState() {
-    this.isDragging = false
-    this.lastDragEndTime = 0
-    this.dragStartY = 0
-    this.dragCurrentY = 0
-    this.dragStartTime = 0
     this.error = ''
     this.notice = ''
     this.errors = {}
@@ -275,146 +199,6 @@ export class Auth extends LitElement {
     this.resetStep = 'none'
     this.signupStep = 'form'
     this.mode = this.initialMode
-  }
-
-  private handleClose = () => {
-    if (this.isClosing || !this.isVisible) return
-
-    this.cleanupInlineStyles()
-    this.isDragging = false
-    this.dragStartY = 0
-    this.dragCurrentY = 0
-    this.dragStartTime = 0
-
-    this.isClosing = true
-
-    setTimeout(() => {
-      this.isClosing = false
-      this.isVisible = false
-      this.open = false
-    }, this.transitionDuration)
-  }
-
-  private handleOverlayClick = () => {
-    this.handleClose()
-  }
-
-  // Drag handlers
-  private handleDragStart = (event: TouchEvent | MouseEvent) => {
-    if (!this.modalContainer) return
-
-    // Check if body is scrolled
-    if (this.modalBody && this.modalBody.scrollTop > 0) {
-      return
-    }
-
-    // Allow drag from handle or from content when at top
-    const target = event.target as HTMLElement
-    const isHandle =
-      target.classList.contains('drawer-handle') ||
-      target.classList.contains('drawer-handle-bar') ||
-      target.closest('.drawer-handle')
-
-    if (!isHandle && this.modalBody && this.modalBody.scrollTop > 0) {
-      return
-    }
-
-    this.modalContainer.style.transition = ''
-    this.modalContainer.style.transform = ''
-
-    this.isDragging = true
-    this.dragStartTime = Date.now()
-
-    if (event instanceof TouchEvent) {
-      this.dragStartY = event.touches[0].clientY
-      this.dragCurrentY = event.touches[0].clientY
-    } else {
-      this.dragStartY = event.clientY
-      this.dragCurrentY = event.clientY
-    }
-  }
-
-  private handleDragMove = (event: TouchEvent | MouseEvent) => {
-    if (!this.isDragging || !this.modalContainer) return
-
-    if (event instanceof TouchEvent) {
-      this.dragCurrentY = event.touches[0].clientY
-    } else {
-      this.dragCurrentY = event.clientY
-    }
-
-    const dragDistance = this.dragCurrentY - this.dragStartY
-
-    if (dragDistance > 0) {
-      event.preventDefault()
-      this.modalContainer.style.transform = `translateY(${dragDistance}px)`
-      this.modalContainer.style.transition = 'none'
-    }
-  }
-
-  private handleDragEnd = () => {
-    if (!this.isDragging || !this.modalContainer) return
-
-    const dragDistance = Math.max(0, this.dragCurrentY - this.dragStartY)
-
-    if (dragDistance > 5) {
-      this.lastDragEndTime = Date.now()
-    }
-
-    const dragDuration = Date.now() - this.dragStartTime
-    const velocity = dragDistance / dragDuration
-
-    const containerHeight = this.modalContainer.offsetHeight
-    const distanceThreshold = Math.max(150, containerHeight * 0.3)
-    const velocityThreshold = 0.5
-
-    const shouldClose = dragDistance > distanceThreshold || velocity > velocityThreshold
-
-    // Stop dragging immediately to prevent further drag events
-    this.isDragging = false
-
-    const container = this.modalContainer
-    const targetPosition = shouldClose ? containerHeight + containerHeight * 0.1 : 0
-
-    // Set starting position immediately
-    container.style.transition = 'none'
-    container.style.transform = `translateY(${dragDistance}px)`
-
-    // Force reflow
-    void container.offsetHeight
-
-    // Start animation on next frame
-    requestAnimationFrame(() => {
-      container.style.transition = `transform ${this.transitionDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`
-      container.style.transform = `translateY(${targetPosition}px)`
-    })
-
-    setTimeout(() => {
-      this.dragStartY = 0
-      this.dragCurrentY = 0
-      this.dragStartTime = 0
-
-      if (shouldClose) {
-        this.isVisible = false
-        this.open = false
-      } else {
-        // Only clean up styles if staying open
-        if (this.modalContainer) {
-          this.modalContainer.style.transition = ''
-          this.modalContainer.style.transform = ''
-        }
-      }
-    }, this.transitionDuration)
-  }
-
-  private handleHandleClick = (event: MouseEvent) => {
-    const timeSinceLastDrag = Date.now() - this.lastDragEndTime
-    if (timeSinceLastDrag < 200) {
-      event.preventDefault()
-      event.stopPropagation()
-      return
-    }
-    this.handleClose()
   }
 
   private toggleMode() {
@@ -657,8 +441,6 @@ export class Auth extends LitElement {
 
     const { accessToken, idToken, refreshToken, user } = await this.getApiService().login(detail)
     this.setAuthTokens(accessToken, idToken, refreshToken, user)
-    // close drawer
-    this.handleClose()
   }
 
   private isOAuthConfigured(): boolean {
@@ -728,10 +510,6 @@ export class Auth extends LitElement {
       return
     }
 
-    // Open drawer to show loading state
-    this.open = true
-    this.isVisible = true
-
     this.hasHandledOAuthCallback = true
     this.isLoading = true
     this.error = ''
@@ -754,8 +532,6 @@ export class Auth extends LitElement {
           })
 
         this.setAuthTokens(apiAccessToken, apiIdToken, apiRefreshToken ?? refreshToken, user)
-        // Close drawer after successful login
-        this.handleClose()
       }
       // LEGACY FLOW: If we have authorization code (direct OAuth)
       else if (code && state) {
@@ -783,8 +559,6 @@ export class Auth extends LitElement {
           })
 
         this.setAuthTokens(apiAccessToken, apiIdToken, apiRefreshToken ?? tokens.refresh_token, user)
-        // Close drawer after successful login
-        this.handleClose()
       } else {
         throw new Error('Missing required OAuth parameters')
       }
@@ -1084,62 +858,6 @@ export class Auth extends LitElement {
   }
 
   render() {
-    if (!this.isVisible) {
-      return nothing
-    }
-
-    const overlayClasses = {
-      'modal-overlay': true,
-      'modal-overlay--closing': this.isClosing,
-    }
-
-    const containerClasses = {
-      'modal-container': true,
-      'modal-container--drawer': true,
-      'modal-container--closing': this.isClosing,
-      'modal-container--dragging': this.isDragging,
-      [`modal-container--${this.size}`]: true,
-    }
-
-    return html`
-      <!-- Modal/Drawer -->
-      <div
-        class=${classMap(overlayClasses)}
-        @click=${this.handleOverlayClick}
-        @touchstart=${this.handleDragStart}
-        @touchmove=${this.handleDragMove}
-        @touchend=${this.handleDragEnd}
-        @mousedown=${this.handleDragStart}
-      >
-        <div
-          class=${classMap(containerClasses)}
-          @click=${(e: Event) => e.stopPropagation()}
-          role="dialog"
-          aria-modal="true"
-          @mousemove=${this.handleDragMove}
-          @mouseup=${this.handleDragEnd}
-        >
-          <!-- Drawer Handle -->
-          <div
-            class="drawer-handle"
-            @click=${this.handleHandleClick}
-            role="button"
-            tabindex="0"
-            aria-label="Close drawer"
-          >
-            <div class="drawer-handle-bar"></div>
-          </div>
-
-          <!-- Drawer Content Wrapper -->
-          <div class="drawer-content drawer-content--${this.size}">
-            ${this.renderContent()}
-          </div>
-        </div>
-      </div>
-    `
-  }
-
-  private renderContent() {
     if (!this.hasApiBaseUrl()) {
       const message = this.baseUrlErrorMessage
       return html`
@@ -1191,9 +909,15 @@ export class Auth extends LitElement {
         <div class="modal-body">
           <div class="auth-form">
             <div class="form-actions">
-              <button type="button" class="cta" disabled>
+              <base-button
+                type="button"
+                variant="primary"
+                full-width
+                loading
+                disabled
+              >
                 Signing in...
-              </button>
+              </base-button>
             </div>
             ${this.renderAlerts()}
           </div>
@@ -1224,7 +948,14 @@ export class Auth extends LitElement {
         <div class="modal-body">
           <div class="auth-form">
             <div class="form-actions">
-              <button type="button" class="cta" @click=${this.logout}>Logout</button>
+              <base-button
+                type="button"
+                variant="primary"
+                full-width
+                @click=${this.logout}
+              >
+                Logout
+              </base-button>
             </div>
             ${this.renderAlerts()}
           </div>
@@ -1273,35 +1004,29 @@ export class Auth extends LitElement {
     if (this.resetStep === 'none' && (!this.mode || this.mode === 'signin' || this.signupStep === 'form')) {
       return html`
         <!-- Email -->
-        <label class="field">
-          <span class="field-label">Email Address</span>
-          <input
-            id="email-input"
-            type="email"
-            class="field-input ${this.errors.email ? 'field-input--error' : ''}"
-            placeholder="Enter your email"
-            .value=${this.email}
-            @input=${(e: Event) => (this.email = (e.target as HTMLInputElement).value)}
-            required
-            autocomplete="email"
-          />
-          ${this.errors.email ? html`<span class="field-error">${this.errors.email}</span>` : nothing}
-        </label>
+        <base-input
+          id="email-input"
+          type="email"
+          label="Email Address"
+          placeholder="Enter your email"
+          .value=${this.email}
+          .error=${this.errors.email}
+          ?required=${true}
+          autocomplete="email"
+          @input=${(e: CustomEvent) => (this.email = e.detail.value)}
+        ></base-input>
 
         <!-- Password -->
-        <label class="field">
-          <span class="field-label">Password</span>
-          <input
-            type="password"
-            class="field-input ${this.errors.password ? 'field-input--error' : ''}"
-            placeholder="Enter your password"
-            .value=${this.password}
-            @input=${(e: Event) => (this.password = (e.target as HTMLInputElement).value)}
-            required
-            autocomplete=${this.mode === 'signup' ? 'new-password' : 'current-password'}
-          />
-          ${this.errors.password ? html`<span class="field-error">${this.errors.password}</span>` : nothing}
-        </label>
+        <base-input
+          type="password"
+          label="Password"
+          placeholder="Enter your password"
+          .value=${this.password}
+          .error=${this.errors.password}
+          ?required=${true}
+          autocomplete=${this.mode === 'signup' ? 'new-password' : 'current-password'}
+          @input=${(e: CustomEvent) => (this.password = e.detail.value)}
+        ></base-input>
 
         ${this.mode === 'signin' && this.error
           ? html`
@@ -1316,55 +1041,40 @@ export class Auth extends LitElement {
         ${this.mode === 'signup'
           ? html`
               <!-- Confirm Password -->
-              <label class="field">
-                <span class="field-label">Confirm Password</span>
-                <input
-                  type="password"
-                  class="field-input ${this.errors.confirm_password ? 'field-input--error' : ''}"
-                  placeholder="Re-enter your password"
-                  .value=${this.confirmPassword}
-                  @input=${(e: Event) => (this.confirmPassword = (e.target as HTMLInputElement).value)}
-                  required
-                  autocomplete="new-password"
-                />
-                ${this.errors.confirm_password
-                  ? html`<span class="field-error">${this.errors.confirm_password}</span>`
-                  : nothing}
-              </label>
+              <base-input
+                type="password"
+                label="Confirm Password"
+                placeholder="Re-enter your password"
+                .value=${this.confirmPassword}
+                .error=${this.errors.confirm_password}
+                ?required=${true}
+                autocomplete="new-password"
+                @input=${(e: CustomEvent) => (this.confirmPassword = e.detail.value)}
+              ></base-input>
 
               <!-- First Name -->
-              <label class="field">
-                <span class="field-label">First Name</span>
-                <input
-                  type="text"
-                  class="field-input ${this.errors.givenName ? 'field-input--error' : ''}"
-                  placeholder="Enter your first name"
-                  .value=${this.givenName}
-                  @input=${(e: Event) => (this.givenName = (e.target as HTMLInputElement).value)}
-                  required
-                  autocomplete="given-name"
-                />
-                ${this.errors.givenName
-                  ? html`<span class="field-error">${this.errors.givenName}</span>`
-                  : nothing}
-              </label>
+              <base-input
+                type="text"
+                label="First Name"
+                placeholder="Enter your first name"
+                .value=${this.givenName}
+                .error=${this.errors.givenName}
+                ?required=${true}
+                autocomplete="given-name"
+                @input=${(e: CustomEvent) => (this.givenName = e.detail.value)}
+              ></base-input>
 
               <!-- Last Name -->
-              <label class="field">
-                <span class="field-label">Last Name</span>
-                <input
-                  type="text"
-                  class="field-input ${this.errors.familyName ? 'field-input--error' : ''}"
-                  placeholder="Enter your last name"
-                  .value=${this.familyName}
-                  @input=${(e: Event) => (this.familyName = (e.target as HTMLInputElement).value)}
-                  required
-                  autocomplete="family-name"
-                />
-                ${this.errors.familyName
-                  ? html`<span class="field-error">${this.errors.familyName}</span>`
-                  : nothing}
-              </label>
+              <base-input
+                type="text"
+                label="Last Name"
+                placeholder="Enter your last name"
+                .value=${this.familyName}
+                .error=${this.errors.familyName}
+                ?required=${true}
+                autocomplete="family-name"
+                @input=${(e: CustomEvent) => (this.familyName = e.detail.value)}
+              ></base-input>
             `
           : nothing}
       `
@@ -1409,20 +1119,17 @@ export class Auth extends LitElement {
 
     if (this.resetStep === 'request') {
       return html`
-        <label class="field">
-          <span class="field-label">Email Address</span>
-          <input
-            id="email-input"
-            type="email"
-            class="field-input ${this.errors.email ? 'field-input--error' : ''}"
-            placeholder="Enter your email"
-            .value=${this.email}
-            @input=${(e: Event) => (this.email = (e.target as HTMLInputElement).value)}
-            required
-            autocomplete="email"
-          />
-          ${this.errors.email ? html`<span class="field-error">${this.errors.email}</span>` : nothing}
-        </label>
+        <base-input
+          id="email-input"
+          type="email"
+          label="Email Address"
+          placeholder="Enter your email"
+          .value=${this.email}
+          .error=${this.errors.email}
+          ?required=${true}
+          autocomplete="email"
+          @input=${(e: CustomEvent) => (this.email = e.detail.value)}
+        ></base-input>
         <div class="forgot-row">
           <button type="button" class="text-btn" @click=${this.cancelReset}>
             Back to Sign In
@@ -1435,19 +1142,16 @@ export class Auth extends LitElement {
       const otpComplete = this.otpDigits.every((d) => /^\d$/.test(d))
 
       return html`
-        <label class="field">
-          <span class="field-label">Email Address</span>
-          <input
-            type="email"
-            class="field-input ${this.errors.email ? 'field-input--error' : ''}"
-            placeholder="Enter your email"
-            .value=${this.email}
-            @input=${(e: Event) => (this.email = (e.target as HTMLInputElement).value)}
-            required
-            autocomplete="email"
-          />
-          ${this.errors.email ? html`<span class="field-error">${this.errors.email}</span>` : nothing}
-        </label>
+        <base-input
+          type="email"
+          label="Email Address"
+          placeholder="Enter your email"
+          .value=${this.email}
+          .error=${this.errors.email}
+          ?required=${true}
+          autocomplete="email"
+          @input=${(e: CustomEvent) => (this.email = e.detail.value)}
+        ></base-input>
 
         <div class="otp-section">
           <label class="otp-label">Enter 6-digit code</label>
@@ -1478,38 +1182,27 @@ export class Auth extends LitElement {
         ${otpComplete
           ? html`
               <div class="new-password-fields">
-                <label class="field">
-                  <span class="field-label">New Password</span>
-                  <input
-                    type="password"
-                    class="field-input ${this.errors.new_password ? 'field-input--error' : ''}"
-                    placeholder="Enter your new password"
-                    .value=${this.newPassword}
-                    @input=${(e: Event) => (this.newPassword = (e.target as HTMLInputElement).value)}
-                    required
-                    autocomplete="new-password"
-                  />
-                  ${this.errors.new_password
-                    ? html`<span class="field-error">${this.errors.new_password}</span>`
-                    : nothing}
-                </label>
+                <base-input
+                  type="password"
+                  label="New Password"
+                  placeholder="Enter your new password"
+                  .value=${this.newPassword}
+                  .error=${this.errors.new_password}
+                  ?required=${true}
+                  autocomplete="new-password"
+                  @input=${(e: CustomEvent) => (this.newPassword = e.detail.value)}
+                ></base-input>
 
-                <label class="field">
-                  <span class="field-label">Confirm New Password</span>
-                  <input
-                    type="password"
-                    class="field-input ${this.errors.confirm_password ? 'field-input--error' : ''}"
-                    placeholder="Re-enter your new password"
-                    .value=${this.confirmPassword}
-                    @input=${(e: Event) =>
-                      (this.confirmPassword = (e.target as HTMLInputElement).value)}
-                    required
-                    autocomplete="new-password"
-                  />
-                  ${this.errors.confirm_password
-                    ? html`<span class="field-error">${this.errors.confirm_password}</span>`
-                    : nothing}
-                </label>
+                <base-input
+                  type="password"
+                  label="Confirm New Password"
+                  placeholder="Re-enter your new password"
+                  .value=${this.confirmPassword}
+                  .error=${this.errors.confirm_password}
+                  ?required=${true}
+                  autocomplete="new-password"
+                  @input=${(e: CustomEvent) => (this.confirmPassword = e.detail.value)}
+                ></base-input>
               </div>
             `
           : nothing}
@@ -1528,9 +1221,15 @@ export class Auth extends LitElement {
   private renderActions() {
     if (this.resetStep === 'request') {
       return html`
-        <button type="submit" class="cta" ?disabled=${this.isLoading}>
+        <base-button
+          type="submit"
+          variant="primary"
+          full-width
+          ?loading=${this.isLoading}
+          ?disabled=${this.isLoading}
+        >
           ${this.isLoading ? 'Sending...' : 'Send Reset Code'}
-        </button>
+        </base-button>
       `
     }
 
@@ -1538,9 +1237,15 @@ export class Auth extends LitElement {
       const otpComplete = this.otpDigits.every((d) => /^\d$/.test(d))
       if (otpComplete) {
         return html`
-          <button type="submit" class="cta" ?disabled=${this.isLoading}>
+          <base-button
+            type="submit"
+            variant="primary"
+            full-width
+            ?loading=${this.isLoading}
+            ?disabled=${this.isLoading}
+          >
             ${this.isLoading ? 'Resetting...' : 'Reset Password'}
-          </button>
+          </base-button>
         `
       }
       return nothing
@@ -1549,20 +1254,32 @@ export class Auth extends LitElement {
     if (this.mode === 'signup' && this.signupStep === 'otp') {
       const signupOtpComplete = this.signupOtpDigits.every((d) => /^\d$/.test(d))
       return html`
-        <button type="submit" class="cta" ?disabled=${!signupOtpComplete || this.isLoading}>
+        <base-button
+          type="submit"
+          variant="primary"
+          full-width
+          ?loading=${this.isLoading}
+          ?disabled=${!signupOtpComplete || this.isLoading}
+        >
           ${this.isLoading ? 'Completing...' : 'Complete Registration'}
-        </button>
+        </base-button>
       `
     }
 
     return html`
-      <button type="submit" class="cta" ?disabled=${this.isLoading}>
+      <base-button
+        type="submit"
+        variant="primary"
+        full-width
+        ?loading=${this.isLoading}
+        ?disabled=${this.isLoading}
+      >
         ${this.isLoading
           ? 'Loading...'
           : this.mode === 'signup'
           ? 'Continue'
           : 'Sign In'}
-      </button>
+      </base-button>
 
       ${this.isOAuthConfigured() && this.mode === 'signin'
         ? html`
@@ -1673,15 +1390,6 @@ export class Auth extends LitElement {
 
   public setNotice(message: string) {
     this.notice = message
-  }
-
-  public closeModal() {
-    this.handleClose()
-  }
-
-  public openModal() {
-    this.open = true
-    this.isVisible = true
   }
 
   public async refresh() {

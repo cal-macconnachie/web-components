@@ -55,6 +55,14 @@ jobs:
       - name: Minify stylesheets
         run: yarn minify:css
 
+      - name: Build playground SPA with environment variables
+        env:
+          VITE_COGNITO_DOMAIN: https://auth.marketplace.csm.codes
+          VITE_COGNITO_REGION: us-east-1
+          VITE_COGNITO_USER_POOL_ID: us-east-1_QA3w6mkCV
+          VITE_COGNITO_CLIENT_ID: 7l7un286e3nm1r1jb2ubuu7nim
+        run: yarn build:playground
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -113,6 +121,18 @@ jobs:
             --include "*.css" \
             --delete \
             --content-type "text/css; charset=utf-8" \
+            --cache-control "public, max-age=31536000, immutable"
+
+      - name: Upload playground SPA to S3
+        run: |
+          # Upload index.html with no caching (for latest version)
+          aws s3 cp ./dist-playground/index.html s3://${{ steps.stack-outputs.outputs.bucket_name }}/index.html \
+            --content-type "text/html; charset=utf-8" \
+            --cache-control "public, max-age=0, must-revalidate"
+
+          # Upload assets (JS, CSS, favicon) with immutable caching
+          aws s3 sync ./dist-playground/assets/ s3://${{ steps.stack-outputs.outputs.bucket_name }}/assets/ \
+            --delete \
             --cache-control "public, max-age=31536000, immutable"
 
       - name: Invalidate CloudFront cache

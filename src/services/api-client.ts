@@ -97,6 +97,18 @@ export const createApiClient = ({ baseUrl, apiBaseUrl }: ApiClientConfig): Axios
             } catch (err) {
               log('Token refresh failed:', err)
               cookies.clearAllAuthTokens()
+
+              // Dispatch custom event for auth refresh failure
+              window.dispatchEvent(
+                new CustomEvent('auth-refresh-failed', {
+                  bubbles: true,
+                  composed: true,
+                  detail: {
+                    error: (err as Error).message || 'Failed to refresh authentication'
+                  }
+                })
+              )
+
               throw new AuthRefreshError(
                 (err as Error).message || 'Failed to refresh authentication'
               )
