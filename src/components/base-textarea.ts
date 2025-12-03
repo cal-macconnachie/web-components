@@ -232,8 +232,8 @@ export class BaseTextarea extends BaseElement {
     const hasError = !!this.error
     const charCount = this.value.length
     const showCharCount = this.maxlength !== undefined
-    const isNearLimit = this.maxlength && charCount > this.maxlength * 0.8
-    const isOverLimit = this.maxlength && charCount > this.maxlength
+    const isNearLimit = !!(this.maxlength && charCount > this.maxlength * 0.8)
+    const isOverLimit = !!(this.maxlength && charCount > this.maxlength)
 
     const textareaClasses = {
       'base-textarea': true,
