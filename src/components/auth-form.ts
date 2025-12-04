@@ -1227,6 +1227,7 @@ export class AuthForm extends BaseElement {
           full-width
           ?loading=${this.isLoading}
           ?disabled=${this.isLoading}
+          @click=${(e: Event) => this.handleSubmit(e)}
         >
           ${this.isLoading ? 'Sending...' : 'Send Reset Code'}
         </base-button>
@@ -1243,6 +1244,7 @@ export class AuthForm extends BaseElement {
             full-width
             ?loading=${this.isLoading}
             ?disabled=${this.isLoading}
+            @click=${(e: Event) => this.handleSubmit(e)}
           >
             ${this.isLoading ? 'Resetting...' : 'Reset Password'}
           </base-button>
@@ -1260,6 +1262,7 @@ export class AuthForm extends BaseElement {
           full-width
           ?loading=${this.isLoading}
           ?disabled=${!signupOtpComplete || this.isLoading}
+          @click=${(e: Event) => this.handleSubmit(e)}
         >
           ${this.isLoading ? 'Completing...' : 'Complete Registration'}
         </base-button>
@@ -1273,6 +1276,7 @@ export class AuthForm extends BaseElement {
         full-width
         ?loading=${this.isLoading}
         ?disabled=${this.isLoading}
+        @click=${(e: Event) => this.handleSubmit(e)}
       >
         ${this.isLoading
           ? 'Loading...'

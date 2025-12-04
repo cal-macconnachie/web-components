@@ -166,6 +166,7 @@ export class BaseInput extends BaseElement {
   `
 
   private handleInput(event: Event) {
+    event.stopPropagation() // Prevent native event from bubbling to parent
     const target = event.target as HTMLInputElement
     this.value = target.value
     this.dispatchEvent(
