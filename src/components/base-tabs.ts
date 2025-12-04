@@ -16,19 +16,23 @@ export class BaseTabs extends BaseElement {
 
   @state() private tabs: TabData[] = []
   @state() private isExpanded = false
+  @state() private isMobile = false
 
   @query('.tabs-nav') private tabsNav?: HTMLElement
 
   private boundHashChangeHandler = this.handleHashChange.bind(this)
+  private boundResizeHandler = this.handleResize.bind(this)
 
   static styles = css`
     :host {
       display: block;
-      width: 100%;
+      min-width: 0;
     }
 
     .base-tabs {
       width: 100%;
+      min-width: 0;
+      overflow-x: hidden;
     }
 
     .base-tabs--vertical {
@@ -36,6 +40,8 @@ export class BaseTabs extends BaseElement {
       gap: var(--space-6, 1.5rem);
       align-items: flex-start;
       padding: var(--space-4, 1rem);
+      min-width: 0;
+      overflow-x: hidden;
     }
 
     /* Sidebar Layout */
@@ -294,27 +300,38 @@ export class BaseTabs extends BaseElement {
 
     /* Mobile responsive */
     @media (max-width: 768px) {
+      :host {
+        overflow-x: hidden;
+      }
+
+      .base-tabs {
+        overflow-x: hidden;
+      }
+
       .base-tabs--vertical {
         flex-direction: column;
         padding: 0;
+        overflow-x: hidden;
       }
 
       .tabs-sidebar {
-        position: sticky;
-        top: 0;
+        position: relative;
         width: 100%;
         max-height: none;
-        border-radius: 0;
-        border-left: none;
-        border-right: none;
-        padding: var(--space-3, 0.75rem);
+        border-radius: var(--radius-lg);
+        border-left: 1px solid var(--color-border, #e2e8f0);
+        border-right: 1px solid var(--color-border, #e2e8f0);
+        padding: var(--space-3);
+        padding-left: 0;
+        padding-right: 0;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         z-index: 10;
         display: grid;
-        grid-template-columns: 1fr auto;
+        grid-template-columns: minmax(0, 1fr) auto;
         grid-template-rows: auto auto;
         gap: var(--space-3, 0.75rem);
         align-items: center;
+        box-sizing: border-box;
       }
 
       .tabs-sidebar--expanded {
@@ -361,6 +378,7 @@ export class BaseTabs extends BaseElement {
         scrollbar-width: none;
         -ms-overflow-style: none;
         padding: 0;
+        min-width: 0;
       }
 
       .tabs-nav::-webkit-scrollbar {
@@ -374,8 +392,13 @@ export class BaseTabs extends BaseElement {
         gap: var(--space-1, 0.25rem);
         padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
         min-width: 70px;
+        width: auto;
         min-height: auto;
         position: relative;
+        flex-shrink: 0;
+        margin-left: var(--space-2);
+        margin-right: var(--space-2);
+        margin-bottom: var(--space-2);
       }
 
       .tabs-sidebar .tab-button .tab-label {
@@ -388,6 +411,7 @@ export class BaseTabs extends BaseElement {
       .tabs-sidebar .tab-icon {
         width: 20px;
         height: 20px;
+        margin-left: 0;
       }
 
       .tabs-sidebar .tab-badge {
@@ -402,6 +426,7 @@ export class BaseTabs extends BaseElement {
       .base-tabs--vertical .tabs-content {
         width: 100%;
         padding: var(--space-4, 1rem) var(--space-3, 0.75rem);
+        box-sizing: border-box;
       }
     }
 
@@ -428,6 +453,8 @@ export class BaseTabs extends BaseElement {
   connectedCallback() {
     super.connectedCallback()
     window.addEventListener('hashchange', this.boundHashChangeHandler)
+    window.addEventListener('resize', this.boundResizeHandler)
+    this.handleResize() // Initial check
 
     // Listen for tab registration from child base-tab elements
     this.addEventListener('tab-register', this.handleTabRegister as EventListener)
@@ -436,6 +463,7 @@ export class BaseTabs extends BaseElement {
 
   disconnectedCallback() {
     window.removeEventListener('hashchange', this.boundHashChangeHandler)
+    window.removeEventListener('resize', this.boundResizeHandler)
     this.removeEventListener('tab-register', this.handleTabRegister as EventListener)
     this.removeEventListener('tab-badge-update', this.handleTabBadgeUpdate as EventListener)
     super.disconnectedCallback()
@@ -537,6 +565,10 @@ export class BaseTabs extends BaseElement {
     }
   }
 
+  private handleResize() {
+    this.isMobile = window.innerWidth <= 768
+  }
+
   private selectTab(id: string) {
     this.activeTab = id
 
@@ -625,10 +657,10 @@ export class BaseTabs extends BaseElement {
         ${tab.icon && this.variant === 'sidebar'
           ? html`<span class="tab-icon">${unsafeHTML(tab.icon)}</span>`
           : nothing}
-        ${this.isExpanded || this.variant !== 'sidebar'
+        ${this.isExpanded || this.variant !== 'sidebar' || this.isMobile
           ? html`<span class="tab-label">${tab.label}</span>`
           : nothing}
-        ${tab.badge !== undefined && tab.badge > 0 && (this.isExpanded || this.variant !== 'sidebar')
+        ${tab.badge !== undefined && tab.badge > 0 && (this.isExpanded || this.variant !== 'sidebar' || this.isMobile)
           ? html`<span class="tab-badge">${tab.badge}</span>`
           : nothing}
       </button>

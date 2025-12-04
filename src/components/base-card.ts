@@ -17,6 +17,8 @@ export class BaseCard extends BaseElement {
   static styles = css`
     :host {
       display: block;
+      min-width: 0;
+      margin: var(--space-4);
     }
 
     .base-card {
@@ -27,7 +29,9 @@ export class BaseCard extends BaseElement {
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
+      width: 100%;
       max-width: 100%;
+      min-width: 0;
     }
 
     /* Variants */

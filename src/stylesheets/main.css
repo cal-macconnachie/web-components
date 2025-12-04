@@ -219,12 +219,46 @@ body {
 
 .page {
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
   padding: var(--space-6);
+  min-width: 0;
 }
 
 .float-right {
-  float: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: var(--space-2);
+  }
+
+  .float-right {
+    justify-content: flex-start;
+    row-gap: var(--space-2);
+  }
+
+  /* Force inline grid layouts to stack on small screens */
+  .page [style*='display: grid'] {
+    min-width: 0;
+  }
+
+  .page [style*='grid-template-columns'] {
+    grid-template-columns: 1fr !important;
+  }
+
+  .page .base-tabs,
+  .page base-tabs,
+  .tabs-content {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
 }
 
 .onboarding-form {

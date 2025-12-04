@@ -1,4 +1,4 @@
-import { html, css } from 'lit'
+import { css, html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import { BaseElement } from '../base-element'
 
@@ -20,7 +20,6 @@ export class BaseTab extends BaseElement {
   static styles = css`
     :host {
       display: none;
-      width: 100%;
     }
 
     :host([active]) {
