@@ -22,6 +22,7 @@ export class BaseTabs extends BaseElement {
 
   private boundHashChangeHandler = this.handleHashChange.bind(this)
   private boundResizeHandler = this.handleResize.bind(this)
+  private hasInitialized = false
 
   static styles = css`
     :host {
@@ -472,28 +473,12 @@ export class BaseTabs extends BaseElement {
   firstUpdated() {
     // Query and register child tabs directly
     this.queryAndRegisterTabs()
-
-    // Defer initialization to allow tabs to be registered
-    setTimeout(() => {
-      // Initialize from URL hash or first tab
-      if (this.syncWithHash && window.location.hash) {
-        const hashTabId = window.location.hash.replace('#', '')
-        const matchingTab = this.tabs.find(t => t.id === hashTabId)
-        if (matchingTab) {
-          this.selectTab(hashTabId)
-          return
-        }
-      }
-
-      // If no active tab set and we have tabs, select first one
-      if (!this.activeTab && this.tabs.length > 0) {
-        this.selectTab(this.tabs[0].id)
-      }
-    }, 0)
   }
 
   private queryAndRegisterTabs() {
     const tabElements = this.querySelectorAll('base-tab')
+    const newTabs: TabData[] = []
+
     tabElements.forEach((tabEl) => {
       const tabData: TabData = {
         id: tabEl.id,
@@ -503,9 +488,40 @@ export class BaseTabs extends BaseElement {
       }
 
       if (tabData.id && !this.tabs.find(t => t.id === tabData.id)) {
-        this.tabs = [...this.tabs, tabData]
+        newTabs.push(tabData)
       }
     })
+
+    // Batch all new tabs into a single update
+    if (newTabs.length > 0) {
+      this.tabs = [...this.tabs, ...newTabs]
+    }
+  }
+
+  willUpdate(changedProperties: Map<string, unknown>) {
+    super.willUpdate(changedProperties)
+
+    // Initialize active tab when tabs become available
+    if (changedProperties.has('tabs') && this.tabs.length > 0 && !this.activeTab && !this.hasInitialized) {
+      this.hasInitialized = true
+
+      if (this.syncWithHash && window.location.hash) {
+        const hashTabId = window.location.hash.replace('#', '')
+        const matchingTab = this.tabs.find(t => t.id === hashTabId)
+        if (matchingTab) {
+          this.activeTab = hashTabId
+        } else {
+          this.activeTab = this.tabs[0].id
+        }
+      } else {
+        this.activeTab = this.tabs[0].id
+      }
+
+      // Update hash if needed
+      if (this.syncWithHash && this.activeTab) {
+        history.replaceState(null, '', `#${this.activeTab}`)
+      }
+    }
   }
 
   updated(changedProperties: Map<string, unknown>) {
@@ -524,14 +540,6 @@ export class BaseTabs extends BaseElement {
     // Only register if not already registered
     if (!this.tabs.find(t => t.id === tabData.id)) {
       this.tabs = [...this.tabs, tabData]
-
-      // Set initial active tab if this is the first tab and no active tab is set
-      if (this.tabs.length === 1 && !this.activeTab) {
-        // Defer slightly to ensure the tab element is fully initialized
-        setTimeout(() => {
-          this.selectTab(tabData.id)
-        }, 0)
-      }
     }
   }
 
