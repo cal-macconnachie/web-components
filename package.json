@@ -5,7 +5,21 @@
   "private": true,
   "keywords": [
     "web-components",
-    "auth"
+    "custom-elements",
+    "lit",
+    "framework-agnostic",
+    "ui-library",
+    "design-system",
+    "form-components",
+    "date-picker",
+    "time-picker",
+    "datetime-picker",
+    "tabs",
+    "drawer",
+    "theme-toggle",
+    "dark-mode",
+    "auth-form",
+    "oauth"
   ],
   "homepage": "https://cdn.cals-api.com/",
   "bugs": {
