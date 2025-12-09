@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.4](https://github.com/cal-macconnachie/web-components/compare/v1.1.3...v1.1.4) (2025-12-09)
+
+
+### Bug Fixes
+
+* auth on root domain ([5c7c56e](https://github.com/cal-macconnachie/web-components/commit/5c7c56eec1f09ab3504ca081b1cbf1fd0b028b25))
+* mobile margin ([5ec7ffe](https://github.com/cal-macconnachie/web-components/commit/5ec7ffe717d39d6c8ad8887eee4b4814dde6289e))
+
 ### [1.1.3](https://github.com/cal-macconnachie/web-components/compare/v1.1.2...v1.1.3) (2025-12-09)
 
 
