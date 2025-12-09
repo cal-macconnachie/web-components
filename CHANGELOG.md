@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.3](https://github.com/cal-macconnachie/web-components/compare/v1.1.2...v1.1.3) (2025-12-09)
+
+
+### Bug Fixes
+
+* tabs update ([8782776](https://github.com/cal-macconnachie/web-components/commit/878277602ef94ad9843ead13fc2f59cf7f090fcc))
+
 ### [1.1.2](https://github.com/cal-macconnachie/web-components/compare/v1.1.1...v1.1.2) (2025-12-09)
 
 
