@@ -120,7 +120,6 @@
             </svg>
             npm
           </base-button>
-          <base-button id="toggle-tabs-layout" variant="outlined-primary" size="sm">Toggle Layout</base-button>
           <theme-toggle size="sm" variant="ghost"></theme-toggle>
         </div>
         </h1>
@@ -780,10 +779,47 @@ drawer.addEventListener('drawer-close', () =&gt; {
           <!-- Tabs Tab -->
           <base-tab id="tabs" label="Tabs" icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v6"/></svg>'>
             <base-card variant="elevated" padding="md">
-              <h3>Tabs</h3>
-              <p style="font-size: var(--font-size-lg); color: var(--color-text-primary); margin-top: 1rem;">
-                You're clicking on them
+              <h3>Tab Controls</h3>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                Try toggling the layout of the main tabs component on this page
               </p>
+              <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <base-button id="toggle-tabs-layout" variant="solid-primary" size="md">
+                  Toggle Layout (Horizontal/Sidebar)
+                </base-button>
+              </div>
+            </base-card>
+
+            <base-card variant="elevated" padding="md">
+              <h3>Variants</h3>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                The tabs component supports two main variants:
+              </p>
+              <div style="display: grid; gap: 1rem;">
+                <div>
+                  <h4 style="margin: 0 0 0.5rem 0;">Sidebar (Current Default)</h4>
+                  <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin: 0;">
+                    Vertical layout on the left side. Perfect for navigation with many options, documentation sites, and dashboard layouts.
+                  </p>
+                </div>
+                <div>
+                  <h4 style="margin: 0 0 0.5rem 0;">Horizontal</h4>
+                  <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin: 0;">
+                    Horizontal layout across the top. Great for top-level navigation with fewer options and cleaner interfaces.
+                  </p>
+                </div>
+              </div>
+            </base-card>
+
+            <base-card variant="elevated" padding="md">
+              <h3>Features</h3>
+              <ul style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+                <li><strong>Icons:</strong> Add SVG icons to tabs for better visual recognition</li>
+                <li><strong>Keyboard Navigation:</strong> Arrow keys to navigate between tabs</li>
+                <li><strong>Accessibility:</strong> Full ARIA support with proper roles and attributes</li>
+                <li><strong>Responsive:</strong> Adapts to different screen sizes automatically</li>
+                <li><strong>Programmatic Control:</strong> Switch tabs and listen to events via JavaScript</li>
+              </ul>
             </base-card>
 
             <!-- Code Usage -->

@@ -13,6 +13,7 @@ export class BaseTabs extends BaseElement {
   @property({ type: String, attribute: 'aria-label' }) ariaLabel = 'Dashboard navigation'
   @property({ type: Boolean, attribute: 'sync-with-hash' }) syncWithHash = true
   @property({ type: String }) variant: TabVariant = 'sidebar'
+  @property({ type: Boolean, attribute: 'force-expanded' }) forceExpanded = false
 
   @state() private tabs: TabData[] = []
   @state() private isExpanded = false
@@ -43,6 +44,7 @@ export class BaseTabs extends BaseElement {
       padding: var(--space-4, 1rem);
       min-width: 0;
       overflow-x: hidden;
+      height: 100%;
     }
 
     /* Sidebar Layout */
@@ -88,6 +90,10 @@ export class BaseTabs extends BaseElement {
       cursor: pointer;
       border-radius: var(--radius-md, 0.5rem);
       transition: all var(--transition-fast, 150ms);
+    }
+
+    .sidebar-toggle--hidden {
+      display: none;
     }
 
     .sidebar-toggle:hover {
@@ -223,8 +229,10 @@ export class BaseTabs extends BaseElement {
     .tabs-header .tab-button {
       position: relative;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: var(--space-2, 0.5rem);
+      justify-content: center;
+      gap: var(--space-1, 0.25rem);
       padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
       background: none;
       border: none;
@@ -254,8 +262,28 @@ export class BaseTabs extends BaseElement {
       border-bottom-color: var(--color-primary, #2563eb);
     }
 
+    .tabs-header .tab-icon {
+      flex-shrink: 0;
+      width: 100%;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 0;
+    }
+
+    .tabs-header .tab-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      display: block;
+      margin: 0 auto;
+    }
+
     .tabs-header .tab-label {
+      width: 100%;
       line-height: 1;
+      text-align: center;
     }
 
     .tabs-header .tab-badge {
@@ -281,11 +309,16 @@ export class BaseTabs extends BaseElement {
       flex: 1;
       min-width: 0;
       animation: fadeIn 0.2s ease-in;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     .base-tabs--vertical .tabs-content {
       flex: 1;
       min-width: 0;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     @keyframes fadeIn {
@@ -646,6 +679,7 @@ export class BaseTabs extends BaseElement {
 
   private renderTabButton(tab: TabData, index: number) {
     const isActive = this.activeTab === tab.id
+    const isExpanded = this.forceExpanded || this.isExpanded
     const classes = {
       'tab-button': true,
       'tab-button--active': isActive,
@@ -662,13 +696,13 @@ export class BaseTabs extends BaseElement {
         @click=${() => this.handleTabClick(tab.id)}
         @keydown=${(e: KeyboardEvent) => this.handleKeyDown(e, index)}
       >
-        ${tab.icon && this.variant === 'sidebar'
+        ${tab.icon
           ? html`<span class="tab-icon">${unsafeHTML(tab.icon)}</span>`
           : nothing}
-        ${this.isExpanded || this.variant !== 'sidebar' || this.isMobile
+        ${isExpanded || this.variant !== 'sidebar' || this.isMobile
           ? html`<span class="tab-label">${tab.label}</span>`
           : nothing}
-        ${tab.badge !== undefined && tab.badge > 0 && (this.isExpanded || this.variant !== 'sidebar' || this.isMobile)
+        ${tab.badge !== undefined && tab.badge > 0 && (isExpanded || this.variant !== 'sidebar' || this.isMobile)
           ? html`<span class="tab-badge">${tab.badge}</span>`
           : nothing}
       </button>
@@ -681,9 +715,16 @@ export class BaseTabs extends BaseElement {
       'base-tabs--vertical': this.variant === 'sidebar',
     }
 
+    const isExpanded = this.forceExpanded || this.isExpanded
+
     const sidebarClasses = {
       'tabs-sidebar': true,
-      'tabs-sidebar--expanded': this.isExpanded,
+      'tabs-sidebar--expanded': isExpanded,
+    }
+
+    const toggleClasses = {
+      'sidebar-toggle': true,
+      'sidebar-toggle--hidden': this.forceExpanded,
     }
 
     return html`
@@ -698,12 +739,12 @@ export class BaseTabs extends BaseElement {
 
                 <!-- Sidebar Toggle -->
                 <button
-                  class="sidebar-toggle"
+                  class=${classMap(toggleClasses)}
                   @click=${this.toggleSidebar}
                   aria-label="Toggle sidebar"
                 >
                   ${
-                    this.isExpanded ? html`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    isExpanded ? html`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M11 19l-7-7 7-7" />
         </svg>` : html`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M9 5l7 7-7 7" />
