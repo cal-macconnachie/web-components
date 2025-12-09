@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.2](https://github.com/cal-macconnachie/web-components/compare/v1.1.1...v1.1.2) (2025-12-09)
+
+
+### Bug Fixes
+
+* scroll margin top ([bf9f3ac](https://github.com/cal-macconnachie/web-components/commit/bf9f3acc18f5807b7a1266117740bec41320fb67))
+
 ### [1.1.1](https://github.com/cal-macconnachie/web-components/compare/v1.1.0...v1.1.1) (2025-12-04)
 
 
