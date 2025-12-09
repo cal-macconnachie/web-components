@@ -20,6 +20,7 @@ export class BaseTab extends BaseElement {
   static styles = css`
     :host {
       display: none;
+      scroll-margin-top: 2rem;
     }
 
     :host([active]) {
