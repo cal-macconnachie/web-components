@@ -20,7 +20,7 @@ const AUTH_TOKEN_OPTIONS: CookieOptions = {
 }
 
 export const cookies = () => {
-  const setCookie = (name: string, value: string, options: CookieOptions = {}): void => {
+  const setCookie = (name: string, value: string, options: CookieOptions = {}, rootDomain: boolean = false): void => {
     const {
       maxAge,
       path = '/',
@@ -44,7 +44,17 @@ export const cookies = () => {
     cookieString += `; SameSite=${sameSite}`
 
     if (domain) {
-      cookieString += `; Domain=${domain}`
+      if (rootDomain) {
+        const hostParts = domain.split('.')
+        if (hostParts.length > 2) {
+          const rootDomainParts = hostParts.slice(-2)
+          cookieString += `; Domain=.${rootDomainParts.join('.')}`
+        } else {
+          cookieString += `; Domain=.${domain}`
+        }
+      } else {
+        cookieString += `; Domain=${domain}`
+      }
     }
 
     document.cookie = cookieString
@@ -67,18 +77,21 @@ export const cookies = () => {
   }
 
 
-  const removeCookie = (name: string, options: Pick<CookieOptions, 'path' | 'domain'> = {}): void => {
+  const removeCookie = (name: string, options: Pick<CookieOptions, 'path' | 'domain'> = {}, rootDomain: boolean = false): void => {
     setCookie(name, '', {
       ...options,
       maxAge: -1,
-    })
+    }, rootDomain)
   }
 
   const hasCookie = (name: string): boolean => {
     return getCookie(name) !== null
   }
   const setAuthToken = (name: keyof typeof TOKEN_COOKIE_NAMES, value: string): void => {
-    setCookie(TOKEN_COOKIE_NAMES[name], value, AUTH_TOKEN_OPTIONS)
+    setCookie(TOKEN_COOKIE_NAMES[name], value, {
+      ...AUTH_TOKEN_OPTIONS,
+      domain: window.location.hostname,
+    }, true)
   }
 
   /**
@@ -92,7 +105,10 @@ export const cookies = () => {
    * Remove an auth token cookie
    */
   const removeAuthToken = (name: keyof typeof TOKEN_COOKIE_NAMES): void => {
-    removeCookie(TOKEN_COOKIE_NAMES[name])
+    removeCookie(TOKEN_COOKIE_NAMES[name], {
+      path: '/',
+      domain: window.location.hostname,
+    }, true)
   }
 
   /**
