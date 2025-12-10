@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.10](https://github.com/cal-macconnachie/web-components/compare/v1.1.9...v1.1.10) (2025-12-10)
+
+
+### Bug Fixes
+
+* attempt to rework 401/400s ([680cd7c](https://github.com/cal-macconnachie/web-components/commit/680cd7c9882f27d1e3fa97928ed9e9b43424ae3d))
+
 ### [1.1.9](https://github.com/cal-macconnachie/web-components/compare/v1.1.8...v1.1.9) (2025-12-10)
 
 
