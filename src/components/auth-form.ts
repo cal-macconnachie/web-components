@@ -427,6 +427,7 @@ export class AuthForm extends BaseElement {
     // Dispatch login success event
     this.dispatchEvent(
       new CustomEvent('auth-success', {
+        detail: { user },
         bubbles: true,
         composed: true,
       })
