@@ -137,6 +137,22 @@ export class AuthForm extends BaseElement {
       this.error = this.baseUrlErrorMessage
     }
     void this.handleOAuthCallbackIfPresent()
+
+    // Listen for auth refresh failures from the API client
+    this.handleAuthRefreshFailed = this.handleAuthRefreshFailed.bind(this)
+    window.addEventListener('auth-refresh-failed', this.handleAuthRefreshFailed)
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback()
+    window.removeEventListener('auth-refresh-failed', this.handleAuthRefreshFailed)
+  }
+
+  private handleAuthRefreshFailed = () => {
+    log('Auth refresh failed, clearing login state')
+    this.isLoggedIn = false
+    this.userEmail = null
+    this.error = 'Your session has expired. Please sign in again.'
   }
 
   firstUpdated() {

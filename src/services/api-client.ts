@@ -13,7 +13,7 @@ interface ApiClientConfig {
   apiBaseUrl?: string
 }
 
-export const createApiClient = ({ baseUrl }: ApiClientConfig): AxiosInstance => {
+export const createApiClient = ({ baseUrl, apiBaseUrl }: ApiClientConfig): AxiosInstance => {
   const client = axios.create({
     baseURL: baseUrl,
     headers: {
@@ -22,26 +22,81 @@ export const createApiClient = ({ baseUrl }: ApiClientConfig): AxiosInstance => 
     withCredentials: true, // Send HttpOnly cookies with every request
   })
 
-  // Response interceptor - handle 401 errors
+  let isRefreshing = false
+  let refreshPromise: Promise<void> | null = null
+
+  // Response interceptor - handle 401 errors with automatic token refresh
   client.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
-      // If error is 401, dispatch auth failure event
-      if (error.response?.status === 401) {
-        log('Authentication failed (401)')
+      const originalRequest = error.config
 
-        // Dispatch custom event for auth failure
-        window.dispatchEvent(
-          new CustomEvent('auth-refresh-failed', {
-            bubbles: true,
-            composed: true,
-            detail: {
-              error: 'Authentication failed'
+      // If error is 401 and we haven't already tried refreshing for this request
+      if (error.response?.status === 401 && originalRequest && !originalRequest.headers['X-Retry-After-Refresh']) {
+        log('Authentication failed (401), attempting token refresh...')
+
+        // If we're already refreshing, wait for that to complete
+        if (isRefreshing && refreshPromise) {
+          try {
+            await refreshPromise
+            // Refresh succeeded, retry original request
+            originalRequest.headers['X-Retry-After-Refresh'] = 'true'
+            return client.request(originalRequest)
+          } catch {
+            // Refresh failed, fall through to error handling
+          }
+        }
+
+        // Start refresh process
+        if (!isRefreshing) {
+          isRefreshing = true
+          refreshPromise = (async () => {
+            try {
+              const refreshUrl = apiBaseUrl ? `${apiBaseUrl}/auth/refresh` : `${baseUrl}/auth/refresh`
+              const response = await fetch(refreshUrl, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+              })
+
+              if (!response.ok) {
+                throw new Error('Refresh failed')
+              }
+
+              log('Token refresh successful')
+            } catch (refreshError) {
+              log('Token refresh failed:', refreshError)
+              throw refreshError
+            } finally {
+              isRefreshing = false
+              refreshPromise = null
             }
-          })
-        )
+          })()
 
-        return Promise.reject(new AuthRefreshError('Authentication failed'))
+          try {
+            await refreshPromise
+            // Refresh succeeded, retry original request
+            originalRequest.headers['X-Retry-After-Refresh'] = 'true'
+            return client.request(originalRequest)
+          } catch (refreshError) {
+            // Refresh failed, dispatch event and throw
+            log('Token refresh failed, user needs to re-authenticate')
+
+            window.dispatchEvent(
+              new CustomEvent('auth-refresh-failed', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                  error: 'Authentication refresh failed'
+                }
+              })
+            )
+
+            return Promise.reject(new AuthRefreshError('Authentication refresh failed'))
+          }
+        }
       }
 
       return Promise.reject(error)
