@@ -29,75 +29,126 @@ export const createApiClient = ({ baseUrl, apiBaseUrl }: ApiClientConfig): Axios
     withCredentials: true, // Send HttpOnly cookies with every request
   })
 
+  // Track if we've determined there are no refresh tokens available
+  let hasNoRefreshToken = false
+
   // Response interceptor - handle 401 errors with automatic token refresh
   client.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
       const originalRequest = error.config
 
-      // If error is 401 and we haven't already tried refreshing for this request
-      if (error.response?.status === 401 && originalRequest && !originalRequest.headers['X-Retry-After-Refresh']) {
+      // Only attempt refresh for 401 errors on requests that haven't been retried yet
+      if (
+        error.response?.status === 401 &&
+        originalRequest &&
+        !originalRequest.headers['X-Retry-After-Refresh']
+      ) {
         log('Authentication failed (401), attempting token refresh...')
 
-        // If we're already refreshing, wait for that to complete
-        if (window.__authRefreshPromise) {
-          try {
-            await window.__authRefreshPromise
-            // Refresh succeeded, retry original request
-            originalRequest.headers['X-Retry-After-Refresh'] = 'true'
-            return client.request(originalRequest)
-          } catch {
-            // Refresh failed, fall through to error handling
-          }
+        // If we already know there's no refresh token, don't try again
+        if (hasNoRefreshToken) {
+          log('No refresh token available (previously determined), skipping refresh')
+          window.dispatchEvent(
+            new CustomEvent('auth-refresh-failed', {
+              bubbles: true,
+              composed: true,
+              detail: { error: 'No refresh token available' }
+            })
+          )
+          return Promise.reject(new AuthRefreshError('No refresh token available'))
         }
 
-        // Start refresh process if not already started
-        if (!window.__authRefreshPromise) {
-          window.__authRefreshPromise = (async () => {
-            try {
-              const refreshUrl = apiBaseUrl ? `${apiBaseUrl}/auth/refresh` : `${baseUrl}/auth/refresh`
-              const response = await fetch(refreshUrl, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-              })
-
-              if (!response.ok) {
-                throw new Error('Refresh failed')
-              }
-
-              log('Token refresh successful')
-            } catch (refreshError) {
-              log('Token refresh failed:', refreshError)
-              throw refreshError
-            } finally {
-              window.__authRefreshPromise = null
-            }
-          })()
-
+        // If a refresh is already in progress, wait for it
+        if (window.__authRefreshPromise) {
+          log('Refresh already in progress, waiting for completion...')
           try {
             await window.__authRefreshPromise
-            // Refresh succeeded, retry original request
+            log('Refresh completed successfully, retrying original request')
             originalRequest.headers['X-Retry-After-Refresh'] = 'true'
             return client.request(originalRequest)
           } catch (refreshError) {
-            // Refresh failed, dispatch event and throw
-            log('Token refresh failed, user needs to re-authenticate')
-
-            window.dispatchEvent(
-              new CustomEvent('auth-refresh-failed', {
-                bubbles: true,
-                composed: true,
-                detail: {
-                  error: 'Authentication refresh failed'
-                }
-              })
-            )
-
+            log('Refresh failed while waiting, rejecting request')
             return Promise.reject(new AuthRefreshError('Authentication refresh failed'))
           }
+        }
+
+        // Start a new refresh (only one will execute due to the check above)
+        log('Starting new refresh token request...')
+        window.__authRefreshPromise = (async () => {
+          try {
+            const refreshUrl = apiBaseUrl ? `${apiBaseUrl}/auth/refresh` : `${baseUrl}/auth/refresh`
+            log(`Calling refresh endpoint: ${refreshUrl}`)
+
+            const response = await fetch(refreshUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+            })
+
+            log(`Refresh response status: ${response.status}`)
+
+            // Log all response headers for investigation
+            const headers: Record<string, string> = {}
+            response.headers.forEach((value, key) => {
+              headers[key] = value
+            })
+            log('Refresh response headers:', headers)
+
+            // Check if Set-Cookie headers are present (they won't be visible in JS for security)
+            // But we can check for the presence of other headers to verify the response is correct
+            const hasContentType = response.headers.get('content-type')
+            log(`Response has content-type: ${hasContentType}`)
+
+            if (response.status === 400) {
+              // 400 means no refresh token present in cookies
+              log('Refresh returned 400 - no refresh token in cookies, marking as unavailable')
+              hasNoRefreshToken = true
+              const errorBody = await response.text()
+              log('400 response body:', errorBody)
+              throw new Error('No refresh token available')
+            }
+
+            if (!response.ok) {
+              const errorBody = await response.text()
+              log(`Refresh failed with status ${response.status}, body:`, errorBody)
+              throw new Error(`Refresh failed with status ${response.status}`)
+            }
+
+            // Success - log the response body
+            const responseBody = await response.text()
+            log('Refresh succeeded, response body:', responseBody)
+            log('Cookies should now be updated by the browser automatically')
+          } catch (refreshError) {
+            log('Token refresh error:', refreshError)
+            throw refreshError
+          } finally {
+            log('Clearing refresh promise')
+            window.__authRefreshPromise = null
+          }
+        })()
+
+        try {
+          await window.__authRefreshPromise
+          log('Refresh succeeded, retrying original request with updated cookies')
+          originalRequest.headers['X-Retry-After-Refresh'] = 'true'
+          return client.request(originalRequest)
+        } catch (refreshError) {
+          log('Token refresh failed, user needs to re-authenticate')
+
+          window.dispatchEvent(
+            new CustomEvent('auth-refresh-failed', {
+              bubbles: true,
+              composed: true,
+              detail: {
+                error: refreshError instanceof Error ? refreshError.message : 'Authentication refresh failed'
+              }
+            })
+          )
+
+          return Promise.reject(new AuthRefreshError('Authentication refresh failed'))
         }
       }
 
