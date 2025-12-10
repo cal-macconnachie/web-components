@@ -668,15 +668,34 @@ export class AuthForm extends BaseElement {
         authToken: authToken,
       })
 
-      if (requiresRedirect && redirectUrl) {
-        // open new window unless redirectUrl has a query param logout_uri that is the same host as current. logout_uri is encodeURIComponent
+      // Determine the logout redirect URL
+      let finalRedirectUrl = redirectUrl
+
+      // If no redirect URL provided, use default oauth-spa logout flow
+      if (requiresRedirect && !redirectUrl) {
+        const currentUrl = window.location.href
+        const oauthSpaDomain = 'https://cdn.cals-api.com'
+        finalRedirectUrl = `${oauthSpaDomain}?logout=true&return_url=${encodeURIComponent(currentUrl)}`
+      }
+
+      if (requiresRedirect && finalRedirectUrl) {
         const currentHost = window.location.host
-        const url = new URL(redirectUrl)
-        if (url.host !== currentHost) {
-          // not new tab new window
-          window.open(redirectUrl, 'newWindow', 'width=400,height=500,resizable=yes,scrollbars=yes,status=yes')
+        const url = new URL(finalRedirectUrl)
+
+        // Check if this is the oauth-spa default logout with return_url
+        const isDefaultLogoutWithReturn =
+          url.searchParams.get('logout') === 'true' &&
+          url.searchParams.has('return_url')
+
+        // If using default logout that will redirect back, don't open new window
+        if (isDefaultLogoutWithReturn) {
+          window.location.href = finalRedirectUrl
+        } else if (url.host !== currentHost) {
+          // Different host without return_url - open new window
+          window.open(finalRedirectUrl, 'newWindow', 'width=400,height=500,resizable=yes,scrollbars=yes,status=yes')
         } else {
-          window.location.href = redirectUrl
+          // Same host - direct redirect
+          window.location.href = finalRedirectUrl
         }
       }
     } catch (err) {
