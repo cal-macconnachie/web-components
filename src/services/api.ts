@@ -16,9 +16,6 @@ export const api = ({
     email, password, accessToken, refreshToken, idToken
   }: {email?: string, password?: string, accessToken?: string, refreshToken?: string, idToken?: string}): Promise<{
     message: 'Login successful',
-    accessToken: string,
-    idToken: string,
-    refreshToken: string,
     user: {
       email: string,
       given_name: string,
@@ -30,6 +27,7 @@ export const api = ({
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({
         email,
         password,
@@ -44,11 +42,7 @@ export const api = ({
     }
     return response.json()
   }
-  const logout = async ({
-    accessToken, refreshToken, authToken
-  }: {
-    accessToken: string, refreshToken: string, authToken: string
-  }): Promise<{
+  const logout = async (): Promise<{
     message: string
     redirectUrl?: string
     requiresRedirect?: boolean
@@ -57,12 +51,8 @@ export const api = ({
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${authToken}`,
       },
-      body: JSON.stringify({
-        accessToken,
-        refreshToken
-      }),
+      credentials: 'include',
     })
     if (!response.ok) {
       const errorData = await response.json()
@@ -70,19 +60,15 @@ export const api = ({
     }
     return response.json()
   }
-  const refresh = async ({ refreshToken }: { refreshToken: string }): Promise<{
-    accessToken: string
-    idToken: string
-    refreshToken: string
+  const refresh = async (): Promise<{
+    message: string
   }> => {
     const response = await fetch(`${baseUrl}${endpoints.refresh}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        refreshToken
-      }),
+      credentials: 'include',
     })
     if (!response.ok) {
       const errorData = await response.json()
@@ -96,6 +82,7 @@ export const api = ({
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({
         email
       }),
@@ -118,6 +105,7 @@ export const api = ({
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({
         email,
         password,
@@ -139,6 +127,7 @@ export const api = ({
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({
         email
       }),
@@ -161,6 +150,7 @@ export const api = ({
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({
         email,
         otp,

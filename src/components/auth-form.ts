@@ -3,7 +3,6 @@ import { customElement, property, query, state } from 'lit/decorators.js'
 import { repeat } from 'lit/directives/repeat.js'
 import { BaseElement } from '../base-element'
 import { api } from '../services/api'
-import { cookies } from '../services/cookies'
 import { log } from '../services/logger'
 import { oauth } from '../services/oauth'
 import { appStyles } from '../services/styles'
@@ -77,13 +76,11 @@ export class AuthForm extends BaseElement {
   @state() private notice = ''
   @state() private error = ''
   @state() private errors: Record<string, string> = {}
+  @state() private userEmail: string | null = null
 
   // OTP state
   @state() private otpDigits: string[] = ['', '', '', '', '', '']
   @state() private signupOtpDigits: string[] = ['', '', '', '', '', '']
-
-  // cookies service
-  private cookies = cookies()
 
   private apiService?: ReturnType<typeof api>
   private oauthService?: ReturnType<typeof oauth>
@@ -131,10 +128,9 @@ export class AuthForm extends BaseElement {
 
   connectedCallback() {
     super.connectedCallback()
-    // check to see if user is logged in
-    const authToken = this.cookies.getAuthToken('AUTH_TOKEN')
-    const refreshToken = this.cookies.getAuthToken('REFRESH_TOKEN')
-    this.isLoggedIn = !!(authToken && refreshToken)
+    // Cannot check HttpOnly cookies from JavaScript
+    // Login state will be determined by successful API responses
+    this.isLoggedIn = false
     this.mode = this.disableSignup && this.initialMode === 'signup' ? 'signin' : this.initialMode
     if (!this.hasApiBaseUrl()) {
       log('Warning: API domain is not set. Please set the "api-domain" attribute to the correct API base URL.')
@@ -415,14 +411,15 @@ export class AuthForm extends BaseElement {
     }
   }
 
-  private setAuthTokens(accessToken: string, idToken: string, refreshToken: string, user: {
+  private handleAuthSuccess(user: {
     email: string
+    given_name?: string
+    family_name?: string
   }) {
-    this.cookies.setAuthToken('ACCESS_TOKEN', accessToken)
-    this.cookies.setAuthToken('AUTH_TOKEN', idToken)
-    this.cookies.setAuthToken('REFRESH_TOKEN', refreshToken)
-    this.cookies.setCookie('USER_EMAIL', user.email)
+    // Cookies are set by the server with HttpOnly flag
+    // We just need to update local state and dispatch event
     this.isLoggedIn = true
+    this.userEmail = user.email
 
     // Dispatch login success event
     this.dispatchEvent(
@@ -440,8 +437,8 @@ export class AuthForm extends BaseElement {
       password: this.password,
     }
 
-    const { accessToken, idToken, refreshToken, user } = await this.getApiService().login(detail)
-    this.setAuthTokens(accessToken, idToken, refreshToken, user)
+    const { user } = await this.getApiService().login(detail)
+    this.handleAuthSuccess(user)
   }
 
   private isOAuthConfigured(): boolean {
@@ -524,15 +521,14 @@ export class AuthForm extends BaseElement {
       if (accessToken && idToken && refreshToken) {
         log('OAuth tokens received from oauth-spa, logging in...')
 
-        // Call API to exchange oauth-spa tokens for our tokens
-        const { accessToken: apiAccessToken, idToken: apiIdToken, refreshToken: apiRefreshToken, user } =
-          await this.getApiService().login({
-            accessToken: accessToken,
-            refreshToken: refreshToken,
-            idToken: idToken,
-          })
+        // Call API to exchange oauth-spa tokens - server sets HttpOnly cookies
+        const { user } = await this.getApiService().login({
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          idToken: idToken,
+        })
 
-        this.setAuthTokens(apiAccessToken, apiIdToken, apiRefreshToken ?? refreshToken, user)
+        this.handleAuthSuccess(user)
       }
       // LEGACY FLOW: If we have authorization code (direct OAuth)
       else if (code && state) {
@@ -552,14 +548,13 @@ export class AuthForm extends BaseElement {
 
         log('Exchanging authorization code for tokens...')
         const tokens = await oauthService.exchangeCodeForTokens(code)
-        const { accessToken: apiAccessToken, idToken: apiIdToken, refreshToken: apiRefreshToken, user } =
-          await this.getApiService().login({
-            accessToken: tokens.access_token,
-            refreshToken: tokens.refresh_token,
-            idToken: tokens.id_token,
-          })
+        const { user } = await this.getApiService().login({
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+          idToken: tokens.id_token,
+        })
 
-        this.setAuthTokens(apiAccessToken, apiIdToken, apiRefreshToken ?? tokens.refresh_token, user)
+        this.handleAuthSuccess(user)
       } else {
         throw new Error('Missing required OAuth parameters')
       }
@@ -642,31 +637,23 @@ export class AuthForm extends BaseElement {
   }
 
   public isUserLoggedIn(): boolean {
-    return this.isLoggedIn || (!!this.cookies.getAuthToken('ACCESS_TOKEN') && !!this.cookies.getAuthToken('REFRESH_TOKEN') && !!this.cookies.getAuthToken('AUTH_TOKEN'))
+    // Cannot read HttpOnly cookies from JavaScript
+    // Return local state only
+    return this.isLoggedIn
   }
 
   public async logout() {
-    const accessToken = this.cookies.getAuthToken('ACCESS_TOKEN')
-    const authToken = this.cookies.getAuthToken('AUTH_TOKEN')
-    const refreshToken = this.cookies.getAuthToken('REFRESH_TOKEN')
-
     try {
-      if (accessToken == null || refreshToken == null || authToken == null) {
-        return
-      }
       if (!this.hasApiBaseUrl()) {
         this.error = this.baseUrlErrorMessage
         return
       }
       const apiService = this.getApiService()
+      // Server reads HttpOnly cookies from request automatically
       const {
         redirectUrl,
         requiresRedirect
-      } = await apiService.logout({
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        authToken: authToken,
-      })
+      } = await apiService.logout()
 
       // Determine the logout redirect URL
       let finalRedirectUrl = redirectUrl
@@ -700,11 +687,12 @@ export class AuthForm extends BaseElement {
       }
     } catch (err) {
       log('Logout error:', err)
-      // Continue to clear tokens even if API call fails
+      // Continue even if API call fails
     } finally {
-      // Always clear tokens and set isLoggedIn to false, no matter what happens
-      this.cookies.clearAllAuthTokens()
+      // Always set isLoggedIn to false and clear user state
+      // Server clears HttpOnly cookies automatically
       this.isLoggedIn = false
+      this.userEmail = null
     }
   }
 
@@ -1424,31 +1412,18 @@ export class AuthForm extends BaseElement {
         return
       }
 
-      const oldRefreshToken = this.cookies.getAuthToken('REFRESH_TOKEN')
-      const oldAccessToken = this.cookies.getAuthToken('ACCESS_TOKEN')
-      const oldIdToken = this.cookies.getAuthToken('AUTH_TOKEN')
-      if (!oldRefreshToken || !oldAccessToken || !oldIdToken) {
-        log('Missing tokens, clearing all auth tokens')
-        this.cookies.clearAllAuthTokens()
-        this.isLoggedIn = false
-        return
-      }
-
-      const { accessToken, idToken, refreshToken } = await this.getApiService().refresh({
-        refreshToken: oldRefreshToken,
-      })
-      this.cookies.setAuthToken('ACCESS_TOKEN', accessToken)
-      this.cookies.setAuthToken('AUTH_TOKEN', idToken)
-      this.cookies.setAuthToken('REFRESH_TOKEN', refreshToken ?? oldRefreshToken)
+      // Server reads HttpOnly cookies from request and sets new ones
+      await this.getApiService().refresh()
+      // Tokens are refreshed server-side, state remains logged in
     } catch (err) {
       log('Token refresh failed:', err)
-      this.cookies.clearAllAuthTokens()
       this.isLoggedIn = false
     }
   }
 
   public getUserEmail(): string | null {
-    return this.cookies.getCookie('USER_EMAIL') || null
+    // Return email from local state (stored after successful login)
+    return this.userEmail
   }
 
   static styles = appStyles()
