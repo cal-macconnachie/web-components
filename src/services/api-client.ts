@@ -13,6 +13,13 @@ interface ApiClientConfig {
   apiBaseUrl?: string
 }
 
+// Global refresh state on window to prevent multiple simultaneous refreshes
+declare global {
+  interface Window {
+    __authRefreshPromise?: Promise<void> | null
+  }
+}
+
 export const createApiClient = ({ baseUrl, apiBaseUrl }: ApiClientConfig): AxiosInstance => {
   const client = axios.create({
     baseURL: baseUrl,
@@ -21,9 +28,6 @@ export const createApiClient = ({ baseUrl, apiBaseUrl }: ApiClientConfig): Axios
     },
     withCredentials: true, // Send HttpOnly cookies with every request
   })
-
-  let isRefreshing = false
-  let refreshPromise: Promise<void> | null = null
 
   // Response interceptor - handle 401 errors with automatic token refresh
   client.interceptors.response.use(
@@ -36,9 +40,9 @@ export const createApiClient = ({ baseUrl, apiBaseUrl }: ApiClientConfig): Axios
         log('Authentication failed (401), attempting token refresh...')
 
         // If we're already refreshing, wait for that to complete
-        if (isRefreshing && refreshPromise) {
+        if (window.__authRefreshPromise) {
           try {
-            await refreshPromise
+            await window.__authRefreshPromise
             // Refresh succeeded, retry original request
             originalRequest.headers['X-Retry-After-Refresh'] = 'true'
             return client.request(originalRequest)
@@ -47,10 +51,9 @@ export const createApiClient = ({ baseUrl, apiBaseUrl }: ApiClientConfig): Axios
           }
         }
 
-        // Start refresh process
-        if (!isRefreshing) {
-          isRefreshing = true
-          refreshPromise = (async () => {
+        // Start refresh process if not already started
+        if (!window.__authRefreshPromise) {
+          window.__authRefreshPromise = (async () => {
             try {
               const refreshUrl = apiBaseUrl ? `${apiBaseUrl}/auth/refresh` : `${baseUrl}/auth/refresh`
               const response = await fetch(refreshUrl, {
@@ -70,13 +73,12 @@ export const createApiClient = ({ baseUrl, apiBaseUrl }: ApiClientConfig): Axios
               log('Token refresh failed:', refreshError)
               throw refreshError
             } finally {
-              isRefreshing = false
-              refreshPromise = null
+              window.__authRefreshPromise = null
             }
           })()
 
           try {
-            await refreshPromise
+            await window.__authRefreshPromise
             // Refresh succeeded, retry original request
             originalRequest.headers['X-Retry-After-Refresh'] = 'true'
             return client.request(originalRequest)
