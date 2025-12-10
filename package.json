@@ -1,6 +1,6 @@
 {
   "name": "@cal.macconnachie/web-components",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Web components hosted on a CDN",
   "private": true,
   "keywords": [

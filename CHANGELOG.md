@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.6](https://github.com/cal-macconnachie/web-components/compare/v1.1.5...v1.1.6) (2025-12-10)
+
+
+### Bug Fixes
+
+* auth ([7a7ba0b](https://github.com/cal-macconnachie/web-components/commit/7a7ba0bbdb021f1ebfd99db0bea3bb8c1f4fb0b3))
+* oauthSpaDomain for logout ([e4316eb](https://github.com/cal-macconnachie/web-components/commit/e4316eb19d26dd3987fbf2f6a3f0bd6e1509af2e))
+
 ### [1.1.5](https://github.com/cal-macconnachie/web-components/compare/v1.1.4...v1.1.5) (2025-12-10)
 
 
