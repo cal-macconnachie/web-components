@@ -66,7 +66,9 @@ export const createApiClient = ({ baseUrl }: ApiClientConfig): AxiosInstance => 
           window.__authRefreshPromise = (async () => {
             try {
               // Always use same-origin auth endpoints (application must provide /api/auth/refresh proxy)
-              const refreshUrl = `${baseUrl}/api/auth/refresh`
+              // Normalize baseUrl to avoid double slashes
+              const normalizedBase = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
+              const refreshUrl = `${normalizedBase}/api/auth/refresh`
               log(`Calling refresh endpoint: ${refreshUrl}`)
 
               const response = await fetch(refreshUrl, {

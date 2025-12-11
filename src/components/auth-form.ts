@@ -99,7 +99,7 @@ export class AuthForm extends BaseElement {
         // Always use same-origin auth endpoints (/api/auth/*)
         // Applications must implement these endpoints (can proxy to auth service)
         this.apiService = api({
-          baseUrl: '/',
+          baseUrl: '/api/',
         })
       }
     }
