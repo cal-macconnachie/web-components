@@ -48,7 +48,7 @@ export const api = ({
     redirectUrl?: string
     requiresRedirect?: boolean
   }> => {
-    const response = await fetch(`${baseUrl}${endpoints.logout}`, {
+    const response = await fetch(`${baseUrl}${endpoints.logout}?return_url=${encodeURIComponent(window.location.href)}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
