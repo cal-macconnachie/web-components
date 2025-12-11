@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.13](https://github.com/cal-macconnachie/web-components/compare/v1.1.12...v1.1.13) (2025-12-11)
+
+
+### Bug Fixes
+
+* new sessioncheck endpoint ([be97ffa](https://github.com/cal-macconnachie/web-components/commit/be97ffa4cac67da60f42c88b105d70a9d9d9712d))
+* timeout ([53dd14c](https://github.com/cal-macconnachie/web-components/commit/53dd14ce7b9f498c1ccb2bc9f7be194072bbc525))
+
 ### [1.1.12](https://github.com/cal-macconnachie/web-components/compare/v1.1.11...v1.1.12) (2025-12-11)
 
 
