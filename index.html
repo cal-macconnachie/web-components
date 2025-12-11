@@ -1132,7 +1132,10 @@ datePicker.addEventListener('change', (e) =&gt; {
             <base-card variant="elevated" padding="md">
               <h3>Code Usage</h3>
               <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
-                <strong>Production Setup:</strong> Your application must implement <code>/api/auth/login</code>, <code>/api/auth/logout</code>, <code>/api/auth/refresh</code>, <code>/api/auth/register</code>, and <code>/api/auth/reset-password</code> endpoints that proxy to your auth service.
+                <strong>Production Setup:</strong> Your application must implement <code>/api/auth/login</code>, <code>/api/auth/logout</code>, <code>/api/auth/refresh</code>, <code>/api/auth/check-session</code>, <code>/api/auth/register</code>, and <code>/api/auth/reset-password</code> endpoints that proxy to your auth service.
+              </p>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                <strong>Session Check Endpoint:</strong> The <code>/api/auth/check-session</code> endpoint is automatically called when the auth-form component loads. It should check for valid HTTP-only cookies and return user data if a session exists, or 401 if no valid session. This allows the component to restore login state on page load.
               </p>
               <pre style="background: var(--color-bg-muted); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-size: var(--font-size-sm);"><code>&lt;!-- Auth Form in Drawer (Production) --&gt;
 &lt;base-drawer id="auth-drawer" size="sm"&gt;

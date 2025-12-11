@@ -7,6 +7,7 @@ export const api = ({
     login: 'auth/login',
     logout: 'auth/logout',
     refresh: 'auth/refresh',
+    checkSession: 'auth/check-session',
     requestRegisterOtp: 'auth/request-register-otp',
     register: 'auth/register',
     requestResetPassword: 'auth/request-reset-password',
@@ -73,6 +74,26 @@ export const api = ({
     if (!response.ok) {
       const errorData = await response.json()
       throw new Error(errorData.message || errorData.error || 'Failed to refresh token')
+    }
+    return response.json()
+  }
+  const checkSession = async (): Promise<{
+    user: {
+      email: string,
+      given_name?: string,
+      family_name?: string
+    }
+  }> => {
+    const response = await fetch(`${baseUrl}${endpoints.checkSession}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    })
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.message || errorData.error || 'No valid session')
     }
     return response.json()
   }
@@ -167,6 +188,7 @@ export const api = ({
     login,
     logout,
     refresh,
+    checkSession,
     requestRegisterOtp,
     register,
     requestResetPassword,

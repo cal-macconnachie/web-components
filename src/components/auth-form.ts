@@ -157,6 +157,17 @@ export class AuthForm extends BaseElement {
         return {
           message: 'Password reset successful'
         }
+      },
+      checkSession: async () => {
+        await new Promise(resolve => setTimeout(resolve, 300))
+        // In mock mode, simulate a logged-in session
+        return {
+          user: {
+            email: 'demo@example.com',
+            given_name: 'Demo',
+            family_name: 'User'
+          }
+        }
       }
     }
   }
@@ -168,6 +179,9 @@ export class AuthForm extends BaseElement {
     this.isLoggedIn = false
     this.mode = this.disableSignup && this.initialMode === 'signup' ? 'signin' : this.initialMode
     void this.handleOAuthCallbackIfPresent()
+
+    // Check for existing session using HTTP-only cookies
+    void this.checkExistingSession()
 
     // Listen for auth refresh failures from the API client
     this.handleAuthRefreshFailed = this.handleAuthRefreshFailed.bind(this)
@@ -184,6 +198,23 @@ export class AuthForm extends BaseElement {
     this.isLoggedIn = false
     this.userEmail = null
     this.error = 'Your session has expired. Please sign in again.'
+  }
+
+  private async checkExistingSession() {
+    try {
+      // Call the session check endpoint to see if valid HTTP-only cookies exist
+      const { user } = await this.getApiService().checkSession()
+
+      // If successful, update auth state
+      if (user) {
+        this.handleAuthSuccess(user)
+        log('Existing session detected, user logged in')
+      }
+    } catch (err) {
+      // No valid session - this is expected for logged-out users
+      // Silently fail without showing errors
+      log('No existing session found')
+    }
   }
 
   firstUpdated() {
