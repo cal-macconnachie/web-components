@@ -52,7 +52,6 @@ export class AuthForm extends BaseElement {
   // Main properties
   @property({ type: String, attribute: 'initial-mode' }) initialMode: AuthMode = 'signin'
   @property({ type: String, attribute: 'logo-url' }) logoUrl = ''
-  @property({ type: String, attribute: 'api-domain' }) baseUrl = ''
   @property({ type: String, attribute: 'oauth-domain' }) oauthDomain = ''
   @property({ type: String, attribute: 'oauth-region' }) oauthRegion = ''
   @property({ type: String, attribute: 'oauth-user-pool-id' }) oauthUserPoolId = ''
@@ -60,6 +59,7 @@ export class AuthForm extends BaseElement {
   @property({ type: String, attribute: 'oauth-redirect-uri' }) oauthRedirectUri = ''
   @property({ type: String, attribute: 'oauth-spa-domain' }) oauthSpaDomain = ''
   @property({ type: Boolean, attribute: 'disable-signup' }) disableSignup = false
+  @property({ type: Boolean, attribute: 'mock-mode' }) mockMode = false
 
   // State
   @state() private mode: AuthMode = 'signin'
@@ -90,40 +90,75 @@ export class AuthForm extends BaseElement {
 
   private hasHandledOAuthCallback = false
 
-  private readonly baseUrlErrorMessage =
-    'Authentication service is not configured correctly. Please add an API domain or contact support.'
-
-  private hasApiBaseUrl() {
-    return this.baseUrl.trim().length > 0
-  }
-
-  private getNormalizedBaseUrl() {
-    const trimmed = this.baseUrl.trim()
-    if (!trimmed) return ''
-
-    // Add https:// if not present
-    const withHttps = trimmed.startsWith('http://') || trimmed.startsWith('https://')
-      ? trimmed
-      : `https://${trimmed}`
-
-    // Ensure trailing slash
-    const normalized = withHttps.endsWith('/') ? withHttps : `${withHttps}/`
-
-    return normalized
-  }
-
   private getApiService() {
-    if (!this.hasApiBaseUrl()) {
-      throw new Error('API domain is not set')
-    }
-
     if (!this.apiService) {
-      this.apiService = api({
-        baseUrl: this.getNormalizedBaseUrl(),
-      })
+      // Mock mode: return fake API responses for demo/testing without backend
+      if (this.mockMode) {
+        this.apiService = this.createMockApiService()
+      } else {
+        // Always use same-origin auth endpoints (/api/auth/*)
+        // Applications must implement these endpoints (can proxy to auth service)
+        this.apiService = api({
+          baseUrl: '/',
+        })
+      }
     }
 
     return this.apiService
+  }
+
+  private createMockApiService() {
+    // Mock API service for demo/testing without backend
+    return {
+      login: async (_params: unknown) => {
+        await new Promise(resolve => setTimeout(resolve, 800)) // Simulate network delay
+        return {
+          message: 'Login successful' as const,
+          user: {
+            email: 'demo@example.com',
+            given_name: 'Demo',
+            family_name: 'User'
+          }
+        }
+      },
+      logout: async () => {
+        await new Promise(resolve => setTimeout(resolve, 500))
+        return {
+          message: 'Logout successful',
+          requiresRedirect: false
+        }
+      },
+      refresh: async () => {
+        await new Promise(resolve => setTimeout(resolve, 500))
+        return {
+          message: 'Token refreshed'
+        }
+      },
+      requestRegisterOtp: async (_params: unknown) => {
+        await new Promise(resolve => setTimeout(resolve, 800))
+        return {
+          message: 'OTP sent'
+        }
+      },
+      register: async (_params: unknown) => {
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        return {
+          message: 'Registration successful'
+        }
+      },
+      requestResetPassword: async (_params: unknown) => {
+        await new Promise(resolve => setTimeout(resolve, 800))
+        return {
+          message: 'Reset code sent'
+        }
+      },
+      resetPassword: async (_params: unknown) => {
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        return {
+          message: 'Password reset successful'
+        }
+      }
+    }
   }
 
   connectedCallback() {
@@ -132,10 +167,6 @@ export class AuthForm extends BaseElement {
     // Login state will be determined by successful API responses
     this.isLoggedIn = false
     this.mode = this.disableSignup && this.initialMode === 'signup' ? 'signin' : this.initialMode
-    if (!this.hasApiBaseUrl()) {
-      log('Warning: API domain is not set. Please set the "api-domain" attribute to the correct API base URL.')
-      this.error = this.baseUrlErrorMessage
-    }
     void this.handleOAuthCallbackIfPresent()
 
     // Listen for auth refresh failures from the API client
@@ -170,18 +201,9 @@ export class AuthForm extends BaseElement {
       }
     }
 
-    if (changed.has('baseUrl')) {
+    if (changed.has('mockMode')) {
+      // Reset API service when mock mode changes
       this.apiService = undefined
-      if (!this.hasApiBaseUrl()) {
-        this.error = this.baseUrlErrorMessage
-      } else {
-        if (this.error === this.baseUrlErrorMessage) {
-          this.error = ''
-        }
-        if (!this.hasHandledOAuthCallback) {
-          void this.handleOAuthCallbackIfPresent()
-        }
-      }
     }
 
     if (
@@ -364,11 +386,6 @@ export class AuthForm extends BaseElement {
     this.notice = ''
     this.error = ''
 
-    if (!this.hasApiBaseUrl()) {
-      this.error = this.baseUrlErrorMessage
-      return
-    }
-
     if (!this.validate()) return
 
     this.isLoading = true
@@ -518,12 +535,6 @@ export class AuthForm extends BaseElement {
 
     if (this.hasHandledOAuthCallback) return
 
-    if (!this.hasApiBaseUrl()) {
-      this.error = this.baseUrlErrorMessage
-      log('OAuth callback received but API domain is not set.')
-      return
-    }
-
     this.hasHandledOAuthCallback = true
     this.isLoading = true
     this.error = ''
@@ -660,10 +671,6 @@ export class AuthForm extends BaseElement {
 
   public async logout() {
     try {
-      if (!this.hasApiBaseUrl()) {
-        this.error = this.baseUrlErrorMessage
-        return
-      }
       const apiService = this.getApiService()
       // Server reads HttpOnly cookies from request automatically
       const {
@@ -882,35 +889,6 @@ export class AuthForm extends BaseElement {
   }
 
   render() {
-    if (!this.hasApiBaseUrl()) {
-      const message = this.baseUrlErrorMessage
-      return html`
-        ${this.logoUrl.length > 0
-          ? html`
-              <header class="modal-header">
-                <div class="auth-header">
-                <img
-                  src="${this.logoUrl}"
-                  width="48"
-                  height="48"
-                  alt="Logo"
-                  class="auth-logo"
-                />
-                </div>
-              </header>
-            `
-          : nothing}
-
-        <div class="modal-body">
-          <div class="auth-form">
-            <div class="alert alert--error">
-              ${message}
-            </div>
-          </div>
-        </div>
-      `
-    }
-
     // Show loading state during OAuth callback processing
     if (this.isLoading && this.hasHandledOAuthCallback) {
       return html`
@@ -1422,12 +1400,6 @@ export class AuthForm extends BaseElement {
 
   public async refresh() {
     try {
-      if (!this.hasApiBaseUrl()) {
-        log('Skipping token refresh: API domain is not set')
-        this.error = this.baseUrlErrorMessage
-        return
-      }
-
       // Server reads HttpOnly cookies from request and sets new ones
       await this.getApiService().refresh()
       // Tokens are refreshed server-side, state remains logged in

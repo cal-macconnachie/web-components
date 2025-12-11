@@ -135,7 +135,7 @@
           <auth-form
             id="auth-form"
             logo-url="https://csm.codes/direct-market.svg"
-            api-domain="https://api.marketplace.csm.codes"
+            mock-mode
             oauth-domain="https://auth.marketplace.csm.codes"
             oauth-region="us-east-1"
             oauth-user-pool-id="us-east-1_QA3w6mkCV"
@@ -1115,9 +1115,14 @@ datePicker.addEventListener('change', (e) =&gt; {
           <base-tab id="auth" label="Auth" icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>'>
             <base-card variant="elevated" padding="md">
               <h3>Auth Controls</h3>
-              <p>This likely wont be useful for anyone but I wanted it published for my own projects</p>
+              <p style="color: var(--color-text-secondary); margin-bottom: 1rem;">
+                <strong>Important:</strong> This playground uses mock-mode for demonstration. In production, you must implement <code>/api/auth/*</code> proxy endpoints.
+              </p>
+              <p style="color: var(--color-text-secondary); margin-bottom: 1rem; font-size: var(--font-size-sm);">
+                The auth component requires your application to implement same-origin auth endpoints that proxy to your auth service. This ensures HttpOnly cookies work correctly for security.
+              </p>
               <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                <base-button variant="solid-primary" size="md" class="open-drawer">Open Drawer</base-button>
+                <base-button variant="solid-primary" size="md" class="open-drawer">Open Drawer (Mock Mode)</base-button>
                 <base-button variant="outlined-primary" size="md" id="logout-button">Logout</base-button>
                 <base-button variant="outlined-primary" size="md" id="refresh-button">Refresh Tokens</base-button>
               </div>
@@ -1127,14 +1132,13 @@ datePicker.addEventListener('change', (e) =&gt; {
             <base-card variant="elevated" padding="md">
               <h3>Code Usage</h3>
               <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
-                Copy and paste the following code to use auth components in your project
+                <strong>Production Setup:</strong> Your application must implement <code>/api/auth/login</code>, <code>/api/auth/logout</code>, <code>/api/auth/refresh</code>, <code>/api/auth/register</code>, and <code>/api/auth/reset-password</code> endpoints that proxy to your auth service.
               </p>
-              <pre style="background: var(--color-bg-muted); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-size: var(--font-size-sm);"><code>&lt;!-- Auth Form in Drawer --&gt;
+              <pre style="background: var(--color-bg-muted); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-size: var(--font-size-sm);"><code>&lt;!-- Auth Form in Drawer (Production) --&gt;
 &lt;base-drawer id="auth-drawer" size="sm"&gt;
   &lt;auth-form
     id="auth-form"
     logo-url="https://example.com/logo.svg"
-    api-domain="https://api.example.com"
     oauth-domain="https://auth.example.com"
     oauth-region="us-east-1"
     oauth-user-pool-id="us-east-1_XXXXXXXXX"
@@ -1142,6 +1146,9 @@ datePicker.addEventListener('change', (e) =&gt; {
     oauth-spa-domain="https://oauth.example.com/"
   &gt;&lt;/auth-form&gt;
 &lt;/base-drawer&gt;
+
+&lt;!-- For Static Sites/Demos (Mock Mode) --&gt;
+&lt;auth-form mock-mode logo-url="logo.svg"&gt;&lt;/auth-form&gt;
 
 &lt;!-- Button to Open Auth Drawer --&gt;
 &lt;base-button
