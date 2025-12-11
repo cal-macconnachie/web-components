@@ -128,6 +128,8 @@ export const createApiClient = ({ baseUrl }: ApiClientConfig): AxiosInstance => 
         try {
           await window.__authRefreshPromise
           log('Refresh completed successfully, retrying original request with updated cookies')
+          // Give browser time to process Set-Cookie headers from refresh response
+          await new Promise(resolve => setTimeout(resolve, 100))
           originalRequest.headers['X-Retry-After-Refresh'] = 'true'
           return client.request(originalRequest)
         } catch (refreshError) {
