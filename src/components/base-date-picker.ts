@@ -26,6 +26,7 @@ export class BaseDatePicker extends BaseElement {
   @state() private showYearPicker = false
   @state() private yearRangeStart = new Date().getFullYear() - 5
   @state() private isFlipped = false
+  @state() private alignRight = false
 
   @query('.date-display') private dateDisplay!: HTMLDivElement
   @query('.calendar-container') private calendarContainer?: HTMLDivElement
@@ -183,6 +184,11 @@ export class BaseDatePicker extends BaseElement {
     .calendar-container--flipped {
       top: auto;
       bottom: calc(100% + 4px);
+    }
+
+    .calendar-container--align-right {
+      left: auto;
+      right: 0;
     }
 
     .calendar-header {
@@ -580,10 +586,14 @@ export class BaseDatePicker extends BaseElement {
 
     const displayRect = this.dateDisplay.getBoundingClientRect()
     const dropdownHeight = 400 // approximate height
+    const dropdownWidth = 280 // min-width from CSS
     const spaceBelow = window.innerHeight - displayRect.bottom
     const spaceAbove = displayRect.top
+    const spaceRight = window.innerWidth - displayRect.left
+    const spaceLeft = displayRect.right
 
     this.isFlipped = spaceBelow < dropdownHeight && spaceAbove > spaceBelow
+    this.alignRight = spaceRight < dropdownWidth && spaceLeft > spaceRight
   }
 
   private closeCalendar() {
@@ -591,6 +601,7 @@ export class BaseDatePicker extends BaseElement {
     this.showMonthPicker = false
     this.showYearPicker = false
     this.isFlipped = false
+    this.alignRight = false
   }
 
   private selectDate(day: number) {
@@ -793,6 +804,7 @@ export class BaseDatePicker extends BaseElement {
                   class=${classMap({
                     'calendar-container': true,
                     'calendar-container--flipped': this.isFlipped,
+                    'calendar-container--align-right': this.alignRight,
                   })}
                   role="dialog"
                   aria-label="Choose date"

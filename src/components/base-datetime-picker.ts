@@ -118,10 +118,18 @@ export class BaseDateTimePicker extends BaseElement {
     base-time-picker {
       display: block;
       --picker-display-border: none;
-      --picker-display-border-radius: 0;
       --picker-display-box-shadow: none;
       --picker-display-border-color-hover: transparent;
       --picker-display-border-color-focus: transparent;
+    }
+
+    /* Add border radius to outer edges for seamless rounded corners */
+    .picker-wrapper--date base-date-picker {
+      --picker-display-border-radius: var(--radius-md) 0 0 var(--radius-md);
+    }
+
+    .picker-wrapper--time base-time-picker {
+      --picker-display-border-radius: 0 var(--radius-md) var(--radius-md) 0;
     }
 
     .datetime-picker-error {

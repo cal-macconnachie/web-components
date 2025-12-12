@@ -28,6 +28,7 @@ export class BaseSelect extends BaseElement {
   @state() private searchQuery = ''
   @state() private highlightedIndex = -1
   @state() private isFlipped = false
+  @state() private alignRight = false
 
   @query('.select-input') private selectInput!: HTMLInputElement
   @query('.select-display') private selectDisplay!: HTMLDivElement
@@ -80,6 +81,21 @@ export class BaseSelect extends BaseElement {
 
     .select-input {
       cursor: text;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      opacity: 0;
+      pointer-events: none;
+      height: 100%;
+      margin: 0;
+      line-height: inherit;
+    }
+
+    .select-input--visible {
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 1;
     }
 
     .select-display {
@@ -87,6 +103,11 @@ export class BaseSelect extends BaseElement {
       user-select: none;
       display: flex;
       align-items: center;
+    }
+
+    .select-display--hidden {
+      opacity: 0;
+      pointer-events: none;
     }
 
     .select-input:hover:not(:disabled),
@@ -112,6 +133,7 @@ export class BaseSelect extends BaseElement {
       font-size: var(--font-size-sm);
     }
 
+    .select--sm .select-input,
     .select--sm .select-display {
       padding-right: var(--space-8);
     }
@@ -122,6 +144,7 @@ export class BaseSelect extends BaseElement {
       font-size: var(--font-size-base);
     }
 
+    .select--md .select-input,
     .select--md .select-display {
       padding-right: var(--space-10);
     }
@@ -132,6 +155,7 @@ export class BaseSelect extends BaseElement {
       font-size: var(--font-size-lg);
     }
 
+    .select--lg .select-input,
     .select--lg .select-display {
       padding-right: var(--space-12);
     }
@@ -202,6 +226,11 @@ export class BaseSelect extends BaseElement {
     .dropdown-options--flipped {
       top: auto;
       bottom: calc(100% + 4px);
+    }
+
+    .dropdown-options--align-right {
+      left: auto;
+      right: 0;
     }
 
     .dropdown-option {
@@ -296,8 +325,11 @@ export class BaseSelect extends BaseElement {
     const dropdownHeight = 240 // max-height from CSS
     const spaceBelow = window.innerHeight - displayRect.bottom
     const spaceAbove = displayRect.top
+    const spaceRight = window.innerWidth - displayRect.left
+    const spaceLeft = displayRect.right
 
     this.isFlipped = spaceBelow < dropdownHeight && spaceAbove > spaceBelow
+    this.alignRight = spaceRight < displayRect.width && spaceLeft > spaceRight
   }
 
   private closeDropdown() {
@@ -305,6 +337,7 @@ export class BaseSelect extends BaseElement {
     this.searchQuery = ''
     this.highlightedIndex = -1
     this.isFlipped = false
+    this.alignRight = false
   }
 
   private handleSearchInput(event: Event) {
@@ -410,11 +443,13 @@ export class BaseSelect extends BaseElement {
     const displayClasses = {
       'select-display': true,
       'select-display--open': this.isOpen,
+      'select-display--hidden': this.searchable && this.isOpen,
       'select-disabled': this.disabled,
     }
 
     const inputClasses = {
       'select-input': true,
+      'select-input--visible': this.searchable && this.isOpen,
       'select-disabled': this.disabled,
     }
 
@@ -432,37 +467,32 @@ export class BaseSelect extends BaseElement {
           : ''}
 
         <div class=${classMap(wrapperClasses)}>
-          ${this.searchable && this.isOpen
-            ? html`
-                <input
-                  id=${this.selectId}
-                  class=${classMap(inputClasses)}
-                  type="text"
-                  placeholder=${this.displayValue}
-                  ?disabled=${this.disabled}
-                  .value=${this.searchQuery}
-                  @input=${this.handleSearchInput}
-                  @keydown=${this.handleKeydown}
-                  aria-describedby=${ifDefined(hasError ? `${this.selectId}-error` : undefined)}
-                  aria-invalid=${hasError}
-                />
-              `
-            : html`
-                <div
-                  id=${this.selectId}
-                  class=${classMap(displayClasses)}
-                  @click=${this.handleDisplayClick}
-                  @keydown=${this.handleKeydown}
-                  tabindex=${this.disabled ? -1 : 0}
-                  role="combobox"
-                  aria-expanded=${this.isOpen}
-                  aria-haspopup="listbox"
-                  aria-describedby=${ifDefined(hasError ? `${this.selectId}-error` : undefined)}
-                  aria-invalid=${hasError}
-                >
-                  ${this.displayValue}
-                </div>
-              `}
+          <input
+            id="${this.selectId}-input"
+            class=${classMap(inputClasses)}
+            type="text"
+            placeholder=${this.displayValue}
+            ?disabled=${this.disabled}
+            .value=${this.searchQuery}
+            @input=${this.handleSearchInput}
+            @keydown=${this.handleKeydown}
+            aria-describedby=${ifDefined(hasError ? `${this.selectId}-error` : undefined)}
+            aria-invalid=${hasError}
+          />
+          <div
+            id=${this.selectId}
+            class=${classMap(displayClasses)}
+            @click=${this.handleDisplayClick}
+            @keydown=${this.handleKeydown}
+            tabindex=${this.disabled ? -1 : 0}
+            role="combobox"
+            aria-expanded=${this.isOpen}
+            aria-haspopup="listbox"
+            aria-describedby=${ifDefined(hasError ? `${this.selectId}-error` : undefined)}
+            aria-invalid=${hasError}
+          >
+            ${this.displayValue}
+          </div>
 
           <div class=${classMap({ 'select-chevron': true, 'select-chevron--open': this.isOpen })}>
             <svg viewBox="0 0 20 20" fill="currentColor">
@@ -481,6 +511,7 @@ export class BaseSelect extends BaseElement {
                   class=${classMap({
                     'dropdown-options': true,
                     'dropdown-options--flipped': this.isFlipped,
+                    'dropdown-options--align-right': this.alignRight,
                   })}
                   role="listbox"
                 >

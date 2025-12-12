@@ -24,6 +24,7 @@ export class BaseTimePicker extends BaseElement {
   @state() private selectedMinute = 0
   @state() private selectedPeriod: 'AM' | 'PM' = 'AM'
   @state() private isFlipped = false
+  @state() private alignRight = false
 
   @query('.time-display') private timeDisplay!: HTMLDivElement
   @query('.time-container') private timeContainer?: HTMLDivElement
@@ -167,6 +168,11 @@ export class BaseTimePicker extends BaseElement {
       bottom: calc(100% + 4px);
     }
 
+    .time-container--align-right {
+      left: auto;
+      right: 0;
+    }
+
     .time-selectors {
       display: flex;
       gap: var(--space-2);
@@ -192,25 +198,11 @@ export class BaseTimePicker extends BaseElement {
       overflow-y: auto;
       border: 1px solid var(--color-border);
       border-radius: var(--radius-md);
-      scrollbar-width: thin;
-      scrollbar-color: var(--color-border) transparent;
+      scrollbar-width: none;
     }
 
     .time-scroll::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .time-scroll::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .time-scroll::-webkit-scrollbar-thumb {
-      background: var(--color-border);
-      border-radius: 3px;
-    }
-
-    .time-scroll::-webkit-scrollbar-thumb:hover {
-      background: var(--color-border-hover);
+      display: none;
     }
 
     .time-option {
@@ -358,15 +350,21 @@ export class BaseTimePicker extends BaseElement {
 
     const displayRect = this.timeDisplay.getBoundingClientRect()
     const dropdownHeight = 300 // approximate height
+    // Account for 3 columns in 12-hour format or 2 columns in 24-hour format
+    const dropdownWidth = this.format === '12' ? 280 : 200
     const spaceBelow = window.innerHeight - displayRect.bottom
     const spaceAbove = displayRect.top
+    const spaceRight = window.innerWidth - displayRect.left
+    const spaceLeft = displayRect.right
 
     this.isFlipped = spaceBelow < dropdownHeight && spaceAbove > spaceBelow
+    this.alignRight = spaceRight < dropdownWidth && spaceLeft > spaceRight
   }
 
   private closeTimePicker() {
     this.isOpen = false
     this.isFlipped = false
+    this.alignRight = false
     this.emitChange()
   }
 
@@ -519,6 +517,7 @@ export class BaseTimePicker extends BaseElement {
                   class=${classMap({
                     'time-container': true,
                     'time-container--flipped': this.isFlipped,
+                    'time-container--align-right': this.alignRight,
                   })}
                   role="dialog"
                   aria-label="Choose time"
