@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.15](https://github.com/cal-macconnachie/web-components/compare/v1.1.14...v1.1.15) (2025-12-12)
+
+
+### Bug Fixes
+
+* allow event bubbling from drawer ([dba2b00](https://github.com/cal-macconnachie/web-components/commit/dba2b00c5e180fc26bd76bcbfe4c83ac0da72591))
+
 ### [1.1.14](https://github.com/cal-macconnachie/web-components/compare/v1.1.13...v1.1.14) (2025-12-11)
 
 
