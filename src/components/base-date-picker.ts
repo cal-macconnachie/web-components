@@ -82,8 +82,8 @@ export class BaseDatePicker extends BaseElement {
       width: 100%;
       font-family: var(--font-family-sans);
       background-color: var(--color-bg-primary);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
+      border: var(--picker-display-border, 1px solid var(--color-border));
+      border-radius: var(--picker-display-border-radius, var(--radius-md));
       transition: all var(--transition-fast);
       color: var(--color-text-primary);
       cursor: pointer;
@@ -94,12 +94,12 @@ export class BaseDatePicker extends BaseElement {
     }
 
     .date-display:hover:not(.date-disabled) {
-      border-color: var(--color-border-hover);
+      border-color: var(--picker-display-border-color-hover, var(--color-border-hover));
     }
 
     .date-display--open {
-      border-color: var(--color-border-focus);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      border-color: var(--picker-display-border-color-focus, var(--color-border-focus));
+      box-shadow: var(--picker-display-box-shadow, 0 0 0 3px rgba(59, 130, 246, 0.1));
     }
 
     .date-display--empty {

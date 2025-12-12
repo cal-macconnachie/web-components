@@ -1,5 +1,6 @@
 import { css, html } from 'lit'
 import { customElement, property, query, state } from 'lit/decorators.js'
+import { classMap } from 'lit/directives/class-map.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
 import { BaseElement } from '../base-element'
 import './base-date-picker'
@@ -26,6 +27,7 @@ export class BaseDateTimePicker extends BaseElement {
 
   @state() private dateValue = ''
   @state() private timeValue = ''
+  @state() private isFocused = false
 
   @query('base-date-picker') private datePicker?: BaseDatePicker
   @query('base-time-picker') private timePicker?: BaseTimePicker
@@ -61,11 +63,65 @@ export class BaseDateTimePicker extends BaseElement {
 
     .datetime-pickers {
       display: flex;
-      gap: var(--space-2);
+      position: relative;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-bg-primary);
+      transition: all var(--transition-fast);
     }
 
-    .datetime-pickers > * {
+    .datetime-pickers:hover:not(.datetime-pickers--disabled) {
+      border-color: var(--color-border-hover);
+    }
+
+    .datetime-pickers--focused {
+      border-color: var(--color-border-focus);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .datetime-pickers--error {
+      border-color: var(--color-error);
+    }
+
+    .datetime-pickers--error.datetime-pickers--focused {
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+
+    .picker-wrapper {
       flex: 1;
+      position: relative;
+    }
+
+    .picker-wrapper--date {
+      margin-right: -1px;
+    }
+
+    .picker-wrapper--time {
+      margin-left: -1px;
+    }
+
+    .picker-wrapper + .picker-wrapper::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 60%;
+      width: 1px;
+      background: var(--color-border);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Hide child picker borders and shadows using CSS custom properties */
+    base-date-picker,
+    base-time-picker {
+      display: block;
+      --picker-display-border: none;
+      --picker-display-border-radius: 0;
+      --picker-display-box-shadow: none;
+      --picker-display-border-color-hover: transparent;
+      --picker-display-border-color-focus: transparent;
     }
 
     .datetime-picker-error {
@@ -173,8 +229,22 @@ export class BaseDateTimePicker extends BaseElement {
     }
   }
 
+  private handleFocusIn() {
+    this.isFocused = true
+  }
+
+  private handleFocusOut() {
+    this.isFocused = false
+  }
+
   render() {
     const hasError = !!this.error
+    const pickersClasses = {
+      'datetime-pickers': true,
+      'datetime-pickers--focused': this.isFocused,
+      'datetime-pickers--error': hasError,
+      'datetime-pickers--disabled': this.disabled,
+    }
 
     return html`
       <div class="datetime-picker-group">
@@ -189,31 +259,40 @@ export class BaseDateTimePicker extends BaseElement {
             `
           : ''}
 
-        <div class="datetime-pickers" id=${this.inputId}>
-          <base-date-picker
-            .value=${this.dateValue}
-            placeholder="Select date"
-            .size=${this.size}
-            .disabled=${this.disabled}
-            .required=${this.required}
-            .minDate=${this.minDate}
-            .maxDate=${this.maxDate}
-            @change=${this.handleDateChange}
-            aria-describedby=${ifDefined(hasError ? `${this.inputId}-error` : undefined)}
-            aria-invalid=${hasError}
-          ></base-date-picker>
+        <div
+          class=${classMap(pickersClasses)}
+          id=${this.inputId}
+          @focusin=${this.handleFocusIn}
+          @focusout=${this.handleFocusOut}
+        >
+          <div class="picker-wrapper picker-wrapper--date">
+            <base-date-picker
+              .value=${this.dateValue}
+              placeholder="Select date"
+              .size=${this.size}
+              .disabled=${this.disabled}
+              .required=${this.required}
+              .minDate=${this.minDate}
+              .maxDate=${this.maxDate}
+              @change=${this.handleDateChange}
+              aria-describedby=${ifDefined(hasError ? `${this.inputId}-error` : undefined)}
+              aria-invalid=${hasError}
+            ></base-date-picker>
+          </div>
 
-          <base-time-picker
-            .value=${this.timeValue}
-            placeholder="Select time"
-            .size=${this.size}
-            .disabled=${this.disabled}
-            .required=${this.required}
-            .format=${this.format}
-            @change=${this.handleTimeChange}
-            aria-describedby=${ifDefined(hasError ? `${this.inputId}-error` : undefined)}
-            aria-invalid=${hasError}
-          ></base-time-picker>
+          <div class="picker-wrapper picker-wrapper--time">
+            <base-time-picker
+              .value=${this.timeValue}
+              placeholder="Select time"
+              .size=${this.size}
+              .disabled=${this.disabled}
+              .required=${this.required}
+              .format=${this.format}
+              @change=${this.handleTimeChange}
+              aria-describedby=${ifDefined(hasError ? `${this.inputId}-error` : undefined)}
+              aria-invalid=${hasError}
+            ></base-time-picker>
+          </div>
         </div>
 
         ${hasError
