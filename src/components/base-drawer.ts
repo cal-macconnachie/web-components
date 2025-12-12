@@ -120,7 +120,9 @@ export class BaseDrawer extends BaseElement {
     }, this.transitionDuration)
   }
 
-  private handleOverlayClick = () => {
+  private handleOverlayClick = (event: Event) => {
+    // Only close when the overlay itself is clicked, allow events inside to bubble
+    if (event.target !== event.currentTarget) return
     this.handleClose()
   }
 
@@ -290,7 +292,6 @@ export class BaseDrawer extends BaseElement {
       >
         <div
           class=${classMap(containerClasses)}
-          @click=${(e: Event) => e.stopPropagation()}
           role="dialog"
           aria-modal="true"
           @mousemove=${this.handleDragMove}
