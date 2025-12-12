@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/cal-macconnachie/web-components/compare/v1.1.15...v1.2.0) (2025-12-12)
+
+
+### Features
+
+* datetime picker internals update ([7a83d9f](https://github.com/cal-macconnachie/web-components/commit/7a83d9fc46e94d4e17e1e60251e129cf65e2cdd2))
+
+
+### Bug Fixes
+
+* almost there ([cb4d935](https://github.com/cal-macconnachie/web-components/commit/cb4d93568abf447a2187a0e0240c148b6569371b))
+* styling ([e8bf2bf](https://github.com/cal-macconnachie/web-components/commit/e8bf2bffeb32e53bf1a7e8e1319e80583b77ec33))
+
 ### [1.1.15](https://github.com/cal-macconnachie/web-components/compare/v1.1.14...v1.1.15) (2025-12-12)
 
 
