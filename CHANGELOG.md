@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.1](https://github.com/cal-macconnachie/web-components/compare/v1.2.0...v1.2.1) (2025-12-18)
+
+
+### Bug Fixes
+
+* dont allow bubbling for nested tabs ([7da0471](https://github.com/cal-macconnachie/web-components/commit/7da0471e62c035a7f8fb5e93a8e078f97ebb71eb))
+
 ## [1.2.0](https://github.com/cal-macconnachie/web-components/compare/v1.1.15...v1.2.0) (2025-12-12)
 
 
