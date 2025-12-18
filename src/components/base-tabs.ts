@@ -513,6 +513,13 @@ export class BaseTabs extends BaseElement {
     const newTabs: TabData[] = []
 
     tabElements.forEach((tabEl) => {
+      // Only register tabs that belong directly to this tabs component
+      // Skip tabs that are nested inside another base-tabs
+      const parentTabs = tabEl.parentElement?.closest('base-tabs')
+      if (parentTabs !== this) {
+        return
+      }
+
       const tabData: TabData = {
         id: tabEl.id,
         label: tabEl.getAttribute('label') || '',
@@ -567,6 +574,14 @@ export class BaseTabs extends BaseElement {
   }
 
   private handleTabRegister(event: CustomEvent<TabData>) {
+    // Only register tabs that belong directly to this tabs component
+    // Skip tabs that are nested inside another base-tabs
+    const tabElement = event.target as HTMLElement
+    const parentTabs = tabElement.parentElement?.closest('base-tabs')
+    if (parentTabs !== this) {
+      return
+    }
+
     event.stopPropagation()
     const tabData = event.detail
 
@@ -577,6 +592,13 @@ export class BaseTabs extends BaseElement {
   }
 
   private handleTabBadgeUpdate(event: CustomEvent<{ id: string; badge?: number }>) {
+    // Only handle badge updates for tabs that belong directly to this tabs component
+    const tabElement = event.target as HTMLElement
+    const parentTabs = tabElement.parentElement?.closest('base-tabs')
+    if (parentTabs !== this) {
+      return
+    }
+
     event.stopPropagation()
     const { id, badge } = event.detail
 
@@ -591,6 +613,11 @@ export class BaseTabs extends BaseElement {
   private updateChildTabs() {
     const tabElements = this.querySelectorAll('base-tab')
     tabElements.forEach((tab) => {
+      // Only update tabs that belong directly to this tabs component
+      const parentTabs = tab.parentElement?.closest('base-tabs')
+      if (parentTabs !== this) {
+        return
+      }
       tab.active = tab.id === this.activeTab
     })
   }
