@@ -64,7 +64,10 @@ export const api = ({
   const refresh = async (): Promise<{
     message: string
   }> => {
-    const response = await fetch(`${baseUrl}${endpoints.refresh}`, {
+    // weird error is occurring where sometimes refresh specifically is calling /api/api/auth/refresh instead of /api/auth/refresh
+    // so to fix this we will normalize the URL here
+    const url =`${baseUrl}${endpoints.refresh}`.replace(/\/api\/api\//, '/api/')
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

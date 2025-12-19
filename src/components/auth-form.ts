@@ -103,6 +103,7 @@ export class AuthForm extends BaseElement {
         })
       }
     }
+    this.error = ''
 
     return this.apiService
   }
