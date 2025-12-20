@@ -103,7 +103,6 @@ export class AuthForm extends BaseElement {
         })
       }
     }
-    this.error = ''
 
     return this.apiService
   }
@@ -702,6 +701,7 @@ export class AuthForm extends BaseElement {
   }
 
   public async logout() {
+    this.error = ''
     try {
       const apiService = this.getApiService()
       // Server reads HttpOnly cookies from request automatically
@@ -1357,7 +1357,7 @@ export class AuthForm extends BaseElement {
             </div>
           `
         : nothing}
-      ${this.error
+      ${this.error && !this.isLoading
         ? html`
             <div class="alert alert--error">
               ${this.error}
