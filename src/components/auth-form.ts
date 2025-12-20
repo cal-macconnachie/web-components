@@ -549,6 +549,7 @@ export class AuthForm extends BaseElement {
   }
 
   private async handleOAuthCallbackIfPresent() {
+    this.error = ''
     const urlParams = new URLSearchParams(window.location.search)
     const accessToken = urlParams.get('access_token')
     const idToken = urlParams.get('id_token')
@@ -568,7 +569,6 @@ export class AuthForm extends BaseElement {
 
     this.hasHandledOAuthCallback = true
     this.isLoading = true
-    this.error = ''
 
     try {
       if (error) {
