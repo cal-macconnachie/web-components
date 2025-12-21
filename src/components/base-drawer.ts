@@ -260,6 +260,12 @@ export class BaseDrawer extends BaseElement {
   public openDrawer() {
     this.open = true
     this.isVisible = true
+    this.dispatchEvent(
+      new CustomEvent('drawer-open', {
+        bubbles: true,
+        composed: true,
+      })
+    )
   }
 
   render() {

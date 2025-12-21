@@ -227,6 +227,11 @@
               <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
                 Copy and paste the following code to use buttons in your project
               </p>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                <ul>
+                  <li><code>click</code>: <small>Fired when the button is clicked</small></li>
+                </ul>
+              </p>
               <pre style="background: var(--color-bg-muted); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-size: var(--font-size-sm);"><code>&lt;!-- Solid Button --&gt;
 &lt;base-button variant="solid-primary"&gt;Primary&lt;/base-button&gt;
 &lt;base-button variant="solid-secondary"&gt;Secondary&lt;/base-button&gt;
@@ -324,6 +329,13 @@
               <h3>Code Usage</h3>
               <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
                 Copy and paste the following code to use inputs in your project
+              </p>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                <ul>
+                  <li><code>input</code>: <small>Fired when the input value changes</small></li>
+                  <li><code>focus</code>: <small>Fired when the input receives focus</small></li>
+                  <li><code>blur</code>: <small>Fired when the input loses focus</small></li>
+                </ul>
               </p>
               <pre style="background: var(--color-bg-muted); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-size: var(--font-size-sm);"><code>&lt;!-- Basic Input --&gt;
 &lt;base-input
@@ -449,8 +461,13 @@
             <!-- Code Usage -->
             <base-card variant="elevated" padding="md">
               <h3>Code Usage</h3>
-              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+            <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
                 Copy and paste the following code to use selects in your project
+              </p>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                <ul>
+                  <li><code>change</code>: <small>Fired when the input value changes</small></li>
+                </ul>
               </p>
               <pre style="background: var(--color-bg-muted); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-size: var(--font-size-sm);"><code>&lt;!-- Basic Select --&gt;
 &lt;base-select
@@ -567,6 +584,13 @@
               <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
                 Copy and paste the following code to use textareas in your project
               </p>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                <ul>
+                  <li><code>input</code>: <small>Fired when the input value changes</small></li>
+                  <li><code>focus</code>: <small>Fired when the input receives focus</small></li>
+                  <li><code>blur</code>: <small>Fired when the input loses focus</small></li>
+                </ul>
+              </p>
               <pre style="background: var(--color-bg-muted); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-size: var(--font-size-sm);"><code>&lt;!-- Basic Textarea --&gt;
 &lt;base-textarea
   label="Description"
@@ -671,6 +695,11 @@
               <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
                 Copy and paste the following code to use quantity selects in your project
               </p>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                <ul>
+                  <li><code>change</code>: <small>Fired when the input value changes</small></li>
+                </ul>
+              </p>
               <pre style="background: var(--color-bg-muted); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-size: var(--font-size-sm);"><code>&lt;!-- Basic Quantity Select --&gt;
 &lt;quantity-select
   id="quantity-basic"
@@ -735,6 +764,12 @@ quantitySelect.addEventListener('quantity-change', (e) =&gt; {
               <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
                 Copy and paste the following code to use drawers in your project
               </p>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                <ul>
+                  <li><code>drawer-close</code>: <small>Emitted when the drawer is closed</small></li>
+                  <li><code>drawer-open</code>: <small>Emitted when the drawer is opened</small></li>
+                </ul>
+              </p>
               <pre style="background: var(--color-bg-muted); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-size: var(--font-size-sm);"><code>&lt;!-- Button to Open Drawer --&gt;
 &lt;base-button variant="solid-primary" onclick="document.getElementById('my-drawer').open()"&gt;
   Open Drawer
@@ -786,7 +821,7 @@ drawer.addEventListener('drawer-close', () =&gt; {
             <base-card variant="elevated" padding="md">
               <h3>Tab Controls</h3>
               <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
-                Try toggling the layout of the main tabs component on this page
+                Try toggling the variant of the main tabs component on this page
               </p>
               <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
                 <base-button id="toggle-tabs-layout" variant="solid-primary" size="md">
@@ -795,43 +830,26 @@ drawer.addEventListener('drawer-close', () =&gt; {
               </div>
             </base-card>
 
-            <base-card variant="elevated" padding="md">
-              <h3>Variants</h3>
-              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
-                The tabs component supports two main variants:
-              </p>
-              <div style="display: grid; gap: 1rem;">
-                <div>
-                  <h4 style="margin: 0 0 0.5rem 0;">Sidebar (Current Default)</h4>
-                  <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin: 0;">
-                    Vertical layout on the left side. Perfect for navigation with many options, documentation sites, and dashboard layouts.
-                  </p>
-                </div>
-                <div>
-                  <h4 style="margin: 0 0 0.5rem 0;">Horizontal</h4>
-                  <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin: 0;">
-                    Horizontal layout across the top. Great for top-level navigation with fewer options and cleaner interfaces.
-                  </p>
-                </div>
-              </div>
-            </base-card>
-
-            <base-card variant="elevated" padding="md">
-              <h3>Features</h3>
-              <ul style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">
-                <li><strong>Icons:</strong> Add SVG icons to tabs for better visual recognition</li>
-                <li><strong>Keyboard Navigation:</strong> Arrow keys to navigate between tabs</li>
-                <li><strong>Accessibility:</strong> Full ARIA support with proper roles and attributes</li>
-                <li><strong>Responsive:</strong> Adapts to different screen sizes automatically</li>
-                <li><strong>Programmatic Control:</strong> Switch tabs and listen to events via JavaScript</li>
-              </ul>
-            </base-card>
-
             <!-- Code Usage -->
             <base-card variant="elevated" padding="md">
               <h3>Code Usage</h3>
               <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
                 Copy and paste the following code to use tabs in your project
+              </p>
+
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                <ul>
+                  <li><code>tab-change</code>: <small>Emitted when the active tab changes</small></li>
+                </ul>
+                <ul>
+                  <li>Base Tab
+                    <ul>
+                      <li><code>tab-register</code>: <small>Emitted when a tab is registered to the base-tabs component</small></li>
+                      <li><code>tab-badge-update</code>: <small>Emitted when a tab's badge is updated</small></li>
+                    </ul>
+
+                  </li>
+                </ul>
               </p>
               <pre style="background: var(--color-bg-muted); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-size: var(--font-size-sm);"><code>&lt;!-- Basic Tabs --&gt;
 &lt;base-tabs variant="horizontal" aria-label="Example tabs"&gt;
@@ -1049,6 +1067,12 @@ tabs.addEventListener('tab-change', (e) =&gt; {
               <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
                 Copy and paste the following code to use date and time pickers in your project
               </p>
+
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                <ul>
+                  <li><code>change</code>: <small>Emitted when the value changes</small></li>
+                </ul>
+              </p>
               <pre style="background: var(--color-bg-muted); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-size: var(--font-size-sm);"><code>&lt;!-- Date Picker --&gt;
 &lt;base-date-picker
   id="date-picker"
@@ -1214,16 +1238,10 @@ const tokens = authForm.getTokens();
             </base-card>
 
             <base-card variant="elevated" padding="md">
-              <h3>Theme Toggle Component</h3>
-              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
-                The theme-toggle component cycles through your defined themes. Try the toggle in the header above!
-              </p>
+              <h3>Theme Toggle</h3>
               <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
                 <div>
-                  <h4 style="margin: 0 0 0.5rem 0;">Ghost Variant</h4>
-                  <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 0.5rem;">
-                    Transparent background
-                  </p>
+                  <h4 style="margin: 0 0 0.5rem 0;">Ghost</h4>
                   <div style="display: flex; gap: 1rem; align-items: center;">
                     <theme-toggle size="sm" variant="ghost"></theme-toggle>
                     <theme-toggle size="md" variant="ghost"></theme-toggle>
@@ -1232,10 +1250,7 @@ const tokens = authForm.getTokens();
                 </div>
 
                 <div>
-                  <h4 style="margin: 0 0 0.5rem 0;">Outline Variant</h4>
-                  <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 0.5rem;">
-                    With border
-                  </p>
+                  <h4 style="margin: 0 0 0.5rem 0;">Outlined</h4>
                   <div style="display: flex; gap: 1rem; align-items: center;">
                     <theme-toggle size="sm" variant="outline"></theme-toggle>
                     <theme-toggle size="md" variant="outline"></theme-toggle>
@@ -1244,29 +1259,14 @@ const tokens = authForm.getTokens();
                 </div>
 
                 <div>
-                  <h4 style="margin: 0 0 0.5rem 0;">Solid Variant</h4>
-                  <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 0.5rem;">
-                    Filled background
-                  </p>
+                  <h4 style="margin: 0 0 0.5rem 0;">Solid</h4>
                   <div style="display: flex; gap: 1rem; align-items: center;">
                     <theme-toggle size="sm" variant="solid"></theme-toggle>
                     <theme-toggle size="md" variant="solid"></theme-toggle>
                     <theme-toggle size="lg" variant="solid"></theme-toggle>
                   </div>
                 </div>
-              </div>
-            </base-card>
 
-            <base-card variant="elevated" padding="md">
-              <h3>Custom Theme Toggle</h3>
-              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
-                You can customize which themes the toggle cycles through by providing your own themes array:
-              </p>
-              <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
-                <div>
-                  <p style="margin-bottom: 0.5rem; font-weight: var(--font-weight-medium); font-size: var(--font-size-sm);">Light/Dark Only:</p>
-                  <theme-toggle id="toggle-light-dark" size="md" variant="outline"></theme-toggle>
-                </div>
                 <div>
                   <p style="margin-bottom: 0.5rem; font-weight: var(--font-weight-medium); font-size: var(--font-size-sm);">Fun Themes:</p>
                   <theme-toggle id="toggle-fun" size="md" variant="outline"></theme-toggle>
@@ -1389,51 +1389,6 @@ const tokens = authForm.getTokens();
 &lt;theme-toggle size="md" variant="outline"&gt;&lt;/theme-toggle&gt;
 &lt;theme-toggle size="md" variant="solid"&gt;&lt;/theme-toggle&gt;</code></pre>
             </base-card>
-
-            <base-card variant="elevated" padding="md">
-              <h3>How It Works</h3>
-              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
-                The theming system works through inheritance:
-              </p>
-              <ol style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">
-                <li style="margin-bottom: 0.75rem;">
-                  <strong>BaseElement Class:</strong> All components extend BaseElement, which manages theme switching and persistence via localStorage
-                </li>
-                <li style="margin-bottom: 0.75rem;">
-                  <strong>data-theme Attribute:</strong> The active theme is set as a data-theme attribute on the document root and individual components
-                </li>
-                <li style="margin-bottom: 0.75rem;">
-                  <strong>CSS Custom Properties:</strong> Each theme defines CSS variables that all components use for colors, spacing, typography, etc.
-                </li>
-                <li style="margin-bottom: 0.75rem;">
-                  <strong>Automatic Updates:</strong> When the theme changes, all components automatically update through CSS variable inheritance
-                </li>
-                <li style="margin-bottom: 0.75rem;">
-                  <strong>Theme Toggle:</strong> The theme-toggle component cycles through your defined themes and updates the entire application
-                </li>
-              </ol>
-            </base-card>
-
-            <base-card variant="elevated" padding="md">
-              <h3>Best Practices</h3>
-              <ul style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">
-                <li style="margin-bottom: 0.75rem;">
-                  <strong>Color Contrast:</strong> Ensure text has sufficient contrast against backgrounds (WCAG AA minimum 4.5:1)
-                </li>
-                <li style="margin-bottom: 0.75rem;">
-                  <strong>Consistent Naming:</strong> Use the same CSS variable names across all themes for consistency
-                </li>
-                <li style="margin-bottom: 0.75rem;">
-                  <strong>Semantic Colors:</strong> Define semantic colors (success, warning, error) that work with your theme
-                </li>
-                <li style="margin-bottom: 0.75rem;">
-                  <strong>Test All Components:</strong> Test every component in your new theme to ensure readability
-                </li>
-                <li style="margin-bottom: 0.75rem;">
-                  <strong>Custom Icons:</strong> Consider creating custom icons for the theme toggle that match your theme's aesthetic
-                </li>
-              </ul>
-            </base-card>
           </base-tab>
 
           <!-- Cards Tab -->
@@ -1547,6 +1502,13 @@ const tokens = authForm.getTokens();
                   <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
                     Copy and paste the following code to use cards in your project
                   </p>
+
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                <ul>
+                  <li><code>card-expanded</code>: <small>Emitted when the card is expanded</small></li>
+                  <li><code>card-collapsed</code>: <small>Emitted when the card is collapsed</small></li>
+                </ul>
+              </p>
                   <pre style="background: var(--color-bg-muted); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-size: var(--font-size-sm);"><code>&lt;!-- Basic Card --&gt;
 &lt;base-card variant="default" padding="md"&gt;
   &lt;h4&gt;Card Title&lt;/h4&gt;
