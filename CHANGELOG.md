@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.4](https://github.com/cal-macconnachie/web-components/compare/v1.2.3...v1.2.4) (2025-12-21)
+
+
+### Bug Fixes
+
+* better error showing ([b048f83](https://github.com/cal-macconnachie/web-components/commit/b048f8301612d5c75b38302bdc4f9ac21a06bbe3))
+* move resetting of error ([1bfae18](https://github.com/cal-macconnachie/web-components/commit/1bfae1869c587da8d16a4ee60c37581f35670e2a))
+* themes ([cd8da15](https://github.com/cal-macconnachie/web-components/commit/cd8da152a217db41e12e76d7f86a718f3d108b6c))
+
 ### [1.2.3](https://github.com/cal-macconnachie/web-components/compare/v1.2.2...v1.2.3) (2025-12-19)
 
 
