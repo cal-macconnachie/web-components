@@ -6,6 +6,7 @@
     <link rel="icon" type="image/x-icon" href="/public/favicon.ico" />
     <title>Web Component playground</title>
     <link rel="stylesheet" href="/src/stylesheets/main.css" />
+    <link rel="stylesheet" href="/src/stylesheets/themes.css" />
     <style>
       /* Custom syntax highlighting using design tokens */
       pre code {
@@ -1189,6 +1190,252 @@ const tokens = authForm.getTokens();
             </base-card>
           </base-tab>
 
+          <!-- Theming Tab -->
+          <base-tab id="theming" label="Theming" icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'>
+            <base-card variant="elevated" padding="md">
+              <h3>Theming System</h3>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                This component library uses CSS custom properties (variables) for theming. All components automatically adapt to the active theme through the BaseElement class.
+              </p>
+              <div style="display: grid; gap: 1rem;">
+                <div>
+                  <h4 style="margin: 0 0 0.5rem 0;">Current Themes</h4>
+                  <ul style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin: 0.5rem 0;">
+                    <li><strong>Light</strong> - Clean, minimal light theme</li>
+                    <li><strong>Dark</strong> - Modern dark theme with high contrast</li>
+                    <li><strong>Retro</strong> - Vintage theme with warm colors and blocky shadows</li>
+                    <li><strong>Neo Tokyo</strong> - Cyberpunk-inspired theme with neon glows</li>
+                    <li><strong>Editorial Serif</strong> - Professional theme with serif typography</li>
+                    <li><strong>Tropical Clay</strong> - Warm, earthy theme with natural tones</li>
+                    <li><strong>Ocean</strong> - Cool, calming theme with blue tones</li>
+                  </ul>
+                </div>
+              </div>
+            </base-card>
+
+            <base-card variant="elevated" padding="md">
+              <h3>Theme Toggle Component</h3>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                The theme-toggle component cycles through your defined themes. Try the toggle in the header above!
+              </p>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                <div>
+                  <h4 style="margin: 0 0 0.5rem 0;">Ghost Variant</h4>
+                  <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 0.5rem;">
+                    Transparent background
+                  </p>
+                  <div style="display: flex; gap: 1rem; align-items: center;">
+                    <theme-toggle size="sm" variant="ghost"></theme-toggle>
+                    <theme-toggle size="md" variant="ghost"></theme-toggle>
+                    <theme-toggle size="lg" variant="ghost"></theme-toggle>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 style="margin: 0 0 0.5rem 0;">Outline Variant</h4>
+                  <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 0.5rem;">
+                    With border
+                  </p>
+                  <div style="display: flex; gap: 1rem; align-items: center;">
+                    <theme-toggle size="sm" variant="outline"></theme-toggle>
+                    <theme-toggle size="md" variant="outline"></theme-toggle>
+                    <theme-toggle size="lg" variant="outline"></theme-toggle>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 style="margin: 0 0 0.5rem 0;">Solid Variant</h4>
+                  <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 0.5rem;">
+                    Filled background
+                  </p>
+                  <div style="display: flex; gap: 1rem; align-items: center;">
+                    <theme-toggle size="sm" variant="solid"></theme-toggle>
+                    <theme-toggle size="md" variant="solid"></theme-toggle>
+                    <theme-toggle size="lg" variant="solid"></theme-toggle>
+                  </div>
+                </div>
+              </div>
+            </base-card>
+
+            <base-card variant="elevated" padding="md">
+              <h3>Custom Theme Toggle</h3>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                You can customize which themes the toggle cycles through by providing your own themes array:
+              </p>
+              <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+                <div>
+                  <p style="margin-bottom: 0.5rem; font-weight: var(--font-weight-medium); font-size: var(--font-size-sm);">Light/Dark Only:</p>
+                  <theme-toggle id="toggle-light-dark" size="md" variant="outline"></theme-toggle>
+                </div>
+                <div>
+                  <p style="margin-bottom: 0.5rem; font-weight: var(--font-weight-medium); font-size: var(--font-size-sm);">Fun Themes:</p>
+                  <theme-toggle id="toggle-fun" size="md" variant="outline"></theme-toggle>
+                </div>
+              </div>
+            </base-card>
+
+            <base-card variant="elevated" padding="md">
+              <h3>Creating Your Own Theme</h3>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                Create a new theme by defining CSS custom properties. Here's a complete example:
+              </p>
+              <pre style="background: var(--color-bg-muted); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-size: var(--font-size-sm);"><code class="language-css">/* Create a new theme in your CSS file */
+[data-theme='ocean'] {
+  /* Brand colors */
+  --color-primary: #0077be;
+  --color-primary-hover: #005a8e;
+  --color-primary-light: #e6f3ff;
+  --color-secondary: #00a896;
+  --color-secondary-hover: #008577;
+
+  /* Semantic colors */
+  --color-success: #28a745;
+  --color-warning: #ffa500;
+  --color-error: #dc3545;
+  --color-info: #17a2b8;
+
+  /* Text colors */
+  --color-text-primary: #1a1a2e;
+  --color-text-secondary: #4a5568;
+  --color-text-muted: #718096;
+  --color-text-inverse: #ffffff;
+
+  /* Background colors */
+  --color-bg-primary: #f0f8ff;
+  --color-bg-secondary: #e6f3ff;
+  --color-bg-muted: #d9ecff;
+  --color-bg-inverse-muted: #1a1a2e;
+  --color-bg-overlay: rgba(26, 26, 46, 0.8);
+
+  /* Border colors */
+  --color-border: #b8d4e8;
+  --color-border-hover: #99c2de;
+  --color-border-focus: #0077be;
+
+  /* Typography */
+  --font-family-sans: 'Inter', system-ui, sans-serif;
+  --font-family-mono: 'JetBrains Mono', monospace;
+
+  /* Spacing (optional - override if needed) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  /* Border radius */
+  --radius-sm: 0.125rem;
+  --radius-base: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px 0 rgba(26, 26, 46, 0.05);
+  --shadow-sm: 0 2px 4px -1px rgba(26, 26, 46, 0.1);
+  --shadow-base: 0 4px 6px -1px rgba(26, 26, 46, 0.1);
+  --shadow-md: 0 8px 12px -2px rgba(26, 26, 46, 0.12);
+  --shadow-lg: 0 16px 24px -4px rgba(26, 26, 46, 0.15);
+  --shadow-xl: 0 24px 40px -8px rgba(26, 26, 46, 0.18);
+}</code></pre>
+            </base-card>
+
+            <base-card variant="elevated" padding="md">
+              <h3>Using the Theme Toggle</h3>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                Add the theme-toggle component to your application:
+              </p>
+              <pre style="background: var(--color-bg-muted); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-size: var(--font-size-sm);"><code>&lt;!-- Basic usage with default light/dark themes --&gt;
+&lt;theme-toggle size="md" variant="ghost"&gt;&lt;/theme-toggle&gt;
+
+&lt;!-- Custom themes with custom icons --&gt;
+&lt;script&gt;
+  const toggle = document.querySelector('theme-toggle');
+  toggle.themes = [
+    {
+      theme: 'light',
+      icon: `&lt;svg viewBox="0 0 20 20" fill="currentColor" class="theme-icon"&gt;
+        &lt;path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/&gt;
+      &lt;/svg&gt;`
+    },
+    {
+      theme: 'dark',
+      icon: `&lt;svg viewBox="0 0 20 20" fill="currentColor" class="theme-icon"&gt;
+        &lt;path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/&gt;
+      &lt;/svg&gt;`
+    },
+    {
+      theme: 'ocean',
+      icon: `&lt;svg viewBox="0 0 20 20" fill="currentColor" class="theme-icon"&gt;
+        &lt;path d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"/&gt;
+      &lt;/svg&gt;`
+    }
+  ];
+&lt;/script&gt;
+
+&lt;!-- Sizes --&gt;
+&lt;theme-toggle size="sm" variant="ghost"&gt;&lt;/theme-toggle&gt;
+&lt;theme-toggle size="md" variant="ghost"&gt;&lt;/theme-toggle&gt;
+&lt;theme-toggle size="lg" variant="ghost"&gt;&lt;/theme-toggle&gt;
+
+&lt;!-- Variants --&gt;
+&lt;theme-toggle size="md" variant="ghost"&gt;&lt;/theme-toggle&gt;
+&lt;theme-toggle size="md" variant="outline"&gt;&lt;/theme-toggle&gt;
+&lt;theme-toggle size="md" variant="solid"&gt;&lt;/theme-toggle&gt;</code></pre>
+            </base-card>
+
+            <base-card variant="elevated" padding="md">
+              <h3>How It Works</h3>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                The theming system works through inheritance:
+              </p>
+              <ol style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+                <li style="margin-bottom: 0.75rem;">
+                  <strong>BaseElement Class:</strong> All components extend BaseElement, which manages theme switching and persistence via localStorage
+                </li>
+                <li style="margin-bottom: 0.75rem;">
+                  <strong>data-theme Attribute:</strong> The active theme is set as a data-theme attribute on the document root and individual components
+                </li>
+                <li style="margin-bottom: 0.75rem;">
+                  <strong>CSS Custom Properties:</strong> Each theme defines CSS variables that all components use for colors, spacing, typography, etc.
+                </li>
+                <li style="margin-bottom: 0.75rem;">
+                  <strong>Automatic Updates:</strong> When the theme changes, all components automatically update through CSS variable inheritance
+                </li>
+                <li style="margin-bottom: 0.75rem;">
+                  <strong>Theme Toggle:</strong> The theme-toggle component cycles through your defined themes and updates the entire application
+                </li>
+              </ol>
+            </base-card>
+
+            <base-card variant="elevated" padding="md">
+              <h3>Best Practices</h3>
+              <ul style="color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+                <li style="margin-bottom: 0.75rem;">
+                  <strong>Color Contrast:</strong> Ensure text has sufficient contrast against backgrounds (WCAG AA minimum 4.5:1)
+                </li>
+                <li style="margin-bottom: 0.75rem;">
+                  <strong>Consistent Naming:</strong> Use the same CSS variable names across all themes for consistency
+                </li>
+                <li style="margin-bottom: 0.75rem;">
+                  <strong>Semantic Colors:</strong> Define semantic colors (success, warning, error) that work with your theme
+                </li>
+                <li style="margin-bottom: 0.75rem;">
+                  <strong>Test All Components:</strong> Test every component in your new theme to ensure readability
+                </li>
+                <li style="margin-bottom: 0.75rem;">
+                  <strong>Custom Icons:</strong> Consider creating custom icons for the theme toggle that match your theme's aesthetic
+                </li>
+              </ul>
+            </base-card>
+          </base-tab>
+
           <!-- Cards Tab -->
           <base-tab id="cards" label="Cards" icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>'>
               <!-- Card Variants Section -->
@@ -1426,6 +1673,8 @@ const tokens = authForm.getTokens();
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css-extras.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
     <script>
       // Apply Prism syntax highlighting to code blocks
@@ -1436,15 +1685,21 @@ const tokens = authForm.getTokens();
           if (!block.className) {
             block.className = 'language-markup';
           }
-          // Unescape HTML entities for Prism to work
-          const code = block.innerHTML
-            .replace(/&lt;/g, '<')
-            .replace(/&gt;/g, '>')
-            .replace(/&quot;/g, '"')
-            .replace(/&#39;/g, "'")
-            .replace(/&amp;/g, '&');
-          block.textContent = code;
-          Prism.highlightElement(block);
+          // For CSS, preserve the original formatting
+          if (block.className.includes('language-css')) {
+            // Don't manipulate CSS code, let Prism handle it directly
+            Prism.highlightElement(block);
+          } else {
+            // Unescape HTML entities for markup
+            const code = block.innerHTML
+              .replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>')
+              .replace(/&quot;/g, '"')
+              .replace(/&#39;/g, "'")
+              .replace(/&amp;/g, '&');
+            block.textContent = code;
+            Prism.highlightElement(block);
+          }
         });
       });
     </script>

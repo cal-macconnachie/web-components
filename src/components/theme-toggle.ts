@@ -1,23 +1,67 @@
 import { css, html } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
+import { unsafeHTML } from 'lit/directives/unsafe-html.js'
 import { BaseElement } from '../base-element'
-
+export interface ThemeInput {
+  theme: string,
+  icon: string
+}
 @customElement('theme-toggle')
 export class ThemeToggle extends BaseElement {
   @property({ type: String, attribute: 'size' }) size: 'sm' | 'md' | 'lg' = 'sm'
   @property({ type: String, attribute: 'variant' }) variant: 'ghost' | 'outline' | 'solid' = 'ghost'
+  @property({ type: Object, attribute: 'themes' }) themes: ThemeInput[] = [
+    { theme: 'light', icon: `
+      <svg
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        class="theme-icon"
+        aria-hidden="true"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+          clip-rule="evenodd"
+        />
+      </svg>
+              ` },
+    { theme: 'dark', icon: `
+      <svg
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        class="theme-icon"
+        aria-hidden="true"
+      >
+        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+      </svg>
+      ` },
+  ]
 
-  @state() private isDark = false
+  @state() private currentTheme = 0
 
   connectedCallback() {
     super.connectedCallback()
-    // Initialize isDark based on the current theme (which may have been set by BaseElement)
-    this.isDark = this.theme === 'dark'
+    this.syncCurrentTheme()
+  }
+
+  updated(changedProperties: Map<string, any>) {
+    super.updated(changedProperties)
+
+    // Sync currentTheme index when themes array or theme value changes
+    if (changedProperties.has('themes') || changedProperties.has('theme')) {
+      this.syncCurrentTheme()
+    }
+  }
+
+  private syncCurrentTheme() {
+    const index = this.themes.findIndex(t => t.theme === this.theme)
+    // If theme not found in array, default to 0, otherwise use found index
+    this.currentTheme = index >= 0 ? index : 0
   }
 
   private toggleTheme() {
-    this.theme = this.isDark ? 'light' : 'dark'
-    this.isDark = !this.isDark
+    this.currentTheme = (this.currentTheme + 1) % this.themes.length
+    this.theme = this.themes[this.currentTheme]?.theme ?? 'light'
     super.applyTheme()
   }
 
@@ -40,7 +84,9 @@ export class ThemeToggle extends BaseElement {
   }
 
   render() {
-    const ariaLabel = this.isDark ? 'Switch to light mode' : 'Switch to dark mode'
+    const nextThemeIndex = (this.currentTheme + 1) % this.themes.length
+    const nextTheme = this.themes[nextThemeIndex]
+    const ariaLabel = `Switch to ${nextTheme?.theme ?? 'next'} theme`
 
     return html`
       <button
@@ -49,31 +95,18 @@ export class ThemeToggle extends BaseElement {
         aria-label=${ariaLabel}
         type="button"
       >
-        ${this.isDark
-          ? html`
-              <svg
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                class="theme-icon"
-                aria-hidden="true"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            `
-          : html`
-              <svg
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                class="theme-icon"
-                aria-hidden="true"
-              >
-                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-              </svg>
-            `}
+        ${unsafeHTML(nextTheme?.icon ?? `<svg
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        class="theme-icon"
+        aria-hidden="true"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+          clip-rule="evenodd"
+        />
+      </svg>`)}
 
         <span class="sr-only">${ariaLabel}</span>
       </button>

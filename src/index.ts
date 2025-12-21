@@ -11,6 +11,6 @@ export { BaseTabs } from './components/base-tabs.js'
 export { BaseTextarea } from './components/base-textarea.js'
 export { BaseTimePicker } from './components/base-time-picker.js'
 export { QuantitySelect } from './components/quantity-select.js'
-export { ThemeToggle } from './components/theme-toggle.js'
+export { ThemeInput, ThemeToggle } from './components/theme-toggle.js'
 export { apiClient, AuthRefreshError, createApiClient } from './services/api-client.js'
 
