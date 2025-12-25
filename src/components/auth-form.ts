@@ -1437,6 +1437,7 @@ export class AuthForm extends BaseElement {
       // Server reads HttpOnly cookies from request and sets new ones
       await this.getApiService().refresh()
       // Tokens are refreshed server-side, state remains logged in
+      this.checkExistingSession()
     } catch (err) {
       log('Token refresh failed:', err)
       this.isLoggedIn = false
