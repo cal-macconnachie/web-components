@@ -499,7 +499,16 @@ export class BaseToast extends BaseElement {
   }
 }
 
-export function showToast(message: string, variant: ToastVariant = 'default', position: ToastPosition = 'top-right', dismiss: DismissBehavior = '2s') {
+export function showToast({
+  message,
+  variant = 'default',
+  position = 'top-right',
+  dismiss = '2s'} : {
+    message: string,
+    variant?: ToastVariant,
+    position?: ToastPosition,
+    dismiss?: DismissBehavior
+  }) {
   const toast = document.createElement('base-toast') as BaseToast;
   toast.id = `toast-${Date.now()}`;
   toast.setAttribute('variant', variant);

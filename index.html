@@ -1052,6 +1052,19 @@ drawer.addEventListener('drawer-close', () =&gt; {
                 Copy and paste the following code to use toasts in your project
               </p>
               <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                  <pre style="margin: 0; display: inline-block;"><code>showToast({
+  message,
+  variant = 'default',
+  position = 'top-right',
+  dismiss = '2s'
+} : {
+  message: string,
+  variant?: ToastVariant,
+  position?: ToastPosition,
+  dismiss?: DismissBehavior
+})</code></pre>
+              </p>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
                 <ul>
                   <li><code>toast-shown</code>: <small>Emitted when the toast is shown</small></li>
                   <li><code>toast-hidden</code>: <small>Emitted when the toast is hidden</small></li>
