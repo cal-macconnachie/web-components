@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.3](https://github.com/cal-macconnachie/web-components/compare/v2.0.2...v2.0.3) (2025-12-25)
+
+
+### Bug Fixes
+
+* refresh should check session for user and trigger auth-success ([c9ce3ed](https://github.com/cal-macconnachie/web-components/commit/c9ce3ed8b546f0247830068d4f61b9982b1f3695))
+* remove unhelpful error message ([a923394](https://github.com/cal-macconnachie/web-components/commit/a923394abbb31040ddabd58d7bfbe22510d5c9d3))
+* toast page ([279738f](https://github.com/cal-macconnachie/web-components/commit/279738f7881edb01eac4023c65e1f5ca63821871))
+
 ### [2.0.2](https://github.com/cal-macconnachie/web-components/compare/v2.0.1...v2.0.2) (2025-12-25)
 
 
