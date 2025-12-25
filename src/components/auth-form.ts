@@ -202,7 +202,6 @@ export class AuthForm extends BaseElement {
     log('Auth refresh failed, clearing login state')
     this.isLoggedIn = false
     this.userEmail = null
-    this.error = 'Your session has expired. Please sign in again.'
   }
 
   private async checkExistingSession() {
