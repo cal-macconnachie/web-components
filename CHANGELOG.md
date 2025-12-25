@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/cal-macconnachie/web-components/compare/v1.2.6...v2.0.0) (2025-12-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* change registration for better tree shaking
+
+### Features
+
+* change registration for better tree shaking ([5219be9](https://github.com/cal-macconnachie/web-components/commit/5219be93f09fbeaceb2303aee66c2442647c3341))
+
 ### [1.2.6](https://github.com/cal-macconnachie/web-components/compare/v1.2.5...v1.2.6) (2025-12-21)
 
 
