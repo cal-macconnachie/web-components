@@ -1,20 +1,89 @@
-import '../src/components/auth-form.js'
-import '../src/components/base-button.js'
-import '../src/components/base-card.js'
-import '../src/components/base-date-picker.js'
-import '../src/components/base-datetime-picker.js'
-import '../src/components/base-drawer.js'
-import '../src/components/base-input.js'
-import '../src/components/base-select.js'
-import '../src/components/base-tab.js'
-import '../src/components/base-tabs.js'
-import '../src/components/base-textarea.js'
-import '../src/components/base-time-picker.js'
-import '../src/components/quantity-select.js'
-import '../src/components/theme-toggle.js'
+import { registerAll } from '../src'
+
+registerAll()
 
 await customElements.whenDefined('auth-form')
 await customElements.whenDefined('base-drawer')
+await customElements.whenDefined('base-button')
+await customElements.whenDefined('base-toast')
+
+
+const toastExampleButton = document.getElementById('show-toast')
+const primaryToastExampleButton = document.getElementById('show-primary-toast')
+const successToastExampleButton = document.getElementById('show-success-toast')
+const warningToastExampleButton = document.getElementById('show-warning-toast')
+const dangerToastExampleButton = document.getElementById('show-danger-toast')
+const infoToastExampleButton = document.getElementById('show-info-toast')
+document.getElementById('show-top-left-toast')?.addEventListener('click', () => {
+  const toastElement = document.getElementById('top-left-toast') as any
+  toastElement.setAttribute('position', 'top-left')
+  toastElement?.show()
+})
+document.getElementById('show-top-center-toast')?.addEventListener('click', () => {
+  const toastElement = document.getElementById('top-center-toast') as any
+  toastElement.setAttribute('position', 'top-center')
+  toastElement?.show()
+})
+document.getElementById('show-top-right-toast')?.addEventListener('click', () => {
+  const toastElement = document.getElementById('top-right-toast') as any
+  toastElement.setAttribute('position', 'top-right')
+  toastElement?.show()
+})
+document.getElementById('show-bottom-left-toast')?.addEventListener('click', () => {
+  const toastElement = document.getElementById('bottom-left-toast') as any
+  toastElement.setAttribute('position', 'bottom-left')
+  toastElement?.show()
+})
+document.getElementById('show-bottom-center-toast')?.addEventListener('click', () => {
+  const toastElement = document.getElementById('bottom-center-toast') as any
+  toastElement.setAttribute('position', 'bottom-center')
+  toastElement?.show()
+})
+document.getElementById('show-bottom-right-toast')?.addEventListener('click', () => {
+  const toastElement = document.getElementById('bottom-right-toast') as any
+  toastElement.setAttribute('position', 'bottom-right')
+  toastElement?.show()
+})
+toastExampleButton?.addEventListener('click', () => {
+  const toastElement = document.getElementById('demo-toast') as any
+  toastElement?.show()
+})
+primaryToastExampleButton?.addEventListener('click', () => {
+  const toastElement = document.getElementById('primary-toast') as any
+  toastElement?.show()
+})
+successToastExampleButton?.addEventListener('click', () => {
+  const toastElement = document.getElementById('success-toast') as any
+  toastElement?.show()
+})
+warningToastExampleButton?.addEventListener('click', () => {
+  const toastElement = document.getElementById('warning-toast') as any
+  toastElement?.show()
+})
+dangerToastExampleButton?.addEventListener('click', () => {
+  const toastElement = document.getElementById('danger-toast') as any
+  toastElement?.show()
+})
+infoToastExampleButton?.addEventListener('click', () => {
+  const toastElement = document.getElementById('info-toast') as any
+  toastElement?.show()
+})
+document.getElementById('show-500ms-toast')?.addEventListener('click', () => {
+  const toastElement = document.getElementById('500ms-toast') as any
+  toastElement?.show()
+})
+document.getElementById('show-2s-toast')?.addEventListener('click', () => {
+  const toastElement = document.getElementById('2s-toast') as any
+  toastElement?.show()
+})
+document.getElementById('show-10s-toast')?.addEventListener('click', () => {
+  const toastElement = document.getElementById('10s-toast') as any
+  toastElement?.show()
+})
+document.getElementById('show-manual-toast')?.addEventListener('click', () => {
+  const toastElement = document.getElementById('manual-toast') as any
+  toastElement?.show()
+})
 
 const authFormElement = document.querySelector('auth-form')
 const authDrawerElement = document.querySelector('base-drawer')
@@ -33,13 +102,11 @@ const logoutButton = document.getElementById('logout-button')
 
 // Listen for auth success to close the drawer
 authFormElement.addEventListener('auth-success', () => {
-  console.log('Auth success - closing drawer')
   authDrawerElement.closeDrawer()
 })
 
 // Listen for drawer close event
 authDrawerElement.addEventListener('drawer-close', () => {
-  console.log('Drawer closed')
 })
 
 refreshButton?.addEventListener('click', async () => {
@@ -64,7 +131,6 @@ logoutButton?.addEventListener('click', async () => {
 
 // Listen for auth refresh failures and open the drawer
 window.addEventListener('auth-refresh-failed', () => {
-  console.log('Auth refresh failed - opening drawer')
   authDrawerElement.openDrawer()
 })
 
@@ -212,27 +278,6 @@ if (selectLarge) {
   ]
 }
 
-// Add change listeners to log selections
-;[
-  selectCountry,
-  selectSearchable,
-  selectRequired,
-  selectError,
-  selectHint,
-  selectSmall,
-  selectLarge,
-].forEach((select) => {
-  if (select) {
-    select.addEventListener('change', (event: CustomEvent) => {
-      console.log('Select changed:', {
-        id: select.id,
-        value: event.detail.value,
-        oldValue: event.detail.oldValue,
-      })
-    })
-  }
-})
-
 // Quantity select examples
 const quantityXs = document.getElementById('quantity-xs') as any
 const quantitySm = document.getElementById('quantity-sm') as any
@@ -295,93 +340,6 @@ if (toggleTabsLayoutButton && baseTabs) {
   })
 }
 
-// Date Picker examples
-const datePickerBasic = document.getElementById('date-picker-basic')
-const datePickerRequired = document.getElementById('date-picker-required')
-const datePickerHint = document.getElementById('date-picker-hint')
-const datePickerError = document.getElementById('date-picker-error')
-const datePickerSmall = document.getElementById('date-picker-small')
-const datePickerLarge = document.getElementById('date-picker-large')
-
-// Add change listeners to date pickers
-;[
-  datePickerBasic,
-  datePickerRequired,
-  datePickerHint,
-  datePickerError,
-  datePickerSmall,
-  datePickerLarge,
-].forEach((picker) => {
-  if (picker) {
-    picker.addEventListener('change', (event: Event) => {
-      const customEvent = event as CustomEvent
-      console.log('Date picker changed:', {
-        id: (picker as HTMLElement).id,
-        value: customEvent.detail.value,
-        oldValue: customEvent.detail.oldValue,
-      })
-    })
-  }
-})
-
-// Time Picker examples
-const timePicker12h = document.getElementById('time-picker-12h')
-const timePicker24h = document.getElementById('time-picker-24h')
-const timePickerRequired = document.getElementById('time-picker-required')
-const timePickerHint = document.getElementById('time-picker-hint')
-const timePickerSmall = document.getElementById('time-picker-small')
-const timePickerLarge = document.getElementById('time-picker-large')
-
-// Add change listeners to time pickers
-;[
-  timePicker12h,
-  timePicker24h,
-  timePickerRequired,
-  timePickerHint,
-  timePickerSmall,
-  timePickerLarge,
-].forEach((picker) => {
-  if (picker) {
-    picker.addEventListener('change', (event: Event) => {
-      const customEvent = event as CustomEvent
-      console.log('Time picker changed:', {
-        id: (picker as HTMLElement).id,
-        value: customEvent.detail.value,
-        oldValue: customEvent.detail.oldValue,
-      })
-    })
-  }
-})
-
-// DateTime Picker examples
-const datetimePicker12h = document.getElementById('datetime-picker-12h')
-const datetimePicker24h = document.getElementById('datetime-picker-24h')
-const datetimePickerRequired = document.getElementById('datetime-picker-required')
-const datetimePickerHint = document.getElementById('datetime-picker-hint')
-const datetimePickerSmall = document.getElementById('datetime-picker-small')
-const datetimePickerLarge = document.getElementById('datetime-picker-large')
-
-// Add change listeners to datetime pickers
-;[
-  datetimePicker12h,
-  datetimePicker24h,
-  datetimePickerRequired,
-  datetimePickerHint,
-  datetimePickerSmall,
-  datetimePickerLarge,
-].forEach((picker) => {
-  if (picker) {
-    picker.addEventListener('change', (event: Event) => {
-      const customEvent = event as CustomEvent
-      console.log('DateTime picker changed:', {
-        id: (picker as HTMLElement).id,
-        value: customEvent.detail.value,
-        oldValue: customEvent.detail.oldValue,
-      })
-    })
-  }
-})
-
 // Custom theme toggle examples
 const toggleLightDark = document.getElementById('toggle-light-dark') as any
 const toggleFun = document.getElementById('toggle-fun') as any
@@ -433,3 +391,4 @@ if (toggleFun) {
     },
   ]
 }
+

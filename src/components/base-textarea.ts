@@ -1,13 +1,16 @@
 import { css, html } from 'lit'
-import { customElement, property, query } from 'lit/decorators.js'
+import { property, query } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
 import { BaseElement } from '../base-element'
+import { register } from '../helpers/register'
 
 type TextareaSize = 'sm' | 'md' | 'lg'
 type ResizeMode = 'none' | 'both' | 'horizontal' | 'vertical'
-
-@customElement('base-textarea')
+export const registerBaseTextarea = () => register({
+  name: 'base-textarea',
+  element: BaseTextarea
+})
 export class BaseTextarea extends BaseElement {
   @property({ type: String }) value = ''
   @property({ type: String }) label?: string

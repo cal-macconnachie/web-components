@@ -1,13 +1,17 @@
 import { css, html } from 'lit'
-import { customElement, property, query, state } from 'lit/decorators.js'
+import { property, query, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
 import { BaseElement } from '../base-element'
+import { register } from '../helpers/register'
 
 type TimePickerSize = 'sm' | 'md' | 'lg'
 type TimeFormat = '12' | '24'
 
-@customElement('base-time-picker')
+export const registerBaseTimePicker = () => register({
+  name: 'base-time-picker',
+  element: BaseTimePicker
+})
 export class BaseTimePicker extends BaseElement {
   @property({ type: String }) value = ''
   @property({ type: String }) label?: string

@@ -1,7 +1,8 @@
 import { css, html } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import { property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { BaseElement } from '../base-element'
+import { register } from '../helpers/register'
 
 type ButtonVariant =
   // Solid variants
@@ -16,7 +17,10 @@ type ButtonVariant =
   | 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'
 type ButtonSize = 'xs' | 'sm' | 'md' | 'lg'
 
-@customElement('base-button')
+export const registerBaseButton = () => register({
+  name: 'base-button',
+  element: BaseButton
+})
 export class BaseButton extends BaseElement {
   @property({ type: String, attribute: 'size' }) size: ButtonSize = 'md'
   @property({ type: String, attribute: 'variant' }) variant: ButtonVariant = 'primary'

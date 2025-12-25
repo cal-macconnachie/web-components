@@ -1,10 +1,14 @@
 import { html, nothing } from 'lit'
-import { customElement, property, query, state } from 'lit/decorators.js'
+import { property, query, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { BaseElement } from '../base-element'
+import { register } from '../helpers/register'
 import { appStyles } from '../services/styles'
 
-@customElement('base-drawer')
+export const registerBaseDrawer = () => register({
+  name: 'base-drawer',
+  element: BaseDrawer
+})
 export class BaseDrawer extends BaseElement {
   // Properties
   @property({ type: Boolean, reflect: true }) open = false

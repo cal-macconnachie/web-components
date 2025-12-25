@@ -1,12 +1,15 @@
 import { css, html } from 'lit'
-import { customElement, property, query, state } from 'lit/decorators.js'
+import { property, query, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
 import { BaseElement } from '../base-element'
+import { register } from '../helpers/register'
 
 type DatePickerSize = 'sm' | 'md' | 'lg'
-
-@customElement('base-date-picker')
+export const registerBaseDatePicker = () => register({
+  name: 'base-date-picker',
+  element: BaseDatePicker
+})
 export class BaseDatePicker extends BaseElement {
   @property({ type: String }) value = ''
   @property({ type: String }) label?: string

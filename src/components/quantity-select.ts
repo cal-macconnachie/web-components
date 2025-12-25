@@ -1,11 +1,15 @@
 import { css, html } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import { property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { BaseElement } from '../base-element'
+import { register } from '../helpers/register'
 
 type QuantitySize = 'xs' | 'sm' | 'md' | 'lg'
 
-@customElement('quantity-select')
+export const registerQuantitySelect = () => register({
+  name: 'quantity-select',
+  element: QuantitySelect
+})
 export class QuantitySelect extends BaseElement {
   @property({ type: Number }) value = 0
   @property({ type: Number }) min = 0

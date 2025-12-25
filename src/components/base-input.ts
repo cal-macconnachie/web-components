@@ -1,13 +1,17 @@
 import { css, html } from 'lit'
-import { customElement, property, query } from 'lit/decorators.js'
+import { property, query } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
 import { BaseElement } from '../base-element'
+import { register } from '../helpers/register'
 
 type InputType = 'text' | 'email' | 'password' | 'tel' | 'url'
 type InputSize = 'sm' | 'md' | 'lg'
 
-@customElement('base-input')
+export const registerBaseInput = () => register({
+  name: 'base-input',
+  element: BaseInput
+})
 export class BaseInput extends BaseElement {
   @property({ type: String }) value = ''
   @property({ type: String }) label?: string

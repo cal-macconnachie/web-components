@@ -1,13 +1,17 @@
 import { css, html, nothing } from 'lit'
-import { customElement, property, query, state } from 'lit/decorators.js'
+import { property, query, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'
 import { BaseElement } from '../base-element'
+import { register } from '../helpers/register'
 import type { TabData } from './base-tab'
 
 type TabVariant = 'horizontal' | 'sidebar'
 
-@customElement('base-tabs')
+export const registerBaseTabs = () => register({
+  name: 'base-tabs',
+  element: BaseTabs
+})
 export class BaseTabs extends BaseElement {
   @property({ type: String, attribute: 'active-tab' }) activeTab = ''
   @property({ type: String, attribute: 'aria-label' }) ariaLabel = 'Dashboard navigation'
@@ -51,7 +55,6 @@ export class BaseTabs extends BaseElement {
     .tabs-sidebar {
       position: sticky;
       top: var(--space-4, 1rem);
-      max-height: calc(100dvh - var(--space-8, 2rem));
       display: flex;
       flex-direction: column;
       gap: var(--space-4, 1rem);

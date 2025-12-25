@@ -1,7 +1,8 @@
 import { html, nothing, PropertyValues } from 'lit'
-import { customElement, property, query, state } from 'lit/decorators.js'
+import { property, query, state } from 'lit/decorators.js'
 import { repeat } from 'lit/directives/repeat.js'
 import { BaseElement } from '../base-element'
+import { register } from '../helpers/register'
 import { api } from '../services/api'
 import { log } from '../services/logger'
 import { oauth } from '../services/oauth'
@@ -47,7 +48,11 @@ const OAUTH_QUERY_PARAMS = [
   'expires_in',
 ] as const
 
-@customElement('auth-form')
+export const registerAuthForm = () => register({
+  name: 'auth-form',
+  element: AuthForm
+})
+// @customElement('auth-form')
 export class AuthForm extends BaseElement {
   // Main properties
   @property({ type: String, attribute: 'initial-mode' }) initialMode: AuthMode = 'signin'
@@ -753,7 +758,6 @@ export class AuthForm extends BaseElement {
 
   // OAuth handlers
   private handleGoogleSignIn() {
-    console.log('Google sign-in clicked')
     this.handleOAuthSignIn('google')
   }
 
@@ -781,7 +785,6 @@ export class AuthForm extends BaseElement {
       // Build oauth-spa redirect URL
       const oauthUrl = `${baseDomain}?return_url=${encodeURIComponent(returnUrl)}&provider=${provider}&theme=${this.theme}`
 
-      console.log('Redirecting to oauth-spa:', oauthUrl)
       window.location.href = oauthUrl
       return
     }

@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   define: {
     'process.env.NODE_ENV': JSON.stringify('production')
   },
@@ -26,7 +26,7 @@ export default defineConfig({
     }
   },
   esbuild: {
-    drop: ['console', 'debugger'],
+    drop: mode === 'production' ? ['console', 'debugger'] : [],
     legalComments: 'none',
     minifyIdentifiers: true,
     minifySyntax: true,
@@ -39,4 +39,4 @@ export default defineConfig({
       rollupTypes: true
     })
   ]
-});
+}));

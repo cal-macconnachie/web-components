@@ -1,12 +1,16 @@
 import { css, html } from 'lit'
-import { customElement, property, state } from 'lit/decorators.js'
+import { property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { BaseElement } from '../base-element'
+import { register } from '../helpers/register'
 
 type CardVariant = 'default' | 'elevated'
 type CardPadding = 'auto' | 'none' | 'sm' | 'md' | 'lg'
 
-@customElement('base-card')
+export const registerBaseCard = () => register({
+  name: 'base-card',
+  element: BaseCard
+})
 export class BaseCard extends BaseElement {
   @property({ type: String, attribute: 'variant' }) variant: CardVariant = 'default'
   @property({ type: String, attribute: 'padding' }) padding: CardPadding = 'none'

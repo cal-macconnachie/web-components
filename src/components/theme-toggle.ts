@@ -1,12 +1,17 @@
 import { css, html } from 'lit'
-import { customElement, property, state } from 'lit/decorators.js'
+import { property, state } from 'lit/decorators.js'
 import { unsafeHTML } from 'lit/directives/unsafe-html.js'
 import { BaseElement } from '../base-element'
+import { register } from '../helpers/register'
 export interface ThemeInput {
   theme: string,
   icon: string
 }
-@customElement('theme-toggle')
+
+export const registerThemeToggle = () => register({
+  name: 'theme-toggle',
+  element: ThemeToggle
+})
 export class ThemeToggle extends BaseElement {
   @property({ type: String, attribute: 'size' }) size: 'sm' | 'md' | 'lg' = 'sm'
   @property({ type: String, attribute: 'variant' }) variant: 'ghost' | 'outline' | 'solid' = 'ghost'

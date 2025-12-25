@@ -1,8 +1,7 @@
-import { build } from 'vite'
-import { resolve, basename } from 'path'
 import { readdir } from 'fs/promises'
+import { basename, dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
-import { dirname } from 'path'
+import { build } from 'vite'
 import dts from 'vite-plugin-dts'
 
 const __filename = fileURLToPath(import.meta.url)

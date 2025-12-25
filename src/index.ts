@@ -1,16 +1,23 @@
-export { AuthForm } from './components/auth-form.js'
-export { BaseButton } from './components/base-button.js'
-export { BaseCard } from './components/base-card.js'
-export { BaseDatePicker } from './components/base-date-picker.js'
-export { BaseDateTimePicker } from './components/base-datetime-picker.js'
-export { BaseDrawer } from './components/base-drawer.js'
-export { BaseInput } from './components/base-input.js'
-export { BaseSelect, type SelectOption } from './components/base-select.js'
-export { BaseTab, type TabData } from './components/base-tab.js'
-export { BaseTabs } from './components/base-tabs.js'
-export { BaseTextarea } from './components/base-textarea.js'
-export { BaseTimePicker } from './components/base-time-picker.js'
-export { QuantitySelect } from './components/quantity-select.js'
-export { type ThemeInput, ThemeToggle } from './components/theme-toggle.js'
+// Component classes
+export { AuthForm, registerAuthForm } from './components/auth-form.js'
+export { BaseButton, registerBaseButton } from './components/base-button.js'
+export { BaseCard, registerBaseCard } from './components/base-card.js'
+export { BaseDatePicker, registerBaseDatePicker } from './components/base-date-picker.js'
+export { BaseDateTimePicker, registerBaseDateTimePicker } from './components/base-datetime-picker.js'
+export { BaseDrawer, registerBaseDrawer } from './components/base-drawer.js'
+export { BaseInput, registerBaseInput } from './components/base-input.js'
+export { BaseSelect, registerBaseSelect, type SelectOption } from './components/base-select.js'
+export { BaseTab, registerBaseTab, type TabData } from './components/base-tab.js'
+export { BaseTabs, registerBaseTabs } from './components/base-tabs.js'
+export { BaseTextarea, registerBaseTextarea } from './components/base-textarea.js'
+export { BaseTimePicker, registerBaseTimePicker } from './components/base-time-picker.js'
+export { BaseToast, registerBaseToast, showToast } from './components/base-toast.js'
+export { QuantitySelect, registerQuantitySelect } from './components/quantity-select.js'
+export { ThemeToggle, registerThemeToggle, type ThemeInput } from './components/theme-toggle.js'
+
+// Services
 export { apiClient, AuthRefreshError, createApiClient } from './services/api-client.js'
+
+// Registration helpers
+export { registerAll } from './helpers/register-all.js'
 

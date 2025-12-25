@@ -1,6 +1,7 @@
 import { css, html } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import { property } from 'lit/decorators.js'
 import { BaseElement } from '../base-element'
+import { register } from '../helpers/register'
 
 export interface TabData {
   id: string
@@ -9,7 +10,10 @@ export interface TabData {
   icon?: string
 }
 
-@customElement('base-tab')
+export const registerBaseTab = () => register({
+  name: 'base-tab',
+  element: BaseTab
+})
 export class BaseTab extends BaseElement {
   @property({ type: String, reflect: true }) id = ''
   @property({ type: String }) label = ''

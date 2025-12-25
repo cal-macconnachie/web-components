@@ -1,17 +1,20 @@
 import { css, html } from 'lit'
-import { customElement, property, query, state } from 'lit/decorators.js'
+import { property, query, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
 import { BaseElement } from '../base-element'
+import { register } from '../helpers/register'
 import './base-date-picker'
-import './base-time-picker'
 import type { BaseDatePicker } from './base-date-picker'
+import './base-time-picker'
 import type { BaseTimePicker } from './base-time-picker'
 
 type DateTimePickerSize = 'sm' | 'md' | 'lg'
 type TimeFormat = '12' | '24'
-
-@customElement('base-datetime-picker')
+export const registerBaseDateTimePicker = () => register({
+  name: 'base-datetime-picker',
+  element: BaseDateTimePicker
+})
 export class BaseDateTimePicker extends BaseElement {
   @property({ type: String }) value = ''
   @property({ type: String }) label?: string
