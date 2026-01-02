@@ -200,7 +200,7 @@ export class BaseInput extends BaseElement {
     )
   }
 
-  focus() {
+  public focus() {
     this.inputElement?.focus()
   }
 
