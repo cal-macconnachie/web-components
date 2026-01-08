@@ -4,6 +4,7 @@ import { registerBaseCard } from '../components/base-card.js'
 import { registerBaseDatePicker } from '../components/base-date-picker.js'
 import { registerBaseDateTimePicker } from '../components/base-datetime-picker.js'
 import { registerBaseDrawer } from '../components/base-drawer.js'
+import { registerBaseIcon } from '../components/base-icon.js'
 import { registerBaseInput } from '../components/base-input.js'
 import { registerBaseSelect } from '../components/base-select.js'
 import { registerBaseTab } from '../components/base-tab.js'
@@ -37,6 +38,7 @@ export function registerAll() {
   registerBaseDatePicker()
   registerBaseDateTimePicker()
   registerBaseDrawer()
+  registerBaseIcon()
   registerBaseInput()
   registerBaseSelect()
   registerBaseTab()

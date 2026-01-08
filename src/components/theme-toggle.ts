@@ -1,48 +1,34 @@
 import { css, html } from 'lit'
 import { property, state } from 'lit/decorators.js'
-import { unsafeHTML } from 'lit/directives/unsafe-html.js'
 import { BaseElement } from '../base-element'
 import { register } from '../helpers/register'
+import { BaseIcon } from './base-icon'
+
 export interface ThemeInput {
   theme: string,
   icon: string
 }
 
-export const registerThemeToggle = () => register({
-  name: 'theme-toggle',
-  element: ThemeToggle
-})
+export const registerThemeToggle = () => {
+  register({
+    name: 'base-icon',
+    element: BaseIcon
+  })
+  register({
+    name: 'theme-toggle',
+    element: ThemeToggle
+  })
+}
 export class ThemeToggle extends BaseElement {
   @property({ type: String, attribute: 'size' }) size: 'sm' | 'md' | 'lg' = 'sm'
   @property({ type: String, attribute: 'variant' }) variant: 'ghost' | 'outline' | 'solid' = 'ghost'
   @property({ type: Object, attribute: 'themes' }) themes: ThemeInput[] = [
-    { theme: 'light', icon: `
-      <svg
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        class="theme-icon"
-        aria-hidden="true"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-          clip-rule="evenodd"
-        />
-      </svg>
-              ` },
-    { theme: 'dark', icon: `
-      <svg
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        class="theme-icon"
-        aria-hidden="true"
-      >
-        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-      </svg>
-      ` },
+    { theme: 'light', icon: 'sun' },
+    { theme: 'dark', icon: 'moon' },
   ]
 
   @state() private currentTheme = 0
+  @state() private animating = false
 
   connectedCallback() {
     super.connectedCallback()
@@ -68,6 +54,12 @@ export class ThemeToggle extends BaseElement {
     this.currentTheme = (this.currentTheme + 1) % this.themes.length
     this.theme = this.themes[this.currentTheme]?.theme ?? 'light'
     super.applyTheme()
+
+    // Trigger animation
+    this.animating = false
+    requestAnimationFrame(() => {
+      this.animating = true
+    })
   }
 
   private getSizeClass() {
@@ -88,6 +80,15 @@ export class ThemeToggle extends BaseElement {
     return variants[this.variant] || variants.ghost
   }
 
+  private getIconSize() {
+    const sizes = {
+      sm: '22px',
+      md: '24px',
+      lg: '28px',
+    }
+    return sizes[this.size] || sizes.sm
+  }
+
   render() {
     const nextThemeIndex = (this.currentTheme + 1) % this.themes.length
     const nextTheme = this.themes[nextThemeIndex]
@@ -100,18 +101,11 @@ export class ThemeToggle extends BaseElement {
         aria-label=${ariaLabel}
         type="button"
       >
-        ${unsafeHTML(nextTheme?.icon ?? `<svg
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        class="theme-icon"
-        aria-hidden="true"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-          clip-rule="evenodd"
-        />
-      </svg>`)}
+        <base-icon
+          name="${nextTheme?.icon ?? 'sun'}"
+          size="${this.getIconSize()}"
+          class="theme-icon ${this.animating ? 'animating' : ''}"
+        ></base-icon>
 
         <span class="sr-only">${ariaLabel}</span>
       </button>
@@ -222,19 +216,10 @@ export class ThemeToggle extends BaseElement {
     }
 
     .theme-icon {
-      width: 1.25rem;
-      height: 1.25rem;
       transition: transform 0.15s ease-in-out;
-    }
-
-    .btn--md .theme-icon {
-      width: 1.5rem;
-      height: 1.5rem;
-    }
-
-    .btn--lg .theme-icon {
-      width: 1.75rem;
-      height: 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .sr-only {
@@ -251,7 +236,7 @@ export class ThemeToggle extends BaseElement {
 
     /* Animation for theme switching */
     @media (prefers-reduced-motion: no-preference) {
-      .theme-icon {
+      .theme-icon.animating {
         animation: themeSwitch 0.3s ease-in-out;
       }
     }

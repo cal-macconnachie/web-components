@@ -1606,6 +1606,190 @@ datePicker.addEventListener('change', (e) =&gt; {
               </div>
           </base-tab>
 
+          <!-- Icons Tab -->
+          <base-tab id="icons" label="Icons" icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>'>
+            <base-card variant="elevated" padding="md">
+              <h3>Icon Component</h3>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                The base-icon component loads SVGs dynamically and automatically removes embedded styles to follow the active theme. All icons inherit the current text color by default.
+              </p>
+
+              <!-- Available Icons Gallery -->
+              <div style="margin-bottom: 2rem;">
+                <h4 style="margin: 0 0 1rem 0;">Available Icons</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 1rem;">
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="arrow" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">arrow</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="calendar-day" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">calendar-day</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="calendar-month" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">calendar-month</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="calendar-week" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">calendar-week</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="cog" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">cog</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="download" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">download</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="email" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">email</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="external-link" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">external-link</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="file-cabinet" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">file-cabinet</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="filters" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">filters</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="house" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">house</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="moon" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">moon</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="open-email" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">open-email</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="paperclip" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">paperclip</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="reply" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">reply</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="send" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">send</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="share" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">share</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="shopping-cart" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">shopping-cart</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="suitcase" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">suitcase</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="sun" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">sun</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="trash-can" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">trash-can</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-primary);">
+                    <base-icon name="user" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">user</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Size Variants -->
+              <div style="margin-bottom: 2rem;">
+                <h4 style="margin: 0 0 1rem 0;">Size Variants</h4>
+                <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <base-icon name="house" size="16px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">16px</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <base-icon name="house" size="24px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">24px (default)</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <base-icon name="house" size="32px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">32px</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <base-icon name="house" size="48px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">48px</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <base-icon name="house" size="64px"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">64px</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Color Variants -->
+              <div style="margin-bottom: 2rem;">
+                <h4 style="margin: 0 0 1rem 0;">Color Variants</h4>
+                <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <base-icon name="cog" size="32px" color="currentColor"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">currentColor</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <base-icon name="cog" size="32px" color="var(--color-primary)"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">primary</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <base-icon name="cog" size="32px" color="var(--color-success)"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">success</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <base-icon name="cog" size="32px" color="var(--color-warning)"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">warning</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <base-icon name="cog" size="32px" color="var(--color-error)"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">error</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <base-icon name="cog" size="32px" color="var(--color-info)"></base-icon>
+                    <span style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">info</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Usage Examples -->
+              <div>
+                <h4 style="margin: 0 0 1rem 0;">Usage Examples</h4>
+                <base-card variant="outlined" padding="md">
+                  <pre style="margin: 0; white-space: pre-wrap; font-family: var(--font-family-mono); font-size: var(--font-size-sm);"><code>&lt;!-- Basic usage --&gt;
+&lt;base-icon name="arrow"&gt;&lt;/base-icon&gt;
+
+&lt;!-- Custom size --&gt;
+&lt;base-icon name="arrow" size="32px"&gt;&lt;/base-icon&gt;
+
+&lt;!-- Custom color --&gt;
+&lt;base-icon name="arrow" color="var(--color-primary)"&gt;&lt;/base-icon&gt;
+
+&lt;!-- In a button --&gt;
+&lt;base-button variant="solid-primary"&gt;
+  &lt;base-icon name="download" size="16px"&gt;&lt;/base-icon&gt;
+  Download
+&lt;/base-button&gt;</code></pre>
+                </base-card>
+              </div>
+            </base-card>
+          </base-tab>
+
           <!-- Theming Tab -->
           <base-tab id="theming" label="Theming" icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'>
             <base-card variant="elevated" padding="md">

@@ -349,15 +349,11 @@ if (toggleLightDark) {
   toggleLightDark.themes = [
     {
       theme: 'light',
-      icon: `<svg viewBox="0 0 20 20" fill="currentColor" class="theme-icon" aria-hidden="true">
-        <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" fill-rule="evenodd"/>
-      </svg>`,
+      icon: 'sun',
     },
     {
       theme: 'dark',
-      icon: `<svg viewBox="0 0 20 20" fill="currentColor" class="theme-icon" aria-hidden="true">
-        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-      </svg>`,
+      icon: 'moon',
     },
   ]
 }
@@ -367,27 +363,19 @@ if (toggleFun) {
   toggleFun.themes = [
     {
       theme: 'retro',
-      icon: `<svg viewBox="0 0 20 20" fill="currentColor" class="theme-icon" aria-hidden="true">
-        <path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V4zm3 1a1 1 0 011-1h8a1 1 0 011 1v8a1 1 0 01-1 1H6a1 1 0 01-1-1V5z"/>
-      </svg>`,
+      icon: 'cog',
     },
     {
       theme: 'neo-tokyo',
-      icon: `<svg viewBox="0 0 20 20" fill="currentColor" class="theme-icon" aria-hidden="true">
-        <path d="M13 7H7v6h6V7z"/><path fill-rule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v2a2 2 0 01-2 2h-2v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H5a2 2 0 01-2-2v-2H2a1 1 0 110-2h1V9H2a1 1 0 010-2h1V5a2 2 0 012-2h2V2zM5 5h10v10H5V5z" clip-rule="evenodd"/>
-      </svg>`,
+      icon: 'filters',
     },
     {
       theme: 'tropical-clay',
-      icon: `<svg viewBox="0 0 20 20" fill="currentColor" class="theme-icon" aria-hidden="true">
-        <path fill-rule="evenodd" d="M5.05 3.636a1 1 0 010 1.414 7 7 0 000 9.9 1 1 0 11-1.414 1.414 9 9 0 010-12.728 1 1 0 011.414 0zm9.9 0a1 1 0 011.414 0 9 9 0 010 12.728 1 1 0 11-1.414-1.414 7 7 0 000-9.9 1 1 0 010-1.414zM7.879 6.464a1 1 0 010 1.414 3 3 0 000 4.243 1 1 0 11-1.415 1.414 5 5 0 010-7.07 1 1 0 011.415 0zm4.242 0a1 1 0 011.415 0 5 5 0 010 7.072 1 1 0 01-1.415-1.415 3 3 0 000-4.242 1 1 0 010-1.415zM10 9a1 1 0 011 1v.01a1 1 0 11-2 0V10a1 1 0 011-1z" clip-rule="evenodd"/>
-      </svg>`,
+      icon: 'sun',
     },
     {
       theme: 'ocean',
-      icon: `<svg viewBox="0 0 20 20" fill="currentColor" class="theme-icon" aria-hidden="true">
-        <path d="M2 10c2 0 2-4 4-4s2 4 4 4 2-4 4-4 2 4 4 4v6H2v-6z"/>
-      </svg>`,
+      icon: 'share',
     },
   ]
 }

@@ -5,16 +5,26 @@ import { ifDefined } from 'lit/directives/if-defined.js'
 import { BaseElement } from '../base-element'
 import { register } from '../helpers/register'
 import './base-date-picker'
-import type { BaseDatePicker } from './base-date-picker'
+import { BaseDatePicker } from './base-date-picker'
 import './base-time-picker'
-import type { BaseTimePicker } from './base-time-picker'
+import { BaseTimePicker } from './base-time-picker'
 
 type DateTimePickerSize = 'sm' | 'md' | 'lg'
 type TimeFormat = '12' | '24'
-export const registerBaseDateTimePicker = () => register({
-  name: 'base-datetime-picker',
-  element: BaseDateTimePicker
-})
+export const registerBaseDateTimePicker = () => {
+  register({
+    name: 'base-date-picker',
+    element: BaseDatePicker
+  })
+  register({
+    name: 'base-time-picker',
+    element: BaseTimePicker
+  })
+  register({
+    name: 'base-datetime-picker',
+    element: BaseDateTimePicker
+  })
+}
 export class BaseDateTimePicker extends BaseElement {
   @property({ type: String }) value = ''
   @property({ type: String }) label?: string
