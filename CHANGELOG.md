@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.1](https://github.com/cal-macconnachie/web-components/compare/v2.1.0...v2.1.1) (2026-01-08)
+
+
+### Bug Fixes
+
+* remove default ([06ec465](https://github.com/cal-macconnachie/web-components/commit/06ec46557307bc109f756cda1a480fecb59e378a))
+
 ## [2.1.0](https://github.com/cal-macconnachie/web-components/compare/v2.0.5...v2.1.0) (2026-01-08)
 
 
