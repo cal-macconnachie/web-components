@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.2](https://github.com/cal-macconnachie/web-components/compare/v2.1.1...v2.1.2) (2026-01-08)
+
+
+### Bug Fixes
+
+* alignment ([de8b6de](https://github.com/cal-macconnachie/web-components/commit/de8b6de1f99034473fba9b48ac5dd58e910cdbce))
+* icon credit ([cbaf611](https://github.com/cal-macconnachie/web-components/commit/cbaf611ef8d369ff373b879d35cf41e1350e7ab4))
+* use base icons where we can ([d929987](https://github.com/cal-macconnachie/web-components/commit/d9299870348857d07d5dca384fb3e6b5286c5c32))
+
 ### [2.1.1](https://github.com/cal-macconnachie/web-components/compare/v2.1.0...v2.1.1) (2026-01-08)
 
 
