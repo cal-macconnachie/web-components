@@ -151,9 +151,13 @@ export class BaseDatePicker extends BaseElement {
       transform: translateY(-50%);
       color: var(--color-text-secondary);
       pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .date-icon svg {
+    .date-icon svg,
+    .date-icon base-icon {
       width: 1.25em;
       height: 1.25em;
       display: block;
@@ -791,13 +795,7 @@ export class BaseDatePicker extends BaseElement {
           </div>
 
           <div class="date-icon">
-            <svg viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fill-rule="evenodd"
-                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                clip-rule="evenodd"
-              />
-            </svg>
+            <base-icon name="calendar-day" size="20px"></base-icon>
           </div>
 
           ${this.isOpen
