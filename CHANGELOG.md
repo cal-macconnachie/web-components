@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/cal-macconnachie/web-components/compare/v2.1.6...v2.2.0) (2026-01-10)
+
+
+### Features
+
+* correct toast removal and select native options ([882055e](https://github.com/cal-macconnachie/web-components/commit/882055e63878b2df5a95151720c9349cacf7a93d))
+
 ### [2.1.6](https://github.com/cal-macconnachie/web-components/compare/v2.1.5...v2.1.6) (2026-01-10)
 
 
