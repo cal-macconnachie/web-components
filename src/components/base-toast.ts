@@ -58,7 +58,7 @@ export class BaseToast extends BaseElement {
 
     this.timerStarted = Date.now()
     this.toastTimout = setTimeout(() => {
-      this.remove()
+      this.hide()
     }, remainingTime)
     this.style.animationPlayState = 'running'
     const shadowContainer = this.shadowRoot?.querySelector('.toast-container') as HTMLElement
@@ -96,7 +96,7 @@ export class BaseToast extends BaseElement {
       this.style.setProperty('--toast-duration', `${timeoutDuration}ms`)
 
       this.toastTimout = setTimeout(() => {
-        this.remove()
+        this.hide()
       }, timeoutDuration)
     }
     this.dispatchEvent(
@@ -108,7 +108,7 @@ export class BaseToast extends BaseElement {
     )
   }
 
-  remove(): void {
+  hide(): void {
     this.classList.remove('show')
     this.classList.add('hide')
     this.toastTimout && clearTimeout(this.toastTimout)
@@ -488,7 +488,7 @@ export class BaseToast extends BaseElement {
             <button
               class="toast-dismiss-btn ${this.variant}"
               aria-label="Dismiss toast"
-              @click=${() => this.remove()}
+              @click=${() => this.hide()}
             >
               &times;
             </button>
