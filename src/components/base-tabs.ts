@@ -484,6 +484,15 @@ export class BaseTabs extends BaseElement {
         transition: none !important;
       }
     }
+    .rotate-90 {
+      transform: rotate(90deg);
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .rotate-270 {
+      transform: rotate(270deg);
+      transition: transform 0.2s ease-in-out;
+    }
   `
 
   connectedCallback() {
@@ -772,13 +781,11 @@ export class BaseTabs extends BaseElement {
                   @click=${this.toggleSidebar}
                   aria-label="Toggle sidebar"
                 >
-                  ${
-                    isExpanded ? html`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M11 19l-7-7 7-7" />
-        </svg>` : html`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 5l7 7-7 7" />
-        </svg>`
-                  }
+                  <base-icon
+                    name="arrow"
+                    class="${isExpanded ? 'rotate-270' : 'rotate-90'}"
+                    size="28px"
+                  ></base-icon>
                 </button>
 
                 <!-- Tabs Navigation -->
