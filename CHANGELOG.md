@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.5](https://github.com/cal-macconnachie/web-components/compare/v2.1.4...v2.1.5) (2026-01-10)
+
+
+### Bug Fixes
+
+* toast infinite error ([b365296](https://github.com/cal-macconnachie/web-components/commit/b3652963104b84cc66278886952bbd9cffa9fc33))
+
 ### [2.1.4](https://github.com/cal-macconnachie/web-components/compare/v2.1.3...v2.1.4) (2026-01-10)
 
 
