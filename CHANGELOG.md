@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.4](https://github.com/cal-macconnachie/web-components/compare/v2.1.3...v2.1.4) (2026-01-10)
+
+
+### Bug Fixes
+
+* base tabs should use base-icon ([22e1ef2](https://github.com/cal-macconnachie/web-components/commit/22e1ef27774e99ca3b3690d387869403e33472e9))
+
 ### [2.1.3](https://github.com/cal-macconnachie/web-components/compare/v2.1.2...v2.1.3) (2026-01-08)
 
 
