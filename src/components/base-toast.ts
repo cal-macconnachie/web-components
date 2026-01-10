@@ -520,6 +520,12 @@ export function showToast({
 
   // Clean up after hiding
   toast.addEventListener('toast-hidden', () => {
-    toast.remove();
+    toast.hide();
+    // once hide animation is complete, remove from DOM
+    setTimeout(() => {
+      if (toast.parentElement) {
+        toast.remove();
+      }
+    }, 500);
   });
 }
