@@ -29,6 +29,7 @@ export class BaseSelect extends BaseElement {
   @property({ type: Array }) options: SelectOption[] = []
 
   @state() private isOpen = false
+  @state() private parsedFromSlot = false
   @state() private searchQuery = ''
   @state() private highlightedIndex = -1
   @state() private isFlipped = false
@@ -39,6 +40,32 @@ export class BaseSelect extends BaseElement {
   @query('.dropdown-options') private dropdownElement!: HTMLDivElement
 
   private selectId = `select-${Math.random().toString(36).substr(2, 9)}`
+
+  connectedCallback() {
+    super.connectedCallback()
+    this.parseSlottedOptions()
+  }
+
+  private parseSlottedOptions() {
+    // Only parse from slot if options weren't set programmatically
+    if (this.options.length === 0 && !this.parsedFromSlot) {
+      const optionElements = this.querySelectorAll('option')
+      if (optionElements.length > 0) {
+        this.options = Array.from(optionElements).map(option => ({
+          label: option.textContent?.trim() || option.value,
+          value: option.value
+        }))
+
+        // Set initial value from selected option
+        const selectedOption = Array.from(optionElements).find(opt => opt.hasAttribute('selected'))
+        if (selectedOption && !this.value) {
+          this.value = selectedOption.value
+        }
+
+        this.parsedFromSlot = true
+      }
+    }
+  }
 
   static styles = css`
     :host {
@@ -275,6 +302,11 @@ export class BaseSelect extends BaseElement {
       font-size: var(--font-size-sm);
       color: var(--color-text-muted);
       line-height: var(--line-height-tight);
+    }
+
+    /* Hidden slot for option elements */
+    ::slotted(option) {
+      display: none;
     }
   `
 
@@ -551,6 +583,9 @@ export class BaseSelect extends BaseElement {
           : this.hint
             ? html` <div class="select-hint">${this.hint}</div> `
             : ''}
+
+        <!-- Hidden slot for option elements -->
+        <slot @slotchange=${this.parseSlottedOptions}></slot>
       </div>
     `
   }

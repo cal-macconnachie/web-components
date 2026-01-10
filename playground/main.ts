@@ -1,4 +1,5 @@
 import { registerAll } from '../src'
+import { showToast } from '../src/components/base-toast'
 
 registerAll()
 
@@ -83,6 +84,26 @@ document.getElementById('show-10s-toast')?.addEventListener('click', () => {
 document.getElementById('show-manual-toast')?.addEventListener('click', () => {
   const toastElement = document.getElementById('manual-toast') as any
   toastElement?.show()
+})
+
+// showToast function demo button
+document.getElementById('show-function-toast-btn')?.addEventListener('click', () => {
+  const messageInput = document.getElementById('toast-message-input') as any
+  const variantSelect = document.getElementById('toast-variant-select') as any
+  const positionSelect = document.getElementById('toast-position-select') as any
+  const dismissSelect = document.getElementById('toast-dismiss-select') as any
+
+  const message = messageInput?.value || 'Default message'
+  const variant = variantSelect?.value || 'default'
+  const position = positionSelect?.value || 'top-right'
+  const dismiss = dismissSelect?.value || '2s'
+
+  showToast({
+    message,
+    variant,
+    position,
+    dismiss
+  })
 })
 
 const authFormElement = document.querySelector('auth-form')

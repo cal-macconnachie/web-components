@@ -1045,6 +1045,69 @@ drawer.addEventListener('drawer-close', () =&gt; {
               </div>
             </base-card>
 
+            <base-card variant="elevated" padding="md" style="margin-top: 1rem;">
+              <h3>Using showToast Function</h3>
+              <p style="margin-bottom: 1rem; color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+                Configure and show a toast using the showToast() helper function
+              </p>
+              <div style="display: grid; gap: 1rem; max-width: 600px;">
+                <base-input
+                  id="toast-message-input"
+                  label="Message"
+                  placeholder="Enter toast message"
+                  value="This is a toast message!"
+                  size="md"
+                ></base-input>
+
+                <base-select
+                  id="toast-variant-select"
+                  label="Variant"
+                  size="md"
+                >
+                  <option value="default" selected>Default</option>
+                  <option value="primary">Primary</option>
+                  <option value="success">Success</option>
+                  <option value="warning">Warning</option>
+                  <option value="danger">Danger</option>
+                  <option value="info">Info</option>
+                </base-select>
+
+                <base-select
+                  id="toast-position-select"
+                  label="Position"
+                  size="md"
+                >
+                  <option value="top-left">Top Left</option>
+                  <option value="top-center">Top Center</option>
+                  <option value="top-right" selected>Top Right</option>
+                  <option value="bottom-left">Bottom Left</option>
+                  <option value="bottom-center">Bottom Center</option>
+                  <option value="bottom-right">Bottom Right</option>
+                </base-select>
+
+                <base-select
+                  id="toast-dismiss-select"
+                  label="Dismiss"
+                  size="md"
+                >
+                  <option value="manual">Manual</option>
+                  <option value="500ms">500ms</option>
+                  <option value="2s" selected>2s</option>
+                  <option value="5s">5s</option>
+                  <option value="10s">10s</option>
+                </base-select>
+
+                <base-button
+                  id="show-function-toast-btn"
+                  variant="solid-primary"
+                  size="md"
+                  style="margin-top: 0.5rem;"
+                >
+                  Show Toast
+                </base-button>
+              </div>
+            </base-card>
+
             <!-- Code Usage -->
             <base-card variant="elevated" padding="md">
               <h3>Code Usage</h3>

@@ -511,21 +511,16 @@ export function showToast({
   }) {
   const toast = document.createElement('base-toast') as BaseToast;
   toast.id = `toast-${Date.now()}`;
+  toast.setAttribute('id', toast.id);
   toast.setAttribute('variant', variant);
   toast.setAttribute('position', position);
   toast.setAttribute('dismiss', dismiss);
   toast.textContent = message;
   document.body.appendChild(toast);
   toast.show();
-
-  // Clean up after hiding
   toast.addEventListener('toast-hidden', () => {
-    toast.hide();
-    // once hide animation is complete, remove from DOM
     setTimeout(() => {
-      if (toast.parentElement) {
-        toast.remove();
-      }
-    }, 500);
+    document.getElementById(toast.id)?.remove();
+    }, 300); // Wait for hide animation to finish
   });
 }
