@@ -215,9 +215,40 @@ export class AuthForm extends BaseElement {
         log('Existing session detected, user logged in')
       }
     } catch (err) {
-      // No valid session - this is expected for logged-out users
-      // Silently fail without showing errors
-      log('No existing session found')
+      // Session check failed, try to refresh tokens using the same global mechanism
+      // that the API client uses to prevent race conditions with other requests
+      try {
+        log('Session check failed, attempting to refresh tokens')
+
+        // Check if a refresh is already in progress
+        if (!window.__authRefreshPromise) {
+          log('Starting new refresh from checkExistingSession')
+          // Start a new refresh using the global promise mechanism
+          window.__authRefreshPromise = (async () => {
+            try {
+              await this.getApiService().refresh()
+            } finally {
+              window.__authRefreshPromise = null
+            }
+          })()
+        } else {
+          log('Refresh already in progress, waiting for completion...')
+        }
+
+        // Wait for the refresh to complete (whether we just started it or it was already running)
+        await window.__authRefreshPromise
+
+        // Try checking session again after refresh
+        const { user } = await this.getApiService().checkSession()
+        if (user) {
+          this.handleAuthSuccess(user)
+          log('Session restored after token refresh')
+        }
+      } catch (refreshErr) {
+        // No valid session and refresh failed - this is expected for logged-out users
+        // Silently fail without showing errors
+        log('No existing session found and refresh failed')
+      }
     }
   }
 

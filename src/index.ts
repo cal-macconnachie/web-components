@@ -14,10 +14,10 @@ export { BaseTextarea, registerBaseTextarea } from './components/base-textarea.j
 export { BaseTimePicker, registerBaseTimePicker } from './components/base-time-picker.js'
 export { BaseToast, registerBaseToast, showToast } from './components/base-toast.js'
 export { QuantitySelect, registerQuantitySelect } from './components/quantity-select.js'
-export { ThemeToggle, registerThemeToggle, type ThemeInput } from './components/theme-toggle.js'
+export { registerThemeToggle, ThemeToggle, type ThemeInput } from './components/theme-toggle.js'
 
 // Services
-export { apiClient, AuthRefreshError, createApiClient } from './services/api-client.js'
+export { AuthRefreshError, createApiClient } from './services/api-client.js'
 
 // Registration helpers
 export { registerAll } from './helpers/register-all.js'

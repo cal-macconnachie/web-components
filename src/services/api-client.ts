@@ -156,6 +156,3 @@ export const createApiClient = ({ baseUrl }: ApiClientConfig): AxiosInstance => 
 
   return client
 }
-
-// Export a default instance creator for convenience
-export const apiClient = createApiClient
