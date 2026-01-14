@@ -101,7 +101,6 @@ export class BaseIcon extends BaseElement {
       <div
         style="
           --icon-size: ${this.size};
-          --icon-color: ${this.color};
         "
       >
         ${unsafeHTML(this.svgContent)}
