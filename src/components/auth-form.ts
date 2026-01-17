@@ -1,4 +1,4 @@
-import { html, nothing, PropertyValues } from 'lit'
+import { css, html, nothing, PropertyValues } from 'lit'
 import { property, query, state } from 'lit/decorators.js'
 import { repeat } from 'lit/directives/repeat.js'
 import { BaseElement } from '../base-element'
@@ -6,7 +6,6 @@ import { register } from '../helpers/register'
 import { api } from '../services/api'
 import { log } from '../services/logger'
 import { oauth } from '../services/oauth'
-import { appStyles } from '../services/styles'
 import { BaseInput } from './base-input'
 
 type AuthMode = 'signin' | 'signup'
@@ -1480,5 +1479,261 @@ export class AuthForm extends BaseElement {
     return this.userEmail
   }
 
-  static styles = appStyles()
+  static styles = css`
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4) var(--space-6);
+      flex-shrink: 0;
+    }
+
+    .auth-logo {
+      display: block;
+    }
+    .auth-logo {
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .auth-logo[src] {
+      opacity: 1;
+      position: relative;
+      z-index: 1;
+    }
+    :host([data-theme='dark']) .auth-header {
+      filter: brightness(0) saturate(100%) invert(98%) sepia(4%) saturate(346%)
+              hue-rotate(183deg) brightness(106%) contrast(93%);
+    }
+
+    .modal-body {
+      padding: var(--space-4) var(--space-6);
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+
+    .forgot-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: calc(var(--space-2) * -1);
+    }
+
+    .text-btn {
+      background: none;
+      border: none;
+      color: var(--color-primary);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 0;
+      text-decoration: none;
+    }
+
+    .text-btn:hover {
+      text-decoration: underline;
+    }
+
+    .form-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      margin-top: var(--space-2);
+    }
+
+    .button-row {
+      display: flex;
+      gap: var(--space-3);
+      width: 100%;
+    }
+
+    .oauth-btn {
+      flex: 1;
+      padding: 0.875rem 1rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-bg-primary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .oauth-btn:hover:not(:disabled) {
+      background: var(--color-bg-secondary);
+      border-color: var(--color-text-muted);
+    }
+
+    .oauth-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .apple-icon path {
+      fill: #0b0b0a;
+    }
+
+    /* Dark theme */
+    :host([data-theme='dark']) {
+      --color-primary: #3b82f6;
+      --color-bg-primary: #1e293b;
+      --color-bg-secondary: #0f172a;
+      --color-text-primary: #f8fafc;
+      --color-text-secondary: #cbd5e1;
+      --color-text-muted: #94a3b8;
+      --color-border: #334155;
+      --color-error: #ef4444;
+      --color-success: #10b981;
+    }
+
+    :host([data-theme='dark']) .apple-icon path {
+      fill: #8e8e93;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .apple-icon path {
+        fill: #8e8e93;
+      }
+    }
+
+    .otp-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .otp-label {
+      display: block;
+      font-weight: 500;
+      font-size: 0.875rem;
+      color: var(--color-text-primary);
+    }
+
+    .otp-inputs {
+      display: flex;
+      gap: var(--space-2);
+      justify-content: center;
+    }
+
+    .otp-input {
+      width: 44px;
+      height: 52px;
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: 600;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      transition: all 0.15s ease;
+    }
+
+    .otp-input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 25%, transparent);
+    }
+
+    .otp-input--error {
+      border-color: var(--color-error);
+    }
+
+    .otp-error {
+      margin: 0;
+      color: var(--color-error);
+      font-size: 0.875rem;
+      text-align: center;
+    }
+
+    .new-password-fields {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+      animation: fadeSlide 0.2s ease;
+    }
+
+    .alert {
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+    }
+
+    .alert--success {
+      background: color-mix(in srgb, var(--color-success) 10%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-success) 30%, transparent);
+      color: var(--color-success);
+    }
+
+    .alert--error {
+      background: color-mix(in srgb, var(--color-error) 10%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
+      color: var(--color-error);
+    }
+
+    .alert-close {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      font-size: 1.5rem;
+      line-height: 1;
+      padding: 0;
+      opacity: 0.7;
+    }
+
+    .alert-close:hover {
+      opacity: 1;
+    }
+
+    .auth-footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding-top: var(--space-4);
+      text-align: center;
+    }
+
+    .toggle-text {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--color-text-secondary);
+    }
+
+    .toggle-text a {
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+
+    .toggle-text a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes fadeSlide {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+    }`
 }

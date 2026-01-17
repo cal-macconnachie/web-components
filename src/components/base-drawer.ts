@@ -1,9 +1,8 @@
-import { html, nothing } from 'lit'
+import { css, html, nothing } from 'lit'
 import { property, query, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { BaseElement } from '../base-element'
 import { register } from '../helpers/register'
-import { appStyles } from '../services/styles'
 
 export const registerBaseDrawer = () => register({
   name: 'base-drawer',
@@ -13,6 +12,21 @@ export class BaseDrawer extends BaseElement {
   // Properties
   @property({ type: Boolean, reflect: true }) open = false
   @property({ type: String, attribute: 'size' }) size: 'sm' | 'md' | 'lg' = 'sm'
+  @property({
+    type: Array,
+    converter: {
+      fromAttribute: (value: string | null) => {
+        if (!value) return [0, 85]
+        try {
+          return JSON.parse(value)
+        } catch {
+          return [0, 85]
+        }
+      }
+    }
+  })
+  detents = [0, 85] // in dvh units
+  @property({ type: Boolean, attribute: 'persist-on-overlay-click' }) persistOnOverlayClick = false
 
   // State
   @state() private isClosing = false
@@ -22,6 +36,7 @@ export class BaseDrawer extends BaseElement {
   @state() private dragCurrentY = 0
   @state() private dragStartTime = 0
   @state() private lastDragEndTime = 0
+  @state() private currentDetentIndex = 0
 
   // Refs
   @query('.modal-container') private modalContainer?: HTMLElement
@@ -30,7 +45,7 @@ export class BaseDrawer extends BaseElement {
   private transitionDuration = 300
 
   private boundKeyHandler = (event: KeyboardEvent) => {
-    if (event.key === 'Escape' && this.isVisible) {
+    if (event.key === 'Escape' && this.isVisible && this.isClosable()) {
       this.handleClose()
     }
   }
@@ -47,8 +62,18 @@ export class BaseDrawer extends BaseElement {
   }
 
   firstUpdated() {
+    // If drawer is not closable (no 0 detent), it should always be open
+    if (!this.isClosable() && !this.open) {
+      this.open = true
+      return
+    }
+
     if (this.open) {
       this.isVisible = true
+      const activeDetents = this.getActiveDetents()
+      // If zero detent is not present, start at smallest (first) detent
+      // Otherwise start at largest (last) detent
+      this.currentDetentIndex = this.isClosable() ? Math.max(0, activeDetents.length - 1) : 0
     }
   }
 
@@ -56,6 +81,10 @@ export class BaseDrawer extends BaseElement {
     if (changedProperties.has('open')) {
       if (this.open) {
         this.isVisible = true
+        const activeDetents = this.getActiveDetents()
+        // If zero detent is not present, start at smallest (first) detent
+        // Otherwise start at largest (last) detent
+        this.currentDetentIndex = this.isClosable() ? Math.max(0, activeDetents.length - 1) : 0
         this.lockBodyScroll()
       } else if (this.isVisible) {
         this.handleClose()
@@ -74,11 +103,15 @@ export class BaseDrawer extends BaseElement {
   }
 
   private lockBodyScroll() {
-    document.body.style.overflow = 'hidden'
+    if (!this.persistOnOverlayClick) {
+      document.body.style.overflow = 'hidden'
+    }
   }
 
   private unlockBodyScroll() {
-    document.body.style.overflow = ''
+    if (!this.persistOnOverlayClick) {
+      document.body.style.overflow = ''
+    }
   }
 
   private cleanupInlineStyles() {
@@ -96,6 +129,21 @@ export class BaseDrawer extends BaseElement {
     this.dragStartY = 0
     this.dragCurrentY = 0
     this.dragStartTime = 0
+  }
+
+  private getActiveDetents(): number[] {
+    const active = this.detents.filter(d => d > 0).sort((a, b) => a - b)
+    return active
+  }
+
+  private isClosable(): boolean {
+    return this.detents.includes(0)
+  }
+
+  private getCurrentDetentHeight(): number {
+    const activeDetents = this.getActiveDetents()
+    if (activeDetents.length === 0) return 85
+    return activeDetents[this.currentDetentIndex] || activeDetents[activeDetents.length - 1]
   }
 
   private handleClose = () => {
@@ -125,9 +173,11 @@ export class BaseDrawer extends BaseElement {
   }
 
   private handleOverlayClick = (event: Event) => {
-    // Only close when the overlay itself is clicked, allow events inside to bubble
-    if (event.target !== event.currentTarget) return
-    this.handleClose()
+  if (!this.persistOnOverlayClick && this.isClosable()) {
+      // Only close when the overlay itself is clicked, allow events inside to bubble
+      if (event.target !== event.currentTarget) return
+      this.handleClose()
+    }
   }
 
   // Drag handlers
@@ -175,49 +225,128 @@ export class BaseDrawer extends BaseElement {
     }
 
     const dragDistance = this.dragCurrentY - this.dragStartY
+    const currentHeight = this.getCurrentDetentHeight()
+    const viewportHeight = window.innerHeight
 
-    if (dragDistance > 0) {
-      event.preventDefault()
+    event.preventDefault()
+    this.modalContainer.style.transition = 'none'
+
+    if (dragDistance < 0) {
+      // Dragging up: increase height, no transform (bottom stays locked to viewport)
+      const additionalHeightPx = Math.abs(dragDistance)
+      const additionalHeightDvh = (additionalHeightPx / viewportHeight) * 100
+      const newHeight = Math.min(100, currentHeight + additionalHeightDvh) // Cap at 100dvh
+      this.modalContainer.style.height = `${newHeight}dvh`
+      this.modalContainer.style.transform = 'translateY(0)'
+    } else {
+      // Dragging down: use transform, keep height constant
       this.modalContainer.style.transform = `translateY(${dragDistance}px)`
-      this.modalContainer.style.transition = 'none'
+      this.modalContainer.style.height = `${currentHeight}dvh`
     }
   }
 
   private handleDragEnd = () => {
     if (!this.isDragging || !this.modalContainer) return
 
-    const dragDistance = Math.max(0, this.dragCurrentY - this.dragStartY)
+    const dragDistance = this.dragCurrentY - this.dragStartY // Can be positive (down) or negative (up)
 
-    if (dragDistance > 5) {
+    if (Math.abs(dragDistance) > 5) {
       this.lastDragEndTime = Date.now()
     }
 
     const dragDuration = Date.now() - this.dragStartTime
-    const velocity = dragDistance / dragDuration
-
-    const containerHeight = this.modalContainer.offsetHeight
-    const distanceThreshold = Math.max(150, containerHeight * 0.3)
-    const velocityThreshold = 0.5
-
-    const shouldClose = dragDistance > distanceThreshold || velocity > velocityThreshold
+    const velocity = Math.abs(dragDistance) / dragDuration
 
     // Stop dragging immediately to prevent further drag events
     this.isDragging = false
 
-    const container = this.modalContainer
-    const targetPosition = shouldClose ? containerHeight + containerHeight * 0.1 : 0
+    const activeDetents = this.getActiveDetents()
+    const currentHeight = this.getCurrentDetentHeight()
+    const viewportHeight = window.innerHeight
 
-    // Set starting position immediately
+    // Calculate the visual height after drag (in dvh units)
+    const dragDistanceDvh = (Math.abs(dragDistance) / viewportHeight) * 100
+    let visualHeight: number
+
+    if (dragDistance < 0) {
+      // Dragged up = height increased
+      visualHeight = currentHeight + dragDistanceDvh
+    } else {
+      // Dragged down = height decreased (due to translateY)
+      visualHeight = currentHeight - dragDistanceDvh
+    }
+
+    // Find closest detent or determine if should close
+    let targetDetentIndex = this.currentDetentIndex
+    const velocityThreshold = 0.5
+
+    // High velocity swipe - move to adjacent detent
+    if (velocity > velocityThreshold && Math.abs(dragDistance) > 30) {
+      if (dragDistance > 0) {
+        // Swiped down fast - move to smaller detent
+        targetDetentIndex = Math.max(0, this.currentDetentIndex - 1)
+      } else {
+        // Swiped up fast - move to larger detent
+        targetDetentIndex = Math.min(activeDetents.length - 1, this.currentDetentIndex + 1)
+      }
+    } else {
+      // Low velocity - snap to closest detent
+      let closestIndex = 0
+      let closestDistance = Math.abs(visualHeight - activeDetents[0])
+
+      for (let i = 1; i < activeDetents.length; i++) {
+        const distance = Math.abs(visualHeight - activeDetents[i])
+        if (distance < closestDistance) {
+          closestDistance = distance
+          closestIndex = i
+        }
+      }
+
+      targetDetentIndex = closestIndex
+
+      // If dragged down significantly past the smallest detent, close instead (only if closable)
+      if (this.isClosable()) {
+        const smallestDetent = activeDetents[0]
+        if (visualHeight < smallestDetent - 10) {
+          targetDetentIndex = -1 // Signal to close
+        }
+      }
+    }
+
+    const shouldClose = targetDetentIndex < 0
+
+    const container = this.modalContainer
+    const targetHeight = shouldClose ? 0 : activeDetents[targetDetentIndex]
+
+    // Set starting state to match what it was during drag
     container.style.transition = 'none'
-    container.style.transform = `translateY(${dragDistance}px)`
+
+    if (dragDistance < 0) {
+      // Was dragging up: had increased height, no transform
+      const startHeight = Math.min(100, visualHeight)
+      container.style.height = `${startHeight}dvh`
+      container.style.transform = 'translateY(0)'
+    } else {
+      // Was dragging down: had transform, constant height
+      container.style.transform = `translateY(${dragDistance}px)`
+      container.style.height = `${currentHeight}dvh`
+    }
 
     // Force reflow
     void container.offsetHeight
 
-    // Start animation on next frame
+    // Animate to target state
     requestAnimationFrame(() => {
-      container.style.transition = `transform ${this.transitionDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`
-      container.style.transform = `translateY(${targetPosition}px)`
+      if (shouldClose) {
+        // Animate drawer closing
+        container.style.transition = `transform ${this.transitionDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`
+        container.style.transform = `translateY(100%)`
+      } else {
+        // Animate to target detent: transform to 0 and height to target
+        container.style.transition = `transform ${this.transitionDuration}ms cubic-bezier(0.4, 0, 0.2, 1), height ${this.transitionDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`
+        container.style.transform = 'translateY(0)'
+        container.style.height = `${targetHeight}dvh`
+      }
     })
 
     setTimeout(() => {
@@ -237,11 +366,27 @@ export class BaseDrawer extends BaseElement {
           })
         )
       } else {
-        // Only clean up styles if staying open
+        // Update the detent index
+        this.currentDetentIndex = targetDetentIndex
+
+        // Clean up inline styles - keep height at target value, don't clear it
         if (this.modalContainer) {
           this.modalContainer.style.transition = ''
           this.modalContainer.style.transform = ''
+          this.modalContainer.style.height = `${targetHeight}dvh`
         }
+
+        // Dispatch detent change event
+        this.dispatchEvent(
+          new CustomEvent('drawer-detent-change', {
+            bubbles: true,
+            composed: true,
+            detail: {
+              detentIndex: this.currentDetentIndex,
+              detentHeight: activeDetents[this.currentDetentIndex]
+            }
+          })
+        )
       }
     }, this.transitionDuration)
   }
@@ -253,7 +398,9 @@ export class BaseDrawer extends BaseElement {
       event.stopPropagation()
       return
     }
-    this.handleClose()
+    if (this.isClosable()) {
+      this.handleClose()
+    }
   }
 
   // Public methods
@@ -264,12 +411,81 @@ export class BaseDrawer extends BaseElement {
   public openDrawer() {
     this.open = true
     this.isVisible = true
+    const activeDetents = this.getActiveDetents()
+    // If zero detent is not present, start at smallest (first) detent
+    // Otherwise start at largest (last) detent
+    this.currentDetentIndex = this.isClosable() ? Math.max(0, activeDetents.length - 1) : 0
     this.dispatchEvent(
       new CustomEvent('drawer-open', {
         bubbles: true,
         composed: true,
       })
     )
+  }
+
+  public setDetent(index: number, animated: boolean = true) {
+    const activeDetents = this.getActiveDetents()
+    if (index < 0 || index >= activeDetents.length) {
+      console.warn(`Invalid detent index: ${index}. Valid range is 0-${activeDetents.length - 1}`)
+      return
+    }
+
+    if (!animated || !this.modalContainer) {
+      this.currentDetentIndex = index
+      this.dispatchEvent(
+        new CustomEvent('drawer-detent-change', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            detentIndex: this.currentDetentIndex,
+            detentHeight: activeDetents[this.currentDetentIndex]
+          }
+        })
+      )
+      return
+    }
+
+    // Animated transition
+    const currentHeight = this.getCurrentDetentHeight()
+    const targetHeight = activeDetents[index]
+
+    if (currentHeight === targetHeight) return
+
+    const container = this.modalContainer
+
+    // Set current height explicitly
+    container.style.height = `${currentHeight}dvh`
+    container.style.transition = 'none'
+
+    // Force reflow
+    void container.offsetHeight
+
+    // Start animation
+    requestAnimationFrame(() => {
+      container.style.transition = `height ${this.transitionDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`
+      container.style.height = `${targetHeight}dvh`
+    })
+
+    setTimeout(() => {
+      this.currentDetentIndex = index
+
+      // Clean up styles - keep height at target value
+      if (this.modalContainer) {
+        this.modalContainer.style.transition = ''
+        this.modalContainer.style.height = `${targetHeight}dvh`
+      }
+
+      this.dispatchEvent(
+        new CustomEvent('drawer-detent-change', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            detentIndex: this.currentDetentIndex,
+            detentHeight: activeDetents[this.currentDetentIndex]
+          }
+        })
+      )
+    }, this.transitionDuration)
   }
 
   render() {
@@ -280,6 +496,7 @@ export class BaseDrawer extends BaseElement {
     const overlayClasses = {
       'modal-overlay': true,
       'modal-overlay--closing': this.isClosing,
+      'modal-overlay--passthrough': this.persistOnOverlayClick,
     }
 
     const containerClasses = {
@@ -289,6 +506,8 @@ export class BaseDrawer extends BaseElement {
       'modal-container--dragging': this.isDragging,
       [`modal-container--${this.size}`]: true,
     }
+
+    const currentHeight = this.getCurrentDetentHeight()
 
     return html`
       <!-- Drawer Overlay -->
@@ -302,6 +521,7 @@ export class BaseDrawer extends BaseElement {
       >
         <div
           class=${classMap(containerClasses)}
+          style="height: ${currentHeight}dvh"
           role="dialog"
           aria-modal="true"
           @mousemove=${this.handleDragMove}
@@ -327,5 +547,200 @@ export class BaseDrawer extends BaseElement {
     `
   }
 
-  static styles = appStyles()
+  static styles = css`
+    :host {
+      display: inline-block;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      box-sizing: border-box;
+      --color-primary: var(--auth-color-primary, #2563eb);
+      --color-bg-primary: var(--auth-color-bg-primary, #ffffff);
+      --color-bg-secondary: var(--auth-color-bg-secondary, #f8fafc);
+      --color-text-primary: var(--auth-color-text-primary, #0f172a);
+      --color-text-secondary: var(--auth-color-text-secondary, #64748b);
+      --color-text-muted: var(--auth-color-text-muted, #94a3b8);
+      --color-border: var(--auth-color-border, #e2e8f0);
+      --color-error: var(--auth-color-error, #dc2626);
+      --color-success: var(--auth-color-success, #16a34a);
+      --transition-slow: var(--auth-transition-slow, 300ms);
+      --radius-md: var(--auth-radius-md, 0.5rem);
+      --radius-lg: var(--auth-radius-lg, 0.75rem);
+      --radius-xl: var(--auth-radius-xl, 1.25rem);
+      --space-2: var(--auth-space-2, 0.5rem);
+      --space-3: var(--auth-space-3, 0.75rem);
+      --space-4: var(--auth-space-4, 1rem);
+      --space-5: var(--auth-space-5, 1.25rem);
+      --space-6: var(--auth-space-6, 1.5rem);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    /* Body scroll lock */
+    :host(.modal-open) {
+      overflow: hidden;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: none;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .modal-overlay--closing {
+      animation: fadeOut var(--transition-slow) ease-out forwards;
+    }
+
+    .modal-overlay--passthrough {
+      background: transparent;
+      pointer-events: none;
+    }
+    .modal-overlay--passthrough .modal-container {
+      pointer-events: auto;
+    }
+
+    .modal-container {
+      background: var(--color-bg-primary);
+      border-top-left-radius: var(--radius-xl);
+      border-top-right-radius: var(--radius-xl);
+      box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06);
+      width: 100vw;
+      max-width: 100vw;
+      height: 85dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: slideUp var(--transition-slow);
+      transform-origin: bottom center;
+      transition: height var(--transition-slow) cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .modal-container--closing {
+      animation: slideDown var(--transition-slow);
+    }
+
+    .modal-container--dragging {
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: grabbing;
+    }
+
+    .drawer-handle {
+      display: flex;
+      justify-content: center;
+      padding-top: var(--space-3);
+      padding-bottom: var(--space-2);
+      flex-shrink: 0;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .drawer-handle:hover .drawer-handle-bar {
+      opacity: 0.7;
+    }
+
+    .drawer-handle-bar {
+      width: 36px;
+      height: 5px;
+      background: var(--color-text-muted);
+      border-radius: 100px;
+      opacity: 0.5;
+      transition: opacity var(--transition-slow) ease;
+    }
+
+    .drawer-content {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    .drawer-content--sm {
+      max-width: 400px;
+    }
+
+    .drawer-content--md {
+      max-width: 600px;
+    }
+
+    .drawer-content--lg {
+      max-width: 900px;
+    }
+
+    /* Dark theme */
+    :host([data-theme='dark']) {
+      --color-primary: #3b82f6;
+      --color-bg-primary: #1e293b;
+      --color-bg-secondary: #0f172a;
+      --color-text-primary: #f8fafc;
+      --color-text-secondary: #cbd5e1;
+      --color-text-muted: #94a3b8;
+      --color-border: #334155;
+      --color-error: #ef4444;
+      --color-success: #10b981;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(100%);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .modal-container {
+        height: 80dvh;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+    }`
 }

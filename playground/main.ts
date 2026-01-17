@@ -203,6 +203,86 @@ document.querySelectorAll('.close-drawer-form').forEach((btn) => {
   })
 })
 
+// Detents drawer examples
+const drawerDetents = document.getElementById('drawer-detents')
+const drawerControl = document.getElementById('drawer-control')
+
+// Open detents drawer
+document.querySelector('.open-drawer-detents')?.addEventListener('click', () => {
+  ;(drawerDetents as any)?.openDrawer()
+})
+
+// Close detents drawer
+document.querySelectorAll('.close-drawer-detents').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    ;(drawerDetents as any)?.closeDrawer()
+  })
+})
+
+// Listen to detent changes for detents drawer
+drawerDetents?.addEventListener('drawer-detent-change', (event: any) => {
+  const display = document.getElementById('current-detent-display')
+  if (display) {
+    display.textContent = `${event.detail.detentIndex} (${event.detail.detentHeight}dvh)`
+  }
+})
+
+// Open control drawer
+document.querySelector('.open-drawer-control')?.addEventListener('click', () => {
+  ;(drawerControl as any)?.openDrawer()
+})
+
+// Close control drawer
+document.querySelectorAll('.close-drawer-control').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    ;(drawerControl as any)?.closeDrawer()
+  })
+})
+
+// Set detent buttons for control drawer
+document.querySelectorAll('.set-detent-0').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    ;(drawerControl as any)?.setDetent(0)
+  })
+})
+
+document.querySelectorAll('.set-detent-1').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    ;(drawerControl as any)?.setDetent(1)
+  })
+})
+
+document.querySelectorAll('.set-detent-2').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    ;(drawerControl as any)?.setDetent(2)
+  })
+})
+
+document.querySelectorAll('.set-detent-3').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    ;(drawerControl as any)?.setDetent(3)
+  })
+})
+
+// Detent select dropdown for control drawer
+const detentSelect = document.getElementById('detent-select') as HTMLSelectElement
+detentSelect?.addEventListener('change', () => {
+  const index = parseInt(detentSelect.value)
+  ;(drawerControl as any)?.setDetent(index)
+})
+
+// Listen to detent changes for control drawer
+drawerControl?.addEventListener('drawer-detent-change', (event: any) => {
+  const display = document.getElementById('current-control-detent')
+  if (display) {
+    display.textContent = `Detent ${event.detail.detentIndex} (${event.detail.detentHeight}dvh)`
+  }
+  // Update select dropdown
+  if (detentSelect) {
+    detentSelect.value = event.detail.detentIndex.toString()
+  }
+})
+
 // Select component examples
 const selectCountry = document.getElementById('select-country') as any
 const selectSearchable = document.getElementById('select-searchable') as any

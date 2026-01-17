@@ -757,6 +757,24 @@ quantitySelect.addEventListener('quantity-change', (e) =&gt; {
               </div>
             </base-card>
 
+            <!-- Multiple Detents Example -->
+            <base-card variant="elevated" padding="md">
+              <h3>Multiple Detents</h3>
+              <p style="margin-bottom: 1rem; color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+                Drawers can snap to multiple height positions. Drag to see the drawer snap to different detents.
+              </p>
+              <base-button variant="solid-primary" size="md" class="open-drawer-detents">Open Multi-Detent Drawer</base-button>
+            </base-card>
+
+            <!-- Programmatic Detent Control Example -->
+            <base-card variant="elevated" padding="md">
+              <h3>Programmatic Detent Control</h3>
+              <p style="margin-bottom: 1rem; color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+                Control drawer height programmatically using buttons and dropdowns.
+              </p>
+              <base-button variant="solid-secondary" size="md" class="open-drawer-control">Open Controlled Drawer</base-button>
+            </base-card>
+
             <!-- Code Usage -->
             <base-card variant="elevated" padding="md">
               <h3>Code Usage</h3>
@@ -767,6 +785,7 @@ quantitySelect.addEventListener('quantity-change', (e) =&gt; {
                 <ul>
                   <li><code>drawer-close</code>: <small>Emitted when the drawer is closed</small></li>
                   <li><code>drawer-open</code>: <small>Emitted when the drawer is opened</small></li>
+                  <li><code>drawer-detent-change</code>: <small>Emitted when the drawer snaps to a different detent (includes detentIndex and detentHeight in detail)</small></li>
                 </ul>
               </p>
               <pre style="background: var(--color-bg-muted); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-size: var(--font-size-sm);"><code>&lt;!-- Button to Open Drawer --&gt;
@@ -793,6 +812,11 @@ quantitySelect.addEventListener('quantity-change', (e) =&gt; {
 &lt;base-drawer size="md"&gt;&lt;/base-drawer&gt; &lt;!-- 480px --&gt;
 &lt;base-drawer size="lg"&gt;&lt;/base-drawer&gt; &lt;!-- 640px --&gt;
 
+&lt;!-- Detents (Snap Points) --&gt;
+&lt;base-drawer id="detent-drawer" detents="[0, 30, 60, 90]"&gt;
+  &lt;!-- Drawer will snap to 30dvh, 60dvh, or 90dvh when dragged --&gt;
+&lt;/base-drawer&gt;
+
 &lt;!-- Using JavaScript --&gt;
 &lt;script&gt;
 const drawer = document.getElementById('my-drawer');
@@ -803,6 +827,11 @@ drawer.open();
 // Close drawer
 drawer.close();
 
+// Set detent (for drawers with detents property)
+const detentDrawer = document.getElementById('detent-drawer');
+detentDrawer.setDetent(0); // Snap to first detent (30dvh)
+detentDrawer.setDetent(1, false); // Jump to second detent without animation
+
 // Listen to events
 drawer.addEventListener('drawer-open', () =&gt; {
   console.log('Drawer opened');
@@ -810,6 +839,10 @@ drawer.addEventListener('drawer-open', () =&gt; {
 
 drawer.addEventListener('drawer-close', () =&gt; {
   console.log('Drawer closed');
+});
+
+drawer.addEventListener('drawer-detent-change', (e) =&gt; {
+  console.log('Detent changed:', e.detail.detentIndex, e.detail.detentHeight);
 });
 &lt;/script&gt;</code></pre>
             </base-card>
@@ -2182,6 +2215,91 @@ const tokens = authForm.getTokens();
                 <base-button variant="outlined-primary" class="close-drawer-form" full-width>Cancel</base-button>
               </div>
             </div>
+          </div>
+        </base-drawer>
+
+        <base-drawer id="drawer-detents" size="md" detents="[0, 20, 35, 50, 70, 90]">
+          <div style="padding: var(--space-4); height: 100%; overflow-y: auto; display: flex; flex-direction: column;">
+            <h2 style="margin-top: 0;">Multiple Detents Demo</h2>
+            <p style="color: var(--color-text-secondary);">
+              This drawer has 5 detent positions: 20dvh, 35dvh, 50dvh, 70dvh, and 90dvh.
+            </p>
+            <p style="color: var(--color-text-secondary); margin-top: var(--space-2);">
+              Try dragging the drawer up and down - it will snap to these height positions!
+            </p>
+            <div style="margin-top: var(--space-4); padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--radius-md);">
+              <p style="font-weight: 600; margin-bottom: var(--space-2);">Current Detent:</p>
+              <p id="current-detent-display" style="color: var(--color-primary); font-size: 1.25rem; font-weight: 700;">
+                4 (90dvh)
+              </p>
+            </div>
+            <div style="margin-top: var(--space-4); flex: 1; overflow-y: auto;">
+              <h3>Sample Content</h3>
+              <p>This drawer contains scrollable content to demonstrate how detents work with different content heights.</p>
+              <ul style="margin-top: var(--space-3);">
+                <li>Detent 0: 20dvh (smallest)</li>
+                <li>Detent 1: 35dvh</li>
+                <li>Detent 2: 50dvh (medium)</li>
+                <li>Detent 3: 70dvh</li>
+                <li>Detent 4: 90dvh (largest)</li>
+              </ul>
+              <p style="margin-top: var(--space-3);">
+                The drawer intelligently snaps to the closest detent based on where you release it. Drag slowly (up or down) and it will find the nearest height.
+              </p>
+              <p style="margin-top: var(--space-3);">
+                For fast swipes: swipe down to move to a smaller detent, or swipe up to expand to a larger one. Drag past the smallest detent to close the drawer.
+              </p>
+            </div>
+            <base-button variant="solid-primary" class="close-drawer-detents" style="margin-top: var(--space-4);">
+              Close Drawer
+            </base-button>
+          </div>
+        </base-drawer>
+
+        <base-drawer id="drawer-control" size="md" detents="[0, 25, 45, 65, 85]" persist-on-overlay-click>
+          <div style="padding: var(--space-4); height: 100%; overflow-y: auto; display: flex; flex-direction: column;">
+            <h2 style="margin-top: 0;">Programmatic Control Demo</h2>
+            <p style="color: var(--color-text-secondary);">
+              Control the drawer height using the buttons and dropdown below.
+            </p>
+
+            <div style="margin-top: var(--space-4); padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--radius-md);">
+              <p style="font-weight: 600; margin-bottom: var(--space-2);">Quick Actions:</p>
+              <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+                <base-button variant="outlined-primary" size="sm" class="set-detent-0">Smallest (25dvh)</base-button>
+                <base-button variant="outlined-primary" size="sm" class="set-detent-1">Small (45dvh)</base-button>
+                <base-button variant="outlined-primary" size="sm" class="set-detent-2">Medium (65dvh)</base-button>
+                <base-button variant="outlined-primary" size="sm" class="set-detent-3">Large (85dvh)</base-button>
+              </div>
+            </div>
+
+            <div style="margin-top: var(--space-4); padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--radius-md);">
+              <label style="font-weight: 600; display: block; margin-bottom: var(--space-2);">Select Detent:</label>
+              <select id="detent-select" style="width: 100%; padding: var(--space-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: 1rem; background: var(--color-bg-primary);">
+                <option value="0">Detent 0 - 25dvh (Smallest)</option>
+                <option value="1">Detent 1 - 45dvh (Small)</option>
+                <option value="2">Detent 2 - 65dvh (Medium)</option>
+                <option value="3" selected>Detent 3 - 85dvh (Large)</option>
+              </select>
+            </div>
+
+            <div style="margin-top: var(--space-4); padding: var(--space-3); background: var(--color-bg-secondary); border-radius: var(--radius-md);">
+              <p style="font-weight: 600; margin-bottom: var(--space-2);">Current State:</p>
+              <p id="current-control-detent" style="color: var(--color-primary); font-size: 1.125rem; font-weight: 600;">
+                Detent 3 (85dvh)
+              </p>
+            </div>
+
+            <div style="margin-top: var(--space-4); flex: 1;">
+              <h3>How It Works</h3>
+              <p>Use the <code>setDetent(index, animated)</code> method to programmatically change the drawer height:</p>
+              <pre style="background: var(--color-bg-muted); padding: var(--space-3); border-radius: var(--radius-md); margin-top: var(--space-2); overflow-x: auto;"><code>drawer.setDetent(2); // Snap to index 2 with animation
+drawer.setDetent(0, false); // Jump to index 0 without animation</code></pre>
+            </div>
+
+            <base-button variant="solid-primary" class="close-drawer-control" style="margin-top: var(--space-4);">
+              Close Drawer
+            </base-button>
           </div>
         </base-drawer>
       </section>
