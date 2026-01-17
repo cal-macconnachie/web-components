@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.4.0](https://github.com/cal-macconnachie/web-components/compare/v2.3.1...v2.4.0) (2026-01-17)
+
+
+### Features
+
+* add detents to drawers ([72985f8](https://github.com/cal-macconnachie/web-components/commit/72985f8169dd3b9488d4b4f683795508bbd16f14))
+
 ### [2.3.1](https://github.com/cal-macconnachie/web-components/compare/v2.3.0...v2.3.1) (2026-01-14)
 
 
