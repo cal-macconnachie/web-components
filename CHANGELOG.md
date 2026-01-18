@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.4.4](https://github.com/cal-macconnachie/web-components/compare/v2.4.3...v2.4.4) (2026-01-18)
+
+
+### Bug Fixes
+
+* attempt to add back minor smart drag behaviour ([75e2620](https://github.com/cal-macconnachie/web-components/commit/75e2620a1067d86bd698cdbe235e1c26c28f688b))
+
 ### [2.4.3](https://github.com/cal-macconnachie/web-components/compare/v2.4.2...v2.4.3) (2026-01-18)
 
 
