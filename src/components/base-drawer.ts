@@ -39,6 +39,7 @@ export class BaseDrawer extends BaseElement {
   @state() private currentDetentIndex = 0
   @state() private dragCommitted = false
   @state() private draggingFromContent = false
+  @state() private dragStartedAtTop = false
 
   // Refs
   @query('.modal-container') private modalContainer?: HTMLElement
@@ -129,6 +130,7 @@ export class BaseDrawer extends BaseElement {
     this.isDragging = false
     this.dragCommitted = false
     this.draggingFromContent = false
+    this.dragStartedAtTop = false
     this.lastDragEndTime = 0
     this.dragStartY = 0
     this.dragCurrentY = 0
@@ -162,6 +164,7 @@ export class BaseDrawer extends BaseElement {
     this.isDragging = false
     this.dragCommitted = false
     this.draggingFromContent = false
+    this.dragStartedAtTop = false
     this.dragStartY = 0
     this.dragCurrentY = 0
     this.dragStartTime = 0
@@ -195,8 +198,11 @@ export class BaseDrawer extends BaseElement {
   private handleDragStart = (event: TouchEvent | MouseEvent, fromContent: boolean = false) => {
     if (!this.modalContainer) return
 
-    // If dragging from content, only allow if scrolled to top
-    if (fromContent && !this.isContentScrolledToTop()) {
+    // Check if we're at the top of scroll at the START of the drag
+    const isAtTop = this.isContentScrolledToTop()
+
+    // If dragging from content, only allow if scrolled to top at start
+    if (fromContent && !isAtTop) {
       return
     }
 
@@ -206,6 +212,7 @@ export class BaseDrawer extends BaseElement {
     this.isDragging = true
     this.dragCommitted = false
     this.draggingFromContent = fromContent
+    this.dragStartedAtTop = isAtTop
     this.dragStartTime = Date.now()
 
     if (event instanceof TouchEvent) {
@@ -239,20 +246,21 @@ export class BaseDrawer extends BaseElement {
         return
       }
 
-      // If dragging from content, only commit if dragging down and still at top
-      if (this.draggingFromContent) {
-        if (dragDistance < 0) {
-          // Dragging up - cancel drag and allow scroll
-          this.isDragging = false
-          this.draggingFromContent = false
-          return
-        }
-        if (!this.isContentScrolledToTop()) {
-          // No longer at top - cancel drag and allow scroll
-          this.isDragging = false
-          this.draggingFromContent = false
-          return
-        }
+      // If dragging from content, only commit if dragging down and started at top
+      if (this.draggingFromContent && !this.dragStartedAtTop) {
+        // Not at top at start - cancel drag and allow scroll
+        this.isDragging = false
+        this.draggingFromContent = false
+        this.dragStartedAtTop = false
+        return
+      }
+
+      // If dragging from content upward, cancel and allow scroll
+      if (this.draggingFromContent && dragDistance < 0) {
+        this.isDragging = false
+        this.draggingFromContent = false
+        this.dragStartedAtTop = false
+        return
       }
 
       this.dragCommitted = true
@@ -286,6 +294,8 @@ export class BaseDrawer extends BaseElement {
     if (!this.dragCommitted) {
       this.isDragging = false
       this.dragCommitted = false
+      this.draggingFromContent = false
+      this.dragStartedAtTop = false
       return
     }
 
@@ -299,9 +309,12 @@ export class BaseDrawer extends BaseElement {
     const velocity = Math.abs(dragDistance) / dragDuration
 
     // Stop dragging immediately to prevent further drag events
+    const wasDraggingFromContent = this.draggingFromContent
+    const wasStartedAtTop = this.dragStartedAtTop
     this.isDragging = false
     this.dragCommitted = false
     this.draggingFromContent = false
+    this.dragStartedAtTop = false
 
     const activeDetents = this.getActiveDetents()
     const currentHeight = this.getCurrentDetentHeight()
@@ -334,7 +347,7 @@ export class BaseDrawer extends BaseElement {
       if (dragDistance > 0) {
         // Swiped down fast
         // If swiping from content with very high velocity, jump to smallest detent or close
-        if (this.draggingFromContent && velocity > highVelocityThreshold) {
+        if (wasDraggingFromContent && wasStartedAtTop && velocity > highVelocityThreshold) {
           if (canClose) {
             targetDetentIndex = -1 // Close
           } else {
@@ -376,8 +389,8 @@ export class BaseDrawer extends BaseElement {
 
       targetDetentIndex = closestIndex
 
-      // If dragging from content downward, ensure we move down at least one detent
-      if (this.draggingFromContent && dragDistance > 0) {
+      // If dragging from content downward (and started at top), ensure we move down at least one detent
+      if (wasDraggingFromContent && wasStartedAtTop && dragDistance > 0) {
         targetDetentIndex = Math.max(0, this.currentDetentIndex - 1)
         // If at smallest detent and closable, close
         if (isAtSmallestDetent && canClose) {
@@ -439,6 +452,9 @@ export class BaseDrawer extends BaseElement {
       this.dragCurrentY = 0
       this.dragStartTime = 0
       this.dragCommitted = false
+      // These are already reset above, but keeping for consistency
+      this.draggingFromContent = false
+      this.dragStartedAtTop = false
 
       if (shouldClose) {
         this.isVisible = false
