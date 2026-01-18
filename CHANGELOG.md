@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.4.1](https://github.com/cal-macconnachie/web-components/compare/v2.4.0...v2.4.1) (2026-01-18)
+
+
+### Bug Fixes
+
+* attempt to fix drawer dragging logic ([e200624](https://github.com/cal-macconnachie/web-components/commit/e20062478059317967f3c842c04d3ac9b3f4509a))
+
 ## [2.4.0](https://github.com/cal-macconnachie/web-components/compare/v2.3.1...v2.4.0) (2026-01-17)
 
 
