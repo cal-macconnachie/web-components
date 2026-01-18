@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.4.7](https://github.com/cal-macconnachie/web-components/compare/v2.4.6...v2.4.7) (2026-01-18)
+
+
+### Bug Fixes
+
+* drag only from handle ([c5777f4](https://github.com/cal-macconnachie/web-components/commit/c5777f4551b008f4fd7ce8c77954781df9d4712b))
+* hide handle sometimes ([1d8b07d](https://github.com/cal-macconnachie/web-components/commit/1d8b07d0e563800a9d231e4c6d1763c11795747c))
+
 ### [2.4.6](https://github.com/cal-macconnachie/web-components/compare/v2.4.5...v2.4.6) (2026-01-18)
 
 
