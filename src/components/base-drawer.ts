@@ -187,39 +187,6 @@ export class BaseDrawer extends BaseElement {
   private handleDragStart = (event: TouchEvent | MouseEvent) => {
     if (!this.modalContainer) return
 
-    const target = event.target as HTMLElement
-    const isHandle =
-      target.classList.contains('drawer-handle') ||
-      target.classList.contains('drawer-handle-bar') ||
-      target.closest('.drawer-handle')
-
-    // Always allow dragging from the handle
-    if (isHandle) {
-      // Continue to start drag
-    } else {
-      // Not from handle - check if touch is on scrollable content
-      if (this.drawerContent) {
-        const isScrollable = this.drawerContent.scrollHeight > this.drawerContent.clientHeight
-
-        // If content is scrollable, check if the touch target is within the content area
-        const isTargetInContent = this.drawerContent.contains(target)
-
-        if (isScrollable && isTargetInContent) {
-          // Only allow drawer drag if content is at the very top
-          const isAtTop = this.drawerContent.scrollTop === 0
-
-          if (!isAtTop) {
-            // Content is scrolled - don't intercept, allow native scroll
-            return
-          }
-
-          // At top - we'll allow drawer drag for downward motion only
-          // For upward motion on scrollable content, we should allow scroll
-          // This will be determined in handleDragMove
-        }
-      }
-    }
-
     this.modalContainer.style.transition = ''
     this.modalContainer.style.transform = ''
 
@@ -247,52 +214,15 @@ export class BaseDrawer extends BaseElement {
 
     const dragDistance = this.dragCurrentY - this.dragStartY
 
-    // If we haven't committed to dragging yet, check if this is a drawer drag or content scroll
+    // Commit to drawer drag after minimal movement
     if (!this.dragCommitted) {
       const absDragDistance = Math.abs(dragDistance)
-
-      // Need some movement to determine intent (at least 10px)
-      if (absDragDistance < 10) {
+      if (absDragDistance < 5) {
         return
       }
-
-      // Check if we should prioritize content scroll over drawer drag
-      if (this.drawerContent) {
-        const isScrollable = this.drawerContent.scrollHeight > this.drawerContent.clientHeight
-
-        if (isScrollable) {
-          const isAtTop = this.drawerContent.scrollTop === 0
-          const isAtBottom = this.drawerContent.scrollTop + this.drawerContent.clientHeight >= this.drawerContent.scrollHeight - 1
-
-          // Swipe UP (dragDistance < 0) = scroll DOWN (reveal content below)
-          // Only allow if NOT at bottom
-          if (dragDistance < 0 && !isAtBottom) {
-            // Cancel drawer drag, allow content scroll
-            this.isDragging = false
-            this.dragCommitted = false
-            this.dragStartY = 0
-            this.dragCurrentY = 0
-            return
-          }
-
-          // Swipe DOWN (dragDistance > 0) = scroll UP (reveal content above)
-          // Only allow if NOT at top
-          if (dragDistance > 0 && !isAtTop) {
-            // Cancel drawer drag, allow content scroll
-            this.isDragging = false
-            this.dragCommitted = false
-            this.dragStartY = 0
-            this.dragCurrentY = 0
-            return
-          }
-        }
-      }
-
-      // Commit to drawer drag
       this.dragCommitted = true
     }
 
-    // Only prevent default AFTER committing to drawer drag
     event.preventDefault()
 
     const currentHeight = this.getCurrentDetentHeight()
@@ -624,17 +554,17 @@ export class BaseDrawer extends BaseElement {
           style="height: ${currentHeight}dvh"
           role="dialog"
           aria-modal="true"
-          @touchstart=${this.handleDragStart}
-          @touchmove=${this.handleDragMove}
-          @touchend=${this.handleDragEnd}
-          @mousedown=${this.handleDragStart}
-          @mousemove=${this.handleDragMove}
-          @mouseup=${this.handleDragEnd}
         >
           <!-- Drawer Handle -->
           <div
             class="drawer-handle"
             @click=${this.handleHandleClick}
+            @touchstart=${this.handleDragStart}
+            @touchmove=${this.handleDragMove}
+            @touchend=${this.handleDragEnd}
+            @mousedown=${this.handleDragStart}
+            @mousemove=${this.handleDragMove}
+            @mouseup=${this.handleDragEnd}
             role="button"
             tabindex="0"
             aria-label="Close drawer"
