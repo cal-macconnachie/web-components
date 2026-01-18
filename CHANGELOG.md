@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.4.9](https://github.com/cal-macconnachie/web-components/compare/v2.4.8...v2.4.9) (2026-01-18)
+
+
+### Bug Fixes
+
+* pading stuff ([b546411](https://github.com/cal-macconnachie/web-components/commit/b5464110525de6c6a08f694c61e7276370d6d322))
+
 ### [2.4.8](https://github.com/cal-macconnachie/web-components/compare/v2.4.7...v2.4.8) (2026-01-18)
 
 
