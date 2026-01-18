@@ -251,24 +251,40 @@ export class BaseDrawer extends BaseElement {
     if (!this.dragCommitted) {
       const absDragDistance = Math.abs(dragDistance)
 
-      // Need some movement to determine intent (at least 5px)
-      if (absDragDistance < 5) {
+      // Need some movement to determine intent (at least 10px)
+      if (absDragDistance < 10) {
         return
       }
 
       // Check if we should prioritize content scroll over drawer drag
       if (this.drawerContent) {
         const isScrollable = this.drawerContent.scrollHeight > this.drawerContent.clientHeight
-        const isAtTop = this.drawerContent.scrollTop === 0
 
-        // If at top of scrollable content and dragging upward, user likely wants to scroll content
-        // (not expand drawer). Cancel drawer drag and let native scroll work.
-        if (isScrollable && isAtTop && dragDistance < 0) {
-          this.isDragging = false
-          this.dragCommitted = false
-          this.dragStartY = 0
-          this.dragCurrentY = 0
-          return
+        if (isScrollable) {
+          const isAtTop = this.drawerContent.scrollTop === 0
+          const isAtBottom = this.drawerContent.scrollTop + this.drawerContent.clientHeight >= this.drawerContent.scrollHeight - 1
+
+          // Swipe UP (dragDistance < 0) = scroll DOWN (reveal content below)
+          // Only allow if NOT at bottom
+          if (dragDistance < 0 && !isAtBottom) {
+            // Cancel drawer drag, allow content scroll
+            this.isDragging = false
+            this.dragCommitted = false
+            this.dragStartY = 0
+            this.dragCurrentY = 0
+            return
+          }
+
+          // Swipe DOWN (dragDistance > 0) = scroll UP (reveal content above)
+          // Only allow if NOT at top
+          if (dragDistance > 0 && !isAtTop) {
+            // Cancel drawer drag, allow content scroll
+            this.isDragging = false
+            this.dragCommitted = false
+            this.dragStartY = 0
+            this.dragCurrentY = 0
+            return
+          }
         }
       }
 
@@ -276,10 +292,12 @@ export class BaseDrawer extends BaseElement {
       this.dragCommitted = true
     }
 
+    // Only prevent default AFTER committing to drawer drag
+    event.preventDefault()
+
     const currentHeight = this.getCurrentDetentHeight()
     const viewportHeight = window.innerHeight
 
-    event.preventDefault()
     this.modalContainer.style.transition = 'none'
 
     if (dragDistance < 0) {
@@ -766,19 +784,6 @@ export class BaseDrawer extends BaseElement {
 
     .drawer-content--lg {
       max-width: 900px;
-    }
-
-    /* Dark theme */
-    :host([data-theme='dark']) {
-      --color-primary: #3b82f6;
-      --color-bg-primary: #1e293b;
-      --color-bg-secondary: #0f172a;
-      --color-text-primary: #f8fafc;
-      --color-text-secondary: #cbd5e1;
-      --color-text-muted: #94a3b8;
-      --color-border: #334155;
-      --color-error: #ef4444;
-      --color-success: #10b981;
     }
 
     @keyframes fadeIn {
