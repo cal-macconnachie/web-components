@@ -38,10 +38,6 @@ export class BaseDrawer extends BaseElement {
   @state() private lastDragEndTime = 0
   @state() private currentDetentIndex = 0
   @state() private dragCommitted = false
-  @state() private draggingFromContent = false
-  @state() private dragStartedAtTop = false
-  @state() private contentTouchTracking = false
-  @state() private contentTouchStartY = 0
 
   // Refs
   @query('.modal-container') private modalContainer?: HTMLElement
@@ -131,10 +127,6 @@ export class BaseDrawer extends BaseElement {
   private resetState() {
     this.isDragging = false
     this.dragCommitted = false
-    this.draggingFromContent = false
-    this.dragStartedAtTop = false
-    this.contentTouchTracking = false
-    this.contentTouchStartY = 0
     this.lastDragEndTime = 0
     this.dragStartY = 0
     this.dragCurrentY = 0
@@ -150,11 +142,6 @@ export class BaseDrawer extends BaseElement {
     return this.detents.includes(0)
   }
 
-  private isContentScrolledToTop(): boolean {
-    if (!this.drawerContent) return true
-    return this.drawerContent.scrollTop === 0
-  }
-
   private getCurrentDetentHeight(): number {
     const activeDetents = this.getActiveDetents()
     if (activeDetents.length === 0) return 85
@@ -167,8 +154,6 @@ export class BaseDrawer extends BaseElement {
     this.cleanupInlineStyles()
     this.isDragging = false
     this.dragCommitted = false
-    this.draggingFromContent = false
-    this.dragStartedAtTop = false
     this.dragStartY = 0
     this.dragCurrentY = 0
     this.dragStartTime = 0
@@ -199,24 +184,14 @@ export class BaseDrawer extends BaseElement {
   }
 
   // Drag handlers
-  private handleDragStart = (event: TouchEvent | MouseEvent, fromContent: boolean = false) => {
+  private handleDragStart = (event: TouchEvent | MouseEvent) => {
     if (!this.modalContainer) return
-
-    // Check if we're at the top of scroll at the START of the drag
-    const isAtTop = this.isContentScrolledToTop()
-
-    // If dragging from content, only allow if scrolled to top at start
-    if (fromContent && !isAtTop) {
-      return
-    }
 
     this.modalContainer.style.transition = ''
     this.modalContainer.style.transform = ''
 
     this.isDragging = true
     this.dragCommitted = false
-    this.draggingFromContent = fromContent
-    this.dragStartedAtTop = isAtTop
     this.dragStartTime = Date.now()
 
     if (event instanceof TouchEvent) {
@@ -226,39 +201,6 @@ export class BaseDrawer extends BaseElement {
       this.dragStartY = event.clientY
       this.dragCurrentY = event.clientY
     }
-  }
-
-  private handleContentTouchStart = (event: TouchEvent) => {
-    // Only track if at top of scroll
-    if (!this.isContentScrolledToTop()) {
-      return
-    }
-
-    // Start tracking but don't interfere yet
-    this.contentTouchTracking = true
-    this.contentTouchStartY = event.touches[0].clientY
-  }
-
-  private handleContentTouchMove = (event: TouchEvent) => {
-    if (!this.contentTouchTracking) return
-    if (this.isDragging) return // Already dragging drawer
-
-    const currentY = event.touches[0].clientY
-    const deltaY = currentY - this.contentTouchStartY
-
-    // If dragging up or very small movement, allow normal scroll
-    if (deltaY <= 5) {
-      return
-    }
-
-    // Dragging down from top - take over and start drawer drag
-    this.contentTouchTracking = false
-    this.handleDragStart(event, true)
-  }
-
-  private handleContentTouchEnd = () => {
-    this.contentTouchTracking = false
-    this.contentTouchStartY = 0
   }
 
   private handleDragMove = (event: TouchEvent | MouseEvent) => {
@@ -278,24 +220,6 @@ export class BaseDrawer extends BaseElement {
       if (absDragDistance < 5) {
         return
       }
-
-      // If dragging from content, only commit if dragging down and started at top
-      if (this.draggingFromContent && !this.dragStartedAtTop) {
-        // Not at top at start - cancel drag and allow scroll
-        this.isDragging = false
-        this.draggingFromContent = false
-        this.dragStartedAtTop = false
-        return
-      }
-
-      // If dragging from content upward, cancel and allow scroll
-      if (this.draggingFromContent && dragDistance < 0) {
-        this.isDragging = false
-        this.draggingFromContent = false
-        this.dragStartedAtTop = false
-        return
-      }
-
       this.dragCommitted = true
     }
 
@@ -327,8 +251,6 @@ export class BaseDrawer extends BaseElement {
     if (!this.dragCommitted) {
       this.isDragging = false
       this.dragCommitted = false
-      this.draggingFromContent = false
-      this.dragStartedAtTop = false
       return
     }
 
@@ -342,27 +264,23 @@ export class BaseDrawer extends BaseElement {
     const velocity = Math.abs(dragDistance) / dragDuration
 
     // Stop dragging immediately to prevent further drag events
-    const wasDraggingFromContent = this.draggingFromContent
-    const wasStartedAtTop = this.dragStartedAtTop
     this.isDragging = false
     this.dragCommitted = false
-    this.draggingFromContent = false
-    this.dragStartedAtTop = false
 
     const activeDetents = this.getActiveDetents()
     const currentHeight = this.getCurrentDetentHeight()
     const viewportHeight = window.innerHeight
 
     // Calculate the visual height after drag (in dvh units)
-    const dragDistanceDvh = (Math.abs(dragDistance) / viewportHeight) * 100
+    const dragDistanceSvh = (Math.abs(dragDistance) / viewportHeight) * 100
     let visualHeight: number
 
     if (dragDistance < 0) {
       // Dragged up = height increased
-      visualHeight = currentHeight + dragDistanceDvh
+      visualHeight = currentHeight + dragDistanceSvh
     } else {
       // Dragged down = height decreased (due to translateY)
-      visualHeight = currentHeight - dragDistanceDvh
+      visualHeight = currentHeight - dragDistanceSvh
     }
 
     // Find closest detent or determine if should close
@@ -379,14 +297,7 @@ export class BaseDrawer extends BaseElement {
     if (velocity > velocityThreshold && Math.abs(dragDistance) > 30) {
       if (dragDistance > 0) {
         // Swiped down fast
-        // If swiping from content with very high velocity, jump to smallest detent or close
-        if (wasDraggingFromContent && wasStartedAtTop && velocity > highVelocityThreshold) {
-          if (canClose) {
-            targetDetentIndex = -1 // Close
-          } else {
-            targetDetentIndex = 0 // Jump to smallest detent
-          }
-        } else if (canClose) {
+        if (canClose) {
           // Very high velocity downward swipe from smallest detent = close
           if (velocity > highVelocityThreshold && isAtSmallestDetent && dragDistance > 50) {
             targetDetentIndex = -1 // Signal to close
@@ -421,15 +332,6 @@ export class BaseDrawer extends BaseElement {
       }
 
       targetDetentIndex = closestIndex
-
-      // If dragging from content downward (and started at top), ensure we move down at least one detent
-      if (wasDraggingFromContent && wasStartedAtTop && dragDistance > 0) {
-        targetDetentIndex = Math.max(0, this.currentDetentIndex - 1)
-        // If at smallest detent and closable, close
-        if (isAtSmallestDetent && canClose) {
-          targetDetentIndex = -1 // Signal to close
-        }
-      }
 
       // More lenient closing threshold
       if (canClose) {
@@ -485,9 +387,6 @@ export class BaseDrawer extends BaseElement {
       this.dragCurrentY = 0
       this.dragStartTime = 0
       this.dragCommitted = false
-      // These are already reset above, but keeping for consistency
-      this.draggingFromContent = false
-      this.dragStartedAtTop = false
 
       if (shouldClose) {
         this.isVisible = false
@@ -674,12 +573,7 @@ export class BaseDrawer extends BaseElement {
           </div>
 
           <!-- Drawer Content Wrapper -->
-          <div
-            class="drawer-content drawer-content--${this.size}"
-            @touchstart=${this.handleContentTouchStart}
-            @touchmove=${this.handleContentTouchMove}
-            @touchend=${this.handleContentTouchEnd}
-          >
+          <div class="drawer-content drawer-content--${this.size}">
             <slot></slot>
           </div>
         </div>
