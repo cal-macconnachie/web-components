@@ -1,5 +1,7 @@
 import axios, { AxiosError, AxiosInstance } from 'axios'
+import { registerBaseToast, showToast } from '../components/base-toast'
 import { log } from './logger'
+registerBaseToast()
 
 export class AuthRefreshError extends Error {
   constructor(message: string = 'Authentication refresh failed') {
@@ -10,6 +12,7 @@ export class AuthRefreshError extends Error {
 
 interface ApiClientConfig {
   baseUrl: string
+  useToasts?: boolean
 }
 
 // Global refresh state on window to prevent multiple simultaneous refreshes
@@ -19,7 +22,7 @@ declare global {
   }
 }
 
-export const createApiClient = ({ baseUrl }: ApiClientConfig): AxiosInstance => {
+export const createApiClient = ({ baseUrl, useToasts = true }: ApiClientConfig): AxiosInstance => {
   const client = axios.create({
     baseURL: baseUrl,
     headers: {
@@ -36,6 +39,66 @@ export const createApiClient = ({ baseUrl }: ApiClientConfig): AxiosInstance => 
     (response) => response,
     async (error: AxiosError) => {
       const originalRequest = error.config
+
+      // Handle rate limiting (429) - show user-friendly toast
+      if (error.response?.status === 429) {
+        const retryAfter = error.response.headers['retry-after']
+        let message = 'Too many requests. Please try again later.'
+
+        if (retryAfter) {
+          // retry-after can be in seconds or a date
+          const retryAfterNum = parseInt(retryAfter, 10)
+          if (!isNaN(retryAfterNum)) {
+            // It's a number of seconds
+            if (retryAfterNum < 60) {
+              message = `Too many requests. Please try again in ${retryAfterNum} seconds.`
+            } else {
+              const minutes = Math.ceil(retryAfterNum / 60)
+              message = `Too many requests. Please try again in ${minutes} minute${minutes > 1 ? 's' : ''}.`
+            }
+          } else {
+            // It's a date string
+            try {
+              const retryDate = new Date(retryAfter)
+              const now = new Date()
+              const diffMs = retryDate.getTime() - now.getTime()
+              const diffSecs = Math.ceil(diffMs / 1000)
+
+              if (diffSecs > 0 && diffSecs < 60) {
+                message = `Too many requests. Please try again in ${diffSecs} seconds.`
+              } else if (diffSecs >= 60) {
+                const minutes = Math.ceil(diffSecs / 60)
+                message = `Too many requests. Please try again in ${minutes} minute${minutes > 1 ? 's' : ''}.`
+              }
+            } catch (e) {
+              // Invalid date, use default message
+            }
+          }
+        }
+
+        log('Rate limited (429):', message)
+        if (useToasts) {
+          showToast({
+            message,
+            variant: 'warning',
+          })
+        }
+
+        return Promise.reject(error)
+      }
+
+      // Handle other server errors (5xx) with user-friendly messages
+      if (error.response?.status && error.response.status >= 500) {
+        log(`Server error (${error.response.status})`)
+        if (useToasts) {
+          showToast({
+            message: 'Server error. Please try again later.',
+            variant: 'danger',
+          })
+        }
+
+        return Promise.reject(error)
+      }
 
       // Only attempt refresh for 401 errors on requests that haven't been retried yet
       if (
@@ -115,6 +178,7 @@ export const createApiClient = ({ baseUrl }: ApiClientConfig): AxiosInstance => 
               log('Cookies should now be updated by the browser automatically')
             } catch (refreshError) {
               log('Token refresh error:', refreshError)
+              
               throw refreshError
             } finally {
               log('Clearing refresh promise')
@@ -135,6 +199,12 @@ export const createApiClient = ({ baseUrl }: ApiClientConfig): AxiosInstance => 
           return client.request(originalRequest)
         } catch (refreshError) {
           log('Token refresh failed, user needs to re-authenticate')
+          if (useToasts) {
+            showToast({
+              message: 'Session expired. Please log in again.',
+              variant: 'danger',
+            })
+          }
 
           window.dispatchEvent(
             new CustomEvent('auth-refresh-failed', {
@@ -148,6 +218,25 @@ export const createApiClient = ({ baseUrl }: ApiClientConfig): AxiosInstance => 
 
           return Promise.reject(new AuthRefreshError('Authentication refresh failed'))
         }
+      }
+
+      // Handle network errors (no response from server)
+      if (!error.response) {
+        log('Network error - no response from server')
+        if (useToasts) {
+          showToast({
+            message: 'Network error. Please check your connection and try again.',
+            variant: 'danger',
+          })
+        }
+
+        return Promise.reject(error)
+      }
+
+      // For other errors (4xx except 401 and 429), we'll let the application handle them
+      // But log them for debugging
+      if (error.response?.status) {
+        log(`Request failed with status ${error.response.status}`)
       }
 
       return Promise.reject(error)

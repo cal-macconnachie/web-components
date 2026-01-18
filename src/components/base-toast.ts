@@ -502,7 +502,7 @@ export class BaseToast extends BaseElement {
 export function showToast({
   message,
   variant = 'default',
-  position = 'top-right',
+  position = 'bottom-center',
   dismiss = '2s'} : {
     message: string,
     variant?: ToastVariant,
