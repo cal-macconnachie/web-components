@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.4.8](https://github.com/cal-macconnachie/web-components/compare/v2.4.7...v2.4.8) (2026-01-18)
+
+
+### Bug Fixes
+
+* slow requires override to prevent flicker ([ab899b6](https://github.com/cal-macconnachie/web-components/commit/ab899b6454e117d6d0c6b537ce8d0b48f5a018a9))
+
 ### [2.4.7](https://github.com/cal-macconnachie/web-components/compare/v2.4.6...v2.4.7) (2026-01-18)
 
 
