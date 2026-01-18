@@ -40,6 +40,8 @@ export class BaseDrawer extends BaseElement {
   @state() private dragCommitted = false
   @state() private draggingFromContent = false
   @state() private dragStartedAtTop = false
+  @state() private contentTouchTracking = false
+  @state() private contentTouchStartY = 0
 
   // Refs
   @query('.modal-container') private modalContainer?: HTMLElement
@@ -131,6 +133,8 @@ export class BaseDrawer extends BaseElement {
     this.dragCommitted = false
     this.draggingFromContent = false
     this.dragStartedAtTop = false
+    this.contentTouchTracking = false
+    this.contentTouchStartY = 0
     this.lastDragEndTime = 0
     this.dragStartY = 0
     this.dragCurrentY = 0
@@ -224,8 +228,37 @@ export class BaseDrawer extends BaseElement {
     }
   }
 
-  private handleContentDragStart = (event: TouchEvent | MouseEvent) => {
+  private handleContentTouchStart = (event: TouchEvent) => {
+    // Only track if at top of scroll
+    if (!this.isContentScrolledToTop()) {
+      return
+    }
+
+    // Start tracking but don't interfere yet
+    this.contentTouchTracking = true
+    this.contentTouchStartY = event.touches[0].clientY
+  }
+
+  private handleContentTouchMove = (event: TouchEvent) => {
+    if (!this.contentTouchTracking) return
+    if (this.isDragging) return // Already dragging drawer
+
+    const currentY = event.touches[0].clientY
+    const deltaY = currentY - this.contentTouchStartY
+
+    // If dragging up or very small movement, allow normal scroll
+    if (deltaY <= 5) {
+      return
+    }
+
+    // Dragging down from top - take over and start drawer drag
+    this.contentTouchTracking = false
     this.handleDragStart(event, true)
+  }
+
+  private handleContentTouchEnd = () => {
+    this.contentTouchTracking = false
+    this.contentTouchStartY = 0
   }
 
   private handleDragMove = (event: TouchEvent | MouseEvent) => {
@@ -643,12 +676,9 @@ export class BaseDrawer extends BaseElement {
           <!-- Drawer Content Wrapper -->
           <div
             class="drawer-content drawer-content--${this.size}"
-            @touchstart=${this.handleContentDragStart}
-            @touchmove=${this.handleDragMove}
-            @touchend=${this.handleDragEnd}
-            @mousedown=${this.handleContentDragStart}
-            @mousemove=${this.handleDragMove}
-            @mouseup=${this.handleDragEnd}
+            @touchstart=${this.handleContentTouchStart}
+            @touchmove=${this.handleContentTouchMove}
+            @touchend=${this.handleContentTouchEnd}
           >
             <slot></slot>
           </div>
