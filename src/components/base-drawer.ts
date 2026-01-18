@@ -58,6 +58,8 @@ export class BaseDrawer extends BaseElement {
 
   disconnectedCallback() {
     window.removeEventListener('keyup', this.boundKeyHandler)
+    window.removeEventListener('mousemove', this.handleDragMove)
+    window.removeEventListener('mouseup', this.handleDragEnd)
     this.unlockBodyScroll()
     super.disconnectedCallback()
   }
@@ -200,6 +202,9 @@ export class BaseDrawer extends BaseElement {
     } else {
       this.dragStartY = event.clientY
       this.dragCurrentY = event.clientY
+      // For mouse events, attach listeners to window so they work even when cursor leaves the handle
+      window.addEventListener('mousemove', this.handleDragMove)
+      window.addEventListener('mouseup', this.handleDragEnd)
     }
   }
 
@@ -246,6 +251,10 @@ export class BaseDrawer extends BaseElement {
 
   private handleDragEnd = () => {
     if (!this.isDragging || !this.modalContainer) return
+
+    // Clean up mouse event listeners
+    window.removeEventListener('mousemove', this.handleDragMove)
+    window.removeEventListener('mouseup', this.handleDragEnd)
 
     // If we never committed to dragging, just cancel
     if (!this.dragCommitted) {
@@ -542,6 +551,8 @@ export class BaseDrawer extends BaseElement {
     }
 
     const currentHeight = this.getCurrentDetentHeight()
+    const activeDetents = this.getActiveDetents()
+    const showHandle = this.isClosable() || activeDetents.length > 1
 
     return html`
       <!-- Drawer Overlay -->
@@ -556,21 +567,21 @@ export class BaseDrawer extends BaseElement {
           aria-modal="true"
         >
           <!-- Drawer Handle -->
-          <div
-            class="drawer-handle"
-            @click=${this.handleHandleClick}
-            @touchstart=${this.handleDragStart}
-            @touchmove=${this.handleDragMove}
-            @touchend=${this.handleDragEnd}
-            @mousedown=${this.handleDragStart}
-            @mousemove=${this.handleDragMove}
-            @mouseup=${this.handleDragEnd}
-            role="button"
-            tabindex="0"
-            aria-label="Close drawer"
-          >
-            <div class="drawer-handle-bar"></div>
-          </div>
+          ${showHandle ? html`
+            <div
+              class="drawer-handle"
+              @click=${this.handleHandleClick}
+              @touchstart=${this.handleDragStart}
+              @touchmove=${this.handleDragMove}
+              @touchend=${this.handleDragEnd}
+              @mousedown=${this.handleDragStart}
+              role="button"
+              tabindex="0"
+              aria-label="Close drawer"
+            >
+              <div class="drawer-handle-bar"></div>
+            </div>
+          ` : nothing}
 
           <!-- Drawer Content Wrapper -->
           <div class="drawer-content drawer-content--${this.size}">
@@ -582,36 +593,6 @@ export class BaseDrawer extends BaseElement {
   }
 
   static styles = css`
-    :host {
-      display: inline-block;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      box-sizing: border-box;
-      --color-primary: var(--auth-color-primary, #2563eb);
-      --color-bg-primary: var(--auth-color-bg-primary, #ffffff);
-      --color-bg-secondary: var(--auth-color-bg-secondary, #f8fafc);
-      --color-text-primary: var(--auth-color-text-primary, #0f172a);
-      --color-text-secondary: var(--auth-color-text-secondary, #64748b);
-      --color-text-muted: var(--auth-color-text-muted, #94a3b8);
-      --color-border: var(--auth-color-border, #e2e8f0);
-      --color-error: var(--auth-color-error, #dc2626);
-      --color-success: var(--auth-color-success, #16a34a);
-      --transition-slow: var(--auth-transition-slow, 300ms);
-      --radius-md: var(--auth-radius-md, 0.5rem);
-      --radius-lg: var(--auth-radius-lg, 0.75rem);
-      --radius-xl: var(--auth-radius-xl, 1.25rem);
-      --space-2: var(--auth-space-2, 0.5rem);
-      --space-3: var(--auth-space-3, 0.75rem);
-      --space-4: var(--auth-space-4, 1rem);
-      --space-5: var(--auth-space-5, 1.25rem);
-      --space-6: var(--auth-space-6, 1.5rem);
-    }
-
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-    }
-
     /* Body scroll lock */
     :host(.modal-open) {
       overflow: hidden;
@@ -658,6 +639,7 @@ export class BaseDrawer extends BaseElement {
       animation: slideUp var(--transition-slow);
       transform-origin: bottom center;
       transition: height var(--transition-slow) cubic-bezier(0.4, 0, 0.2, 1);
+      padding-bottom: env(safe-area-inset-bottom);
     }
 
     .modal-container--closing {
