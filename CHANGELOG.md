@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.4.5](https://github.com/cal-macconnachie/web-components/compare/v2.4.4...v2.4.5) (2026-01-18)
+
+
+### Bug Fixes
+
+* only allow drag down from top of scroll ([57e5d3b](https://github.com/cal-macconnachie/web-components/commit/57e5d3b38f876b082757002871fc381e4d05453f))
+
 ### [2.4.4](https://github.com/cal-macconnachie/web-components/compare/v2.4.3...v2.4.4) (2026-01-18)
 
 
