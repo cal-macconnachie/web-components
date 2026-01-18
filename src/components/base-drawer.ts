@@ -593,6 +593,10 @@ export class BaseDrawer extends BaseElement {
   }
 
   static styles = css`
+  :host {
+      --transition-slow: 300ms;
+    }
+
     /* Body scroll lock */
     :host(.modal-open) {
       overflow: hidden;
