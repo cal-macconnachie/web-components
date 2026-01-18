@@ -635,15 +635,12 @@ export class BaseDrawer extends BaseElement {
       border-top-right-radius: var(--radius-xl);
       box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06);
       width: 100vw;
-      max-width: 100vw;
-      height: 85dvh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
       animation: slideUp var(--transition-slow);
       transform-origin: bottom center;
       transition: height var(--transition-slow) cubic-bezier(0.4, 0, 0.2, 1);
-      padding-bottom: env(safe-area-inset-bottom);
     }
 
     .modal-container--closing {
@@ -740,7 +737,7 @@ export class BaseDrawer extends BaseElement {
 
     @media (max-width: 640px) {
       .modal-container {
-        height: 80dvh;
+        padding-bottom: env(safe-area-inset-bottom);
       }
     }
 
