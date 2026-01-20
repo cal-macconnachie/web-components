@@ -97,6 +97,75 @@ export class BaseListItem extends BaseElement {
       filter: brightness(0.9);
     }
 
+    /* Desktop hover actions */
+    .desktop-actions {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding-right: var(--space-3);
+      opacity: 0;
+      transform: translateX(10px);
+      transition: all var(--transition-fast);
+      pointer-events: none;
+      z-index: 2;
+      background: linear-gradient(to right, transparent, var(--color-bg-primary) 20%);
+      padding-left: var(--space-8);
+    }
+
+    .desktop-action-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      color: white;
+      pointer-events: auto;
+    }
+
+    .desktop-action-button:hover {
+      transform: scale(1.1);
+      filter: brightness(1.1);
+    }
+
+    .desktop-action-button:active {
+      transform: scale(0.95);
+    }
+
+    .desktop-action-button:focus-visible {
+      outline: 2px solid var(--color-border-focus);
+      outline-offset: 2px;
+    }
+
+    /* Show desktop actions on hover (desktop only) */
+    @media (hover: hover) and (pointer: fine) {
+      :host(:hover) .desktop-actions,
+      :host(:focus-within) .desktop-actions {
+        opacity: 1;
+        transform: translateX(0);
+        pointer-events: auto;
+      }
+
+      /* Hide swipe actions on desktop */
+      .swipe-actions {
+        display: none;
+      }
+    }
+
+    /* Hide desktop actions on touch devices */
+    @media (hover: none) {
+      .desktop-actions {
+        display: none;
+      }
+    }
+
     .base-list-item {
       position: relative;
       display: block;
@@ -337,6 +406,54 @@ export class BaseListItem extends BaseElement {
                     ? html`<span>${this.rightSwipeAction.label}</span>`
                     : ''}
                 </button>
+              </div>
+            `
+          : ''}
+
+        <!-- Desktop hover actions -->
+        ${this.leftSwipeAction || this.rightSwipeAction
+          ? html`
+              <div class="desktop-actions">
+                ${this.leftSwipeAction
+                  ? html`
+                      <button
+                        class="desktop-action-button"
+                        style="background-color: ${this.leftSwipeAction.color || 'var(--color-success)'}"
+                        @click=${(e: Event) => {
+                          e.stopPropagation()
+                          this.triggerSwipeAction(this.leftSwipeAction!)
+                        }}
+                        title=${this.leftSwipeAction.label || ''}
+                        aria-label=${this.leftSwipeAction.label || ''}
+                      >
+                        <base-icon
+                          name=${this.leftSwipeAction.icon}
+                          size="20px"
+                          color="white"
+                        ></base-icon>
+                      </button>
+                    `
+                  : ''}
+                ${this.rightSwipeAction
+                  ? html`
+                      <button
+                        class="desktop-action-button"
+                        style="background-color: ${this.rightSwipeAction.color || 'var(--color-error)'}"
+                        @click=${(e: Event) => {
+                          e.stopPropagation()
+                          this.triggerSwipeAction(this.rightSwipeAction!)
+                        }}
+                        title=${this.rightSwipeAction.label || ''}
+                        aria-label=${this.rightSwipeAction.label || ''}
+                      >
+                        <base-icon
+                          name=${this.rightSwipeAction.icon}
+                          size="20px"
+                          color="white"
+                        ></base-icon>
+                      </button>
+                    `
+                  : ''}
               </div>
             `
           : ''}

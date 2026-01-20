@@ -2294,9 +2294,10 @@ const tokens = authForm.getTokens();
 
             <!-- Swipe Actions List -->
             <base-card variant="elevated" padding="md">
-              <h3>Swipe Actions (Mobile)</h3>
+              <h3>Item Actions</h3>
               <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
-                iOS-style swipe actions. Try swiping left or right on mobile/touch devices.
+                <strong>Desktop:</strong> Hover over items to reveal action buttons.<br>
+                <strong>Mobile:</strong> Swipe left or right for iOS-style swipe actions.
               </p>
               <base-list size="md" variant="divided" id="swipe-list">
                 <base-list-item size="md" id="swipe-item-1">
@@ -2383,16 +2384,17 @@ const tokens = authForm.getTokens();
   &lt;/base-list-item&gt;
 &lt;/base-list&gt;
 
-&lt;!-- List with Swipe Actions (JavaScript) --&gt;
+&lt;!-- List with Actions (JavaScript) --&gt;
+&lt;!-- Actions automatically adapt: hover buttons on desktop, swipe on mobile --&gt;
 &lt;script type="module"&gt;
   const item = document.querySelector('base-list-item');
 
-  // Define swipe actions
+  // Define actions (work on both desktop and mobile)
   item.leftSwipeAction = {
     icon: 'archive',  // base-icon name
     callback: () =&gt; console.log('Archived!'),
     color: '#22c55e',
-    label: 'Archive'
+    label: 'Archive'  // Shows as tooltip on desktop
   };
 
   item.rightSwipeAction = {
@@ -2402,7 +2404,7 @@ const tokens = authForm.getTokens();
     label: 'Delete'
   };
 
-  // Listen for swipe events
+  // Listen for action events (fires on both desktop click and mobile swipe)
   item.addEventListener('swipe-action', (e) =&gt; {
     console.log('Action triggered:', e.detail.action);
   });
