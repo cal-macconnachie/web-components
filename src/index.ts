@@ -7,6 +7,8 @@ export { BaseDateTimePicker, registerBaseDateTimePicker } from './components/bas
 export { BaseDrawer, registerBaseDrawer } from './components/base-drawer.js'
 export { BaseIcon, registerBaseIcon } from './components/base-icon.js'
 export { BaseInput, registerBaseInput } from './components/base-input.js'
+export { BaseList, registerBaseList } from './components/base-list.js'
+export { BaseListItem, registerBaseListItem, type SwipeAction } from './components/base-list-item.js'
 export { BaseSelect, registerBaseSelect, type SelectOption } from './components/base-select.js'
 export { BaseTab, registerBaseTab, type TabData } from './components/base-tab.js'
 export { BaseTabs, registerBaseTabs } from './components/base-tabs.js'

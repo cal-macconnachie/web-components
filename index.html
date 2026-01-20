@@ -2139,6 +2139,281 @@ const tokens = authForm.getTokens();
 &lt;/script&gt;</code></pre>
             </base-card>
           </base-tab>
+
+          <!-- Lists Tab -->
+          <base-tab id="lists" label="Lists" icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>'>
+            <!-- Basic List -->
+            <base-card variant="elevated" padding="md">
+              <h3>Basic List</h3>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                Simple list with default styling
+              </p>
+              <base-list size="md" variant="default">
+                <base-list-item size="md">
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <base-icon name="email" size="20px"></base-icon>
+                    <span>Inbox</span>
+                  </div>
+                </base-list-item>
+                <base-list-item size="md">
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <base-icon name="paperclip" size="20px"></base-icon>
+                    <span>Drafts</span>
+                  </div>
+                </base-list-item>
+                <base-list-item size="md">
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <base-icon name="send" size="20px"></base-icon>
+                    <span>Sent</span>
+                  </div>
+                </base-list-item>
+                <base-list-item size="md">
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <base-icon name="file-cabinet" size="20px"></base-icon>
+                    <span>Trash</span>
+                  </div>
+                </base-list-item>
+              </base-list>
+            </base-card>
+
+            <!-- Bordered List -->
+            <base-card variant="elevated" padding="md">
+              <h3>Bordered List</h3>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                List with border and rounded corners
+              </p>
+              <base-list size="md" variant="bordered">
+                <base-list-item size="md">
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <base-icon name="cog" size="20px"></base-icon>
+                      <span>Settings</span>
+                    </div>
+                    <base-icon name="arrow" size="16px" style="color: var(--color-text-muted);"></base-icon>
+                  </div>
+                </base-list-item>
+                <base-list-item size="md">
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <base-icon name="house" size="20px"></base-icon>
+                      <span>Profile</span>
+                    </div>
+                    <base-icon name="arrow" size="16px" style="color: var(--color-text-muted);"></base-icon>
+                  </div>
+                </base-list-item>
+                <base-list-item size="md">
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <base-icon name="filters" size="20px"></base-icon>
+                      <span>Notifications</span>
+                    </div>
+                    <base-icon name="arrow" size="16px" style="color: var(--color-text-muted);"></base-icon>
+                  </div>
+                </base-list-item>
+              </base-list>
+            </base-card>
+
+            <!-- Divided List -->
+            <base-card variant="elevated" padding="md">
+              <h3>Divided List</h3>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                List with dividers between items
+              </p>
+              <base-list size="md" variant="divided">
+                <base-list-item size="md">
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--color-primary); display: flex; align-items: center; justify-content: center; color: white;">JD</div>
+                    <div>
+                      <div style="font-weight: 500;">John Doe</div>
+                      <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">john@example.com</div>
+                    </div>
+                  </div>
+                </base-list-item>
+                <base-list-item size="md">
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--color-success); display: flex; align-items: center; justify-content: center; color: white;">JS</div>
+                    <div>
+                      <div style="font-weight: 500;">Jane Smith</div>
+                      <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">jane@example.com</div>
+                    </div>
+                  </div>
+                </base-list-item>
+                <base-list-item size="md">
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--color-warning); display: flex; align-items: center; justify-content: center; color: white;">BJ</div>
+                    <div>
+                      <div style="font-weight: 500;">Bob Johnson</div>
+                      <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">bob@example.com</div>
+                    </div>
+                  </div>
+                </base-list-item>
+              </base-list>
+            </base-card>
+
+            <!-- Interactive List -->
+            <base-card variant="elevated" padding="md">
+              <h3>Interactive List</h3>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                List items that respond to clicks with hover effects
+              </p>
+              <base-list size="md" variant="bordered" interactive>
+                <base-list-item size="md" interactive id="list-item-home">
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <base-icon name="house" size="20px"></base-icon>
+                      <span>Home</span>
+                    </div>
+                  </div>
+                </base-list-item>
+                <base-list-item size="md" interactive selected id="list-item-dashboard">
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <base-icon name="filters" size="20px"></base-icon>
+                      <span>Dashboard</span>
+                    </div>
+                  </div>
+                </base-list-item>
+                <base-list-item size="md" interactive id="list-item-analytics">
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <base-icon name="arrow" size="20px"></base-icon>
+                      <span>Analytics</span>
+                    </div>
+                  </div>
+                </base-list-item>
+                <base-list-item size="md" interactive disabled id="list-item-settings">
+                  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <base-icon name="cog" size="20px"></base-icon>
+                      <span>Settings (Disabled)</span>
+                    </div>
+                  </div>
+                </base-list-item>
+              </base-list>
+            </base-card>
+
+            <!-- Swipe Actions List -->
+            <base-card variant="elevated" padding="md">
+              <h3>Swipe Actions (Mobile)</h3>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                iOS-style swipe actions. Try swiping left or right on mobile/touch devices.
+              </p>
+              <base-list size="md" variant="divided" id="swipe-list">
+                <base-list-item size="md" id="swipe-item-1">
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <base-icon name="email" size="24px"></base-icon>
+                    <div>
+                      <div style="font-weight: 500;">New Message</div>
+                      <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Swipe for actions</div>
+                    </div>
+                  </div>
+                </base-list-item>
+                <base-list-item size="md" id="swipe-item-2">
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <base-icon name="suitcase" size="24px"></base-icon>
+                    <div>
+                      <div style="font-weight: 500;">Work Update</div>
+                      <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Swipe left or right</div>
+                    </div>
+                  </div>
+                </base-list-item>
+                <base-list-item size="md" id="swipe-item-3">
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <base-icon name="calendar-day" size="24px"></base-icon>
+                    <div>
+                      <div style="font-weight: 500;">Event Reminder</div>
+                      <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Try swiping!</div>
+                    </div>
+                  </div>
+                </base-list-item>
+              </base-list>
+            </base-card>
+
+            <!-- Size Variants -->
+            <base-card variant="elevated" padding="md">
+              <h3>Size Variants</h3>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                Different sizes for different use cases
+              </p>
+              <div style="display: grid; gap: 1.5rem;">
+                <div>
+                  <h4 style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: 0.5rem;">Small</h4>
+                  <base-list size="sm" variant="bordered">
+                    <base-list-item size="sm">Compact list item</base-list-item>
+                    <base-list-item size="sm">For dense layouts</base-list-item>
+                  </base-list>
+                </div>
+                <div>
+                  <h4 style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: 0.5rem;">Medium (Default)</h4>
+                  <base-list size="md" variant="bordered">
+                    <base-list-item size="md">Standard list item</base-list-item>
+                    <base-list-item size="md">Balanced spacing</base-list-item>
+                  </base-list>
+                </div>
+                <div>
+                  <h4 style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: 0.5rem;">Large</h4>
+                  <base-list size="lg" variant="bordered">
+                    <base-list-item size="lg">Spacious list item</base-list-item>
+                    <base-list-item size="lg">For touch-friendly interfaces</base-list-item>
+                  </base-list>
+                </div>
+              </div>
+            </base-card>
+
+            <!-- Code Usage -->
+            <base-card variant="elevated" padding="md">
+              <h3>Code Usage</h3>
+              <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: 1rem;">
+                Examples of how to use lists in your project
+              </p>
+              <pre style="background: var(--color-bg-muted); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; font-size: var(--font-size-sm);"><code>&lt;!-- Basic List --&gt;
+&lt;base-list size="md" variant="bordered"&gt;
+  &lt;base-list-item size="md"&gt;
+    Your content here
+  &lt;/base-list-item&gt;
+  &lt;base-list-item size="md" selected&gt;
+    Selected item
+  &lt;/base-list-item&gt;
+&lt;/base-list&gt;
+
+&lt;!-- Interactive List --&gt;
+&lt;base-list variant="divided" interactive&gt;
+  &lt;base-list-item interactive&gt;
+    Clickable item
+  &lt;/base-list-item&gt;
+&lt;/base-list&gt;
+
+&lt;!-- List with Swipe Actions (JavaScript) --&gt;
+&lt;script type="module"&gt;
+  const item = document.querySelector('base-list-item');
+
+  // Define swipe actions
+  item.leftSwipeAction = {
+    icon: 'archive',  // base-icon name
+    callback: () =&gt; console.log('Archived!'),
+    color: '#22c55e',
+    label: 'Archive'
+  };
+
+  item.rightSwipeAction = {
+    icon: 'trash',
+    callback: () =&gt; console.log('Deleted!'),
+    color: '#ef4444',
+    label: 'Delete'
+  };
+
+  // Listen for swipe events
+  item.addEventListener('swipe-action', (e) =&gt; {
+    console.log('Action triggered:', e.detail.action);
+  });
+
+  // Listen for item clicks
+  item.addEventListener('item-click', (e) =&gt; {
+    console.log('Item clicked:', e.detail.item);
+  });
+&lt;/script&gt;</code></pre>
+            </base-card>
+          </base-tab>
         </base-tabs>
 
         <!-- Drawer Examples -->

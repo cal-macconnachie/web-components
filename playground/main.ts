@@ -7,6 +7,8 @@ await customElements.whenDefined('auth-form')
 await customElements.whenDefined('base-drawer')
 await customElements.whenDefined('base-button')
 await customElements.whenDefined('base-toast')
+await customElements.whenDefined('base-list')
+await customElements.whenDefined('base-list-item')
 
 
 const toastExampleButton = document.getElementById('show-toast')
@@ -480,4 +482,113 @@ if (toggleFun) {
     },
   ]
 }
+
+// List swipe actions demo
+const swipeItem1 = document.getElementById('swipe-item-1') as any
+const swipeItem2 = document.getElementById('swipe-item-2') as any
+const swipeItem3 = document.getElementById('swipe-item-3') as any
+
+if (swipeItem1) {
+  swipeItem1.leftSwipeAction = {
+    icon: 'open-email',
+    callback: () => {
+      showToast({
+        message: 'Message marked as read!',
+        variant: 'success',
+        position: 'bottom-center',
+        dismiss: '2s'
+      })
+    },
+    color: '#22c55e',
+    label: 'Read'
+  }
+
+  swipeItem1.rightSwipeAction = {
+    icon: 'file-cabinet',
+    callback: () => {
+      showToast({
+        message: 'Message deleted!',
+        variant: 'danger',
+        position: 'bottom-center',
+        dismiss: '2s'
+      })
+    },
+    color: '#ef4444',
+    label: 'Delete'
+  }
+}
+
+if (swipeItem2) {
+  swipeItem2.leftSwipeAction = {
+    icon: 'file-cabinet',
+    callback: () => {
+      showToast({
+        message: 'Update archived!',
+        variant: 'info',
+        position: 'bottom-center',
+        dismiss: '2s'
+      })
+    },
+    color: '#3b82f6',
+    label: 'Archive'
+  }
+
+  swipeItem2.rightSwipeAction = {
+    icon: 'file-cabinet',
+    callback: () => {
+      showToast({
+        message: 'Update deleted!',
+        variant: 'danger',
+        position: 'bottom-center',
+        dismiss: '2s'
+      })
+    },
+    color: '#ef4444',
+    label: 'Delete'
+  }
+}
+
+if (swipeItem3) {
+  swipeItem3.leftSwipeAction = {
+    icon: 'open-email',
+    callback: () => {
+      showToast({
+        message: 'Marked as done!',
+        variant: 'success',
+        position: 'bottom-center',
+        dismiss: '2s'
+      })
+    },
+    color: '#22c55e',
+    label: 'Done'
+  }
+
+  swipeItem3.rightSwipeAction = {
+    icon: 'arrow',
+    callback: () => {
+      showToast({
+        message: 'Reminder dismissed!',
+        variant: 'warning',
+        position: 'bottom-center',
+        dismiss: '2s'
+      })
+    },
+    color: '#f59e0b',
+    label: 'Dismiss'
+  }
+}
+
+// Interactive list item click handlers
+const listItems = ['list-item-home', 'list-item-dashboard', 'list-item-analytics']
+listItems.forEach(id => {
+  const item = document.getElementById(id)
+  item?.addEventListener('item-click', (e: any) => {
+    // Remove selected from all items
+    listItems.forEach(itemId => {
+      document.getElementById(itemId)?.removeAttribute('selected')
+    })
+    // Add selected to clicked item
+    e.detail.item.setAttribute('selected', '')
+  })
+})
 
