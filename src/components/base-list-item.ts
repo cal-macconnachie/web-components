@@ -498,7 +498,7 @@ export class BaseListItem extends BaseElement {
                 title="Show action"
                 aria-label="Show action"
               >
-                +
+                ⋮
               </button>
             `
           : ''}
@@ -510,7 +510,7 @@ export class BaseListItem extends BaseElement {
                 title="Show action"
                 aria-label="Show action"
               >
-                +
+                ⋮
               </button>
             `
           : ''}
