@@ -7,9 +7,10 @@ import { register } from '../helpers/register'
 type ListItemSize = 'sm' | 'md' | 'lg'
 
 export interface SwipeAction {
-  icon: string
+  icon: string // Icon name or custom SVG string
   callback: () => void
-  color?: string
+  color?: string // Background color (use 'transparent' for no background)
+  iconColor?: string // Icon color (defaults to currentColor)
   label?: string
 }
 
@@ -68,6 +69,7 @@ export class BaseListItem extends BaseElement {
       display: flex;
       align-items: stretch;
       z-index: 0;
+      width: 100px;
     }
 
     .swipe-actions--left {
@@ -88,13 +90,12 @@ export class BaseListItem extends BaseElement {
       gap: var(--space-1);
       padding: 0 var(--space-6);
       border: none;
-      color: white;
       cursor: pointer;
       transition: all var(--transition-fast);
       font-family: var(--font-family-sans);
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-medium);
-      min-width: 80px;
+      width: 100%;
     }
 
     .swipe-action-button:active {
@@ -106,13 +107,11 @@ export class BaseListItem extends BaseElement {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      color: var(--color-text-muted);
       width: 18px;
       height: 18px;
       border: none;
       border-radius: 50%;
       background: none;
-      background-color: none;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -124,6 +123,7 @@ export class BaseListItem extends BaseElement {
       font-size: 18px;
       line-height: 1;
       padding: 0;
+      color: var(--color-text-muted);
     }
 
     .desktop-plus-icon--left {
@@ -361,6 +361,23 @@ export class BaseListItem extends BaseElement {
     })
   }
 
+  private renderActionIcon(action: SwipeAction, size: string = '24px') {
+    // Check if icon is a custom SVG (contains < character)
+    if (action.icon.includes('<')) {
+      return html`<span
+        style="display: inline-flex; width: ${size}; height: ${size};"
+        .innerHTML=${action.icon}
+      ></span>`
+    }
+
+    // Otherwise, use base-icon component
+    return html`<base-icon
+      name=${action.icon}
+      size=${size}
+      color=${action.iconColor || 'currentColor'}
+    ></base-icon>`
+  }
+
   private triggerSwipeAction(action: SwipeAction) {
     // Trigger the callback
     action.callback()
@@ -441,14 +458,10 @@ export class BaseListItem extends BaseElement {
               <div class="swipe-actions swipe-actions--left">
                 <button
                   class="swipe-action-button"
-                  style="background-color: ${this.leftSwipeAction.color || 'var(--color-success)'}"
+                  style="background-color: ${this.leftSwipeAction.color || 'var(--color-success)'}; color: ${this.leftSwipeAction.iconColor || 'white'}"
                   @click=${() => this.triggerSwipeAction(this.leftSwipeAction!)}
                 >
-                  <base-icon
-                    name=${this.leftSwipeAction.icon}
-                    size="24px"
-                    color="white"
-                  ></base-icon>
+                  ${this.renderActionIcon(this.leftSwipeAction, '24px')}
                   ${this.leftSwipeAction.label
                     ? html`<span>${this.leftSwipeAction.label}</span>`
                     : ''}
@@ -462,14 +475,10 @@ export class BaseListItem extends BaseElement {
               <div class="swipe-actions swipe-actions--right">
                 <button
                   class="swipe-action-button"
-                  style="background-color: ${this.rightSwipeAction.color || 'var(--color-error)'}"
+                  style="background-color: ${this.rightSwipeAction.color || 'var(--color-error)'}; color: ${this.rightSwipeAction.iconColor || 'white'}"
                   @click=${() => this.triggerSwipeAction(this.rightSwipeAction!)}
                 >
-                  <base-icon
-                    name=${this.rightSwipeAction.icon}
-                    size="24px"
-                    color="white"
-                  ></base-icon>
+                  ${this.renderActionIcon(this.rightSwipeAction, '24px')}
                   ${this.rightSwipeAction.label
                     ? html`<span>${this.rightSwipeAction.label}</span>`
                     : ''}
