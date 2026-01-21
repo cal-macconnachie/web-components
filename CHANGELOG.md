@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.5.6](https://github.com/cal-macconnachie/web-components/compare/v2.5.5...v2.5.6) (2026-01-21)
+
+
+### Bug Fixes
+
+* actual icon colour fix ([a82b234](https://github.com/cal-macconnachie/web-components/commit/a82b234c24bb89074fcb08507c80da311bce8807))
+
 ### [2.5.5](https://github.com/cal-macconnachie/web-components/compare/v2.5.4...v2.5.5) (2026-01-21)
 
 
