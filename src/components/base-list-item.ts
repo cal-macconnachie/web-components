@@ -365,16 +365,16 @@ export class BaseListItem extends BaseElement {
     // Check if icon is a custom SVG (contains < character)
     if (action.icon.includes('<')) {
       return html`<span
-        style="display: inline-flex; width: ${size}; height: ${size};"
+        style="display: inline-flex; width: ${size}; height: ${size}; color: inherit;"
         .innerHTML=${action.icon}
       ></span>`
     }
 
-    // Otherwise, use base-icon component
+    // Otherwise, use base-icon component - color will inherit from parent
     return html`<base-icon
       name=${action.icon}
       size=${size}
-      color=${action.iconColor || 'currentColor'}
+      color="currentColor"
     ></base-icon>`
   }
 
