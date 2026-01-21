@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.5.7](https://github.com/cal-macconnachie/web-components/compare/v2.5.6...v2.5.7) (2026-01-21)
+
+
+### Bug Fixes
+
+* dots and danger ([e8e2c78](https://github.com/cal-macconnachie/web-components/commit/e8e2c783fe8a16bf0d6b1c052c8ce1d508fece1d))
+* no hover ([d552ce1](https://github.com/cal-macconnachie/web-components/commit/d552ce1d644cb927a0e83bef0bbbb3f77d44746f))
+
 ### [2.5.6](https://github.com/cal-macconnachie/web-components/compare/v2.5.5...v2.5.6) (2026-01-21)
 
 
