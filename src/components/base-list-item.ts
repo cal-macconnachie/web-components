@@ -29,12 +29,15 @@ export class BaseListItem extends BaseElement {
 
   @state() private swipeOffset = 0
   @state() private isSwiping = false
+  @state() private desktopActionsOpen = false
+  @state() private desktopActionSide: 'left' | 'right' | null = null
 
   private touchStartX = 0
   private touchStartY = 0
   private currentX = 0
   private isDragging = false
   private swipeThreshold = 80
+  private documentClickHandler = this.handleDocumentClick.bind(this)
 
   static styles = css`
     :host {
@@ -55,6 +58,7 @@ export class BaseListItem extends BaseElement {
       width: 100%;
       display: flex;
       align-items: stretch;
+      isolation: isolate;
     }
 
     .swipe-actions {
@@ -97,70 +101,73 @@ export class BaseListItem extends BaseElement {
       filter: brightness(0.9);
     }
 
-    /* Desktop hover actions */
-    .desktop-actions {
+    /* Desktop plus icons on edges */
+    .desktop-plus-icon {
       position: absolute;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      display: flex;
-      align-items: center;
-      gap: var(--space-1);
-      padding-right: var(--space-3);
-      opacity: 0;
-      transform: translateX(10px);
-      transition: all var(--transition-fast);
-      pointer-events: none;
-      z-index: 2;
-      padding-left: var(--space-8);
-    }
-
-    .desktop-action-button {
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-muted);
+      width: 18px;
+      height: 18px;
+      border: none;
+      border-radius: 50%;
+      background: none;
+      background-color: none;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
-      border: none;
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      transition: all var(--transition-fast);
-      color: white;
-      pointer-events: auto;
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+      z-index: 3;
+      pointer-events: none;
+      font-size: 18px;
+      line-height: 1;
+      padding: 0;
     }
 
-    .desktop-action-button:hover {
-      transform: scale(1.1);
+    .desktop-plus-icon--left {
+      left: -4px;
+    }
+
+    .desktop-plus-icon--right {
+      right: -4px;
+    }
+
+    .desktop-plus-icon:hover {
       filter: brightness(1.1);
     }
 
-    .desktop-action-button:active {
-      transform: scale(0.95);
+    .desktop-plus-icon:active {
+      transform: translateY(-50%) scale(0.95);
     }
 
-    .desktop-action-button:focus-visible {
+    .desktop-plus-icon:focus-visible {
       outline: 2px solid var(--color-border-focus);
       outline-offset: 2px;
     }
 
-    /* Show desktop actions on hover (desktop only) */
+    /* Show plus icons on hover (desktop only) */
     @media (hover: hover) and (pointer: fine) {
-      :host(:hover) .desktop-actions,
-      :host(:focus-within) .desktop-actions {
+      :host(:hover) .desktop-plus-icon {
         opacity: 1;
-        transform: translateX(0);
         pointer-events: auto;
       }
 
-      /* Hide swipe actions on desktop */
+      /* Show swipe actions on desktop when opened */
       .swipe-actions {
-        display: none;
+        display: flex;
+      }
+
+      /* Disable swipe gestures on desktop */
+      .base-list-item {
+        touch-action: auto;
       }
     }
 
-    /* Hide desktop actions on touch devices */
+    /* Hide desktop plus icons on touch devices */
     @media (hover: none) {
-      .desktop-actions {
+      .desktop-plus-icon {
         display: none;
       }
     }
@@ -178,10 +185,15 @@ export class BaseListItem extends BaseElement {
       z-index: 1;
       touch-action: pan-y;
       transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+      will-change: transform;
     }
 
     .base-list-item--swiping {
       transition: none;
+    }
+
+    .base-list-item--desktop-open {
+      transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
     }
 
     /* Size variants */
@@ -237,6 +249,13 @@ export class BaseListItem extends BaseElement {
     if (this.disabled || this.isDragging) {
       event.preventDefault()
       event.stopPropagation()
+      return
+    }
+
+    // Close desktop actions if open
+    if (this.desktopActionsOpen) {
+      this.desktopActionsOpen = false
+      this.desktopActionSide = null
       return
     }
 
@@ -354,6 +373,45 @@ export class BaseListItem extends BaseElement {
         composed: true,
       })
     )
+
+    // Close desktop actions after triggering
+    this.desktopActionsOpen = false
+    this.desktopActionSide = null
+  }
+
+  private handleDesktopActionToggle(side: 'left' | 'right', event: Event) {
+    event.preventDefault()
+    // Don't stop propagation - we need the document click handler to know
+    // that the click was inside the component
+
+    if (this.desktopActionsOpen) {
+      // Close if already open
+      this.desktopActionsOpen = false
+      this.desktopActionSide = null
+    } else {
+      // Open the clicked side
+      this.desktopActionsOpen = true
+      this.desktopActionSide = side
+    }
+  }
+
+  private handleDocumentClick(event: Event) {
+    // Close desktop actions if clicking outside the component
+    const path = event.composedPath()
+    if (!path.includes(this)) {
+      this.desktopActionsOpen = false
+      this.desktopActionSide = null
+    }
+  }
+
+  connectedCallback() {
+    super.connectedCallback()
+    document.addEventListener('click', this.documentClickHandler)
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback()
+    document.removeEventListener('click', this.documentClickHandler)
   }
 
   render() {
@@ -363,6 +421,17 @@ export class BaseListItem extends BaseElement {
       'base-list-item--interactive': this.interactive,
       'base-list-item--selected': this.selected,
       'base-list-item--swiping': this.isDragging,
+      'base-list-item--desktop-open': this.desktopActionsOpen,
+    }
+
+    // Calculate offset: use desktop actions open state or swipe offset
+    let offset = this.swipeOffset
+    if (this.desktopActionsOpen && this.desktopActionSide) {
+      if (this.desktopActionSide === 'left') {
+        offset = 100 // Slide right to reveal left action
+      } else {
+        offset = -100 // Slide left to reveal right action
+      }
     }
 
     return html`
@@ -409,57 +478,35 @@ export class BaseListItem extends BaseElement {
             `
           : ''}
 
-        <!-- Desktop hover actions -->
-        ${this.leftSwipeAction || this.rightSwipeAction
+        <!-- Desktop plus icons -->
+        ${this.leftSwipeAction && !this.desktopActionsOpen
           ? html`
-              <div class="desktop-actions">
-                ${this.leftSwipeAction
-                  ? html`
-                      <button
-                        class="desktop-action-button"
-                        style="background-color: ${this.leftSwipeAction.color || 'var(--color-success)'}"
-                        @click=${(e: Event) => {
-                          e.stopPropagation()
-                          this.triggerSwipeAction(this.leftSwipeAction!)
-                        }}
-                        title=${this.leftSwipeAction.label || ''}
-                        aria-label=${this.leftSwipeAction.label || ''}
-                      >
-                        <base-icon
-                          name=${this.leftSwipeAction.icon}
-                          size="20px"
-                          color="white"
-                        ></base-icon>
-                      </button>
-                    `
-                  : ''}
-                ${this.rightSwipeAction
-                  ? html`
-                      <button
-                        class="desktop-action-button"
-                        style="background-color: ${this.rightSwipeAction.color || 'var(--color-error)'}"
-                        @click=${(e: Event) => {
-                          e.stopPropagation()
-                          this.triggerSwipeAction(this.rightSwipeAction!)
-                        }}
-                        title=${this.rightSwipeAction.label || ''}
-                        aria-label=${this.rightSwipeAction.label || ''}
-                      >
-                        <base-icon
-                          name=${this.rightSwipeAction.icon}
-                          size="20px"
-                          color="white"
-                        ></base-icon>
-                      </button>
-                    `
-                  : ''}
-              </div>
+              <button
+                class="desktop-plus-icon desktop-plus-icon--left"
+                @click=${(e: Event) => this.handleDesktopActionToggle('left', e)}
+                title="Show action"
+                aria-label="Show action"
+              >
+                +
+              </button>
+            `
+          : ''}
+        ${this.rightSwipeAction && !this.desktopActionsOpen
+          ? html`
+              <button
+                class="desktop-plus-icon desktop-plus-icon--right"
+                @click=${(e: Event) => this.handleDesktopActionToggle('right', e)}
+                title="Show action"
+                aria-label="Show action"
+              >
+                +
+              </button>
             `
           : ''}
 
         <div
           class=${classMap(classes)}
-          style="transform: translateX(${this.swipeOffset}px)"
+          style="transform: translateX(${offset}px)"
           role=${this.role}
           tabindex=${this.interactive && !this.disabled ? '0' : '-1'}
           aria-selected=${this.selected ? 'true' : 'false'}
