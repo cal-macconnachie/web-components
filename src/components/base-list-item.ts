@@ -24,6 +24,7 @@ export class BaseListItem extends BaseElement {
   @property({ type: Boolean, reflect: true, attribute: 'disabled' }) disabled = false
   @property({ type: Boolean, reflect: true, attribute: 'selected' }) selected = false
   @property({ type: Boolean, reflect: true, attribute: 'interactive' }) interactive = false
+  @property({ type: Boolean, reflect: true, attribute: 'no-hover' }) noHover = false
   @property({ type: String, attribute: 'role' }) role: string = 'listitem'
   @property({ type: Object, attribute: 'left-swipe-action' }) leftSwipeAction?: SwipeAction
   @property({ type: Object, attribute: 'right-swipe-action' }) rightSwipeAction?: SwipeAction
@@ -226,6 +227,15 @@ export class BaseListItem extends BaseElement {
 
     .base-list-item--interactive:active:not([disabled]) {
       background-color: var(--color-bg-secondary, var(--color-bg-muted));
+    }
+
+    /* No hover variant - keeps cursor but removes hover effects */
+    .base-list-item--no-hover:hover:not([disabled]) {
+      background-color: var(--list-item-bg, var(--color-bg-primary));
+    }
+
+    .base-list-item--no-hover:active:not([disabled]) {
+      background-color: var(--list-item-bg, var(--color-bg-primary));
     }
 
     .base-list-item--interactive:focus-visible {
@@ -441,6 +451,7 @@ export class BaseListItem extends BaseElement {
       'base-list-item--selected': this.selected,
       'base-list-item--swiping': this.isDragging,
       'base-list-item--desktop-open': this.desktopActionsOpen,
+      'base-list-item--no-hover': this.noHover,
     }
 
     // Calculate offset: use desktop actions open state or swipe offset
