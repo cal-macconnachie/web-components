@@ -28,11 +28,18 @@ export class BaseTab extends BaseElement {
     }
 
     :host([active]) {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
     }
 
     .base-tab {
       width: 100%;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
     }
   `
 

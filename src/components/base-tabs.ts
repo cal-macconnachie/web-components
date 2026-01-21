@@ -310,17 +310,20 @@ export class BaseTabs extends BaseElement {
     .tabs-content {
       flex: 1;
       min-width: 0;
+      min-height: 0;
       animation: fadeIn 0.2s ease-in;
-      overflow-y: auto;
-      overflow-x: hidden;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     .base-tabs--vertical .tabs-content {
       flex: 1;
       min-width: 0;
       min-height: 0;
-      overflow-y: auto;
-      overflow-x: hidden;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     @keyframes fadeIn {
