@@ -23,13 +23,13 @@ export class BaseList extends BaseElement {
   @state() private pullDistance = 0
   private startY = 0
   private pullThreshold = 80
-  private listElement?: HTMLElement
 
   static styles = css`
     :host {
       display: block;
       width: 100%;
       position: relative;
+      overflow-y: auto;
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
@@ -40,13 +40,7 @@ export class BaseList extends BaseElement {
 
     .base-list-wrapper {
       position: relative;
-      overflow: hidden;
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-
-    .base-list-wrapper::-webkit-scrollbar {
-      display: none;
+      width: 100%;
     }
 
     .pull-indicator {
@@ -71,11 +65,6 @@ export class BaseList extends BaseElement {
     .pull-indicator__icon {
       font-size: 24px;
       color: var(--color-text-muted);
-      transition: transform var(--transition-normal);
-    }
-
-    .pull-indicator--threshold .pull-indicator__icon {
-      transform: rotate(180deg);
     }
 
     .base-list {
@@ -84,12 +73,6 @@ export class BaseList extends BaseElement {
       width: 100%;
       background-color: inherit;
       transition: transform var(--transition-normal);
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-
-    .base-list::-webkit-scrollbar {
-      display: none;
     }
 
     .base-list--pulling {
@@ -148,10 +131,7 @@ export class BaseList extends BaseElement {
   connectedCallback() {
     super.connectedCallback()
     if (this.pullActionIcon) {
-      this.updateComplete.then(() => {
-        this.listElement = this.shadowRoot?.querySelector('.base-list') as HTMLElement
-        this.setupPullListeners()
-      })
+      this.setupPullListeners()
     }
   }
 
@@ -161,40 +141,45 @@ export class BaseList extends BaseElement {
   }
 
   private setupPullListeners() {
-    if (!this.listElement) return
-    this.listElement.addEventListener('touchstart', this.handleTouchStart, { passive: false })
-    this.listElement.addEventListener('touchmove', this.handleTouchMove, { passive: false })
-    this.listElement.addEventListener('touchend', this.handleTouchEnd)
+    this.addEventListener('touchstart', this.handleTouchStart, { passive: true })
+    this.addEventListener('touchmove', this.handleTouchMove, { passive: false })
+    this.addEventListener('touchend', this.handleTouchEnd, { passive: true })
   }
 
   private removePullListeners() {
-    if (!this.listElement) return
-    this.listElement.removeEventListener('touchstart', this.handleTouchStart)
-    this.listElement.removeEventListener('touchmove', this.handleTouchMove)
-    this.listElement.removeEventListener('touchend', this.handleTouchEnd)
+    this.removeEventListener('touchstart', this.handleTouchStart)
+    this.removeEventListener('touchmove', this.handleTouchMove)
+    this.removeEventListener('touchend', this.handleTouchEnd)
   }
 
   private handleTouchStart = (e: TouchEvent) => {
-    if (this.listElement && this.listElement.scrollTop === 0) {
+    if (this.scrollTop === 0) {
       this.startY = e.touches[0].clientY
     }
   }
 
   private handleTouchMove = (e: TouchEvent) => {
-    if (!this.listElement || this.startY === 0) return
+    if (this.startY === 0) return
 
     const currentY = e.touches[0].clientY
     const diff = currentY - this.startY
 
-    if (diff > 0 && this.listElement.scrollTop === 0) {
+    if (diff > 5 && this.scrollTop === 0) {
       e.preventDefault()
       this.isPulling = true
       this.pullDistance = Math.min(diff * 0.5, this.pullThreshold * 1.5)
+    } else if (diff <= 0) {
+      this.startY = 0
+      this.isPulling = false
+      this.pullDistance = 0
     }
   }
 
   private handleTouchEnd = () => {
-    if (!this.isPulling) return
+    if (!this.isPulling) {
+      this.startY = 0
+      return
+    }
 
     if (this.pullDistance >= this.pullThreshold) {
       this.dispatchEvent(new CustomEvent('list-pulled', {
@@ -220,22 +205,23 @@ export class BaseList extends BaseElement {
     const indicatorClasses = {
       'pull-indicator': true,
       'pull-indicator--active': this.isPulling,
-      'pull-indicator--threshold': this.pullDistance >= this.pullThreshold,
     }
 
     const listStyle = this.isPulling
       ? `transform: translateY(${this.pullDistance}px)`
       : ''
 
+    const rotation = Math.min((this.pullDistance / this.pullThreshold) * 180, 180)
     const indicatorStyle = this.isPulling
       ? `transform: translateY(${Math.max(-100 + (this.pullDistance / this.pullThreshold) * 100, -100)}%)`
       : ''
+    const iconStyle = `transform: rotate(${rotation}deg)`
 
     return html`
       <div class="base-list-wrapper">
         ${this.pullActionIcon ? html`
           <div class=${classMap(indicatorClasses)} style=${indicatorStyle}>
-            <span class="pull-indicator__icon">${this.pullActionIcon}</span>
+            <span class="pull-indicator__icon" style=${iconStyle}>${this.pullActionIcon}</span>
           </div>
         ` : ''}
         <div class=${classMap(listClasses)} role=${this.role} style=${listStyle}>
