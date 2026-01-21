@@ -355,7 +355,7 @@ export class BaseTabs extends BaseElement {
 
       .tabs-sidebar {
         position: relative;
-        width: 100%;
+        width: var(--tabs-sidebar-mobile-width, 100%);
         max-height: none;
         border-radius: var(--radius-lg);
         border-left: 1px solid var(--color-border, #e2e8f0);
