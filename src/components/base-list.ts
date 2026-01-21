@@ -28,7 +28,7 @@ export class BaseList extends BaseElement {
       display: flex;
       flex-direction: column;
       width: 100%;
-      background-color: var(--color-bg-primary);
+      background-color: inherit;
     }
 
     /* Variants */
@@ -40,6 +40,7 @@ export class BaseList extends BaseElement {
       border: 1px solid var(--color-border);
       border-radius: var(--radius-lg);
       overflow: hidden;
+      gap: 0;
     }
 
     .base-list--divided {
@@ -50,25 +51,13 @@ export class BaseList extends BaseElement {
       border-bottom: 1px solid var(--color-border);
     }
 
-    /* Size variants - affects spacing between items */
-    .base-list--sm {
-      gap: var(--space-1);
-    }
-
+    /* Size variants - affects spacing between items for default variant only */
     .base-list--sm.base-list--default {
       gap: var(--space-1);
     }
 
-    .base-list--md {
-      gap: var(--space-2);
-    }
-
     .base-list--md.base-list--default {
       gap: var(--space-2);
-    }
-
-    .base-list--lg {
-      gap: var(--space-3);
     }
 
     .base-list--lg.base-list--default {

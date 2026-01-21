@@ -112,7 +112,6 @@ export class BaseListItem extends BaseElement {
       transition: all var(--transition-fast);
       pointer-events: none;
       z-index: 2;
-      background: linear-gradient(to right, transparent, var(--color-bg-primary) 20%);
       padding-left: var(--space-8);
     }
 
@@ -172,7 +171,7 @@ export class BaseListItem extends BaseElement {
       width: 100%;
       font-family: var(--font-family-sans);
       color: var(--color-text-primary);
-      background-color: var(--color-bg-primary);
+      background-color: inherit;
       border: none;
       text-align: left;
       box-sizing: border-box;
