@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.6.3](https://github.com/cal-macconnachie/web-components/compare/v2.6.2...v2.6.3) (2026-01-21)
+
+
+### Bug Fixes
+
+* scroll top stuff ([12a8cd8](https://github.com/cal-macconnachie/web-components/commit/12a8cd814d7504cf244e163a48ece4a51777c5f0))
+
 ### [2.6.2](https://github.com/cal-macconnachie/web-components/compare/v2.6.1...v2.6.2) (2026-01-21)
 
 
