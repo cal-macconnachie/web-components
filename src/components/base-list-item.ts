@@ -24,8 +24,8 @@ export class BaseListItem extends BaseElement {
   @property({ type: Boolean, reflect: true, attribute: 'selected' }) selected = false
   @property({ type: Boolean, reflect: true, attribute: 'interactive' }) interactive = false
   @property({ type: String, attribute: 'role' }) role: string = 'listitem'
-  @property({ type: Object, attribute: false }) leftSwipeAction?: SwipeAction
-  @property({ type: Object, attribute: false }) rightSwipeAction?: SwipeAction
+  @property({ type: Object, attribute: 'left-swipe-action' }) leftSwipeAction?: SwipeAction
+  @property({ type: Object, attribute: 'right-swipe-action' }) rightSwipeAction?: SwipeAction
 
   @state() private swipeOffset = 0
   @state() private isSwiping = false
