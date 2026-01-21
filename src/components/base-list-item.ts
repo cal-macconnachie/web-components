@@ -171,7 +171,7 @@ export class BaseListItem extends BaseElement {
       width: 100%;
       font-family: var(--font-family-sans);
       color: var(--color-text-primary);
-      background-color: inherit;
+      background-color: var(--list-item-bg, var(--color-bg-primary));
       border: none;
       text-align: left;
       box-sizing: border-box;
