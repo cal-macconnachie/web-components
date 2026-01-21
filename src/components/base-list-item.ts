@@ -372,11 +372,11 @@ export class BaseListItem extends BaseElement {
       ></span>`
     }
 
-    // Otherwise, use base-icon component with explicit color
+    // base-icon uses --icon-color CSS custom property
     return html`<base-icon
       name=${action.icon}
       size=${size}
-      color=${iconColor}
+      style="--icon-color: ${iconColor};"
     ></base-icon>`
   }
 

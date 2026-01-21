@@ -559,7 +559,8 @@ if (swipeItem3) {
         dismiss: '2s'
       })
     },
-    color: '#22c55e',
+    color: 'transparent',
+    iconColor: '#22c55e',
     label: 'Done'
   }
 
@@ -573,7 +574,8 @@ if (swipeItem3) {
         dismiss: '2s'
       })
     },
-    color: '#f59e0b',
+    color: 'transparent',
+    iconColor: '#f59e0b',
     label: 'Dismiss'
   }
 }
