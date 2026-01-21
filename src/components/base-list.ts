@@ -22,7 +22,9 @@ export class BaseList extends BaseElement {
   @state() private isPulling = false
   @state() private pullDistance = 0
   private startY = 0
+  private startScrollTop = 0
   private pullThreshold = 80
+  private pullActivationDistance = 20
 
   static styles = css`
     :host {
@@ -41,6 +43,8 @@ export class BaseList extends BaseElement {
     .base-list-wrapper {
       position: relative;
       width: 100%;
+      overflow: hidden;
+      height: 100%;
     }
 
     .pull-indicator {
@@ -155,6 +159,7 @@ export class BaseList extends BaseElement {
   private handleTouchStart = (e: TouchEvent) => {
     if (this.scrollTop === 0) {
       this.startY = e.touches[0].clientY
+      this.startScrollTop = this.scrollTop
     }
   }
 
@@ -164,12 +169,15 @@ export class BaseList extends BaseElement {
     const currentY = e.touches[0].clientY
     const diff = currentY - this.startY
 
-    if (diff > 5 && this.scrollTop === 0) {
+    // Only activate pull if we're at the top and user has pulled down enough
+    if (diff > this.pullActivationDistance && this.scrollTop === 0 && this.startScrollTop === 0) {
       e.preventDefault()
       this.isPulling = true
       this.pullDistance = Math.min(diff * 0.5, this.pullThreshold * 1.5)
-    } else if (diff <= 0) {
+    } else if (diff <= 0 || this.scrollTop > 0) {
+      // Reset if user scrolls up or if we're no longer at the top
       this.startY = 0
+      this.startScrollTop = 0
       this.isPulling = false
       this.pullDistance = 0
     }
@@ -178,6 +186,7 @@ export class BaseList extends BaseElement {
   private handleTouchEnd = () => {
     if (!this.isPulling) {
       this.startY = 0
+      this.startScrollTop = 0
       return
     }
 
@@ -191,6 +200,7 @@ export class BaseList extends BaseElement {
     this.isPulling = false
     this.pullDistance = 0
     this.startY = 0
+    this.startScrollTop = 0
   }
 
   render() {
