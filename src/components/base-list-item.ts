@@ -127,11 +127,11 @@ export class BaseListItem extends BaseElement {
     }
 
     .desktop-plus-icon--left {
-      left: -4px;
+      left: -2px;
     }
 
     .desktop-plus-icon--right {
-      right: -4px;
+      right: -2px;
     }
 
     .desktop-plus-icon:hover {
@@ -150,7 +150,7 @@ export class BaseListItem extends BaseElement {
     /* Show plus icons on hover (desktop only) */
     @media (hover: hover) and (pointer: fine) {
       :host(:hover) .desktop-plus-icon {
-        opacity: 1;
+        opacity: 0.7;
         pointer-events: auto;
       }
 
@@ -362,19 +362,21 @@ export class BaseListItem extends BaseElement {
   }
 
   private renderActionIcon(action: SwipeAction, size: string = '24px') {
+    const iconColor = action.iconColor || 'white'
+
     // Check if icon is a custom SVG (contains < character)
     if (action.icon.includes('<')) {
       return html`<span
-        style="display: inline-flex; width: ${size}; height: ${size}; color: inherit;"
+        style="display: inline-flex; width: ${size}; height: ${size}; color: ${iconColor};"
         .innerHTML=${action.icon}
       ></span>`
     }
 
-    // Otherwise, use base-icon component - color will inherit from parent
+    // Otherwise, use base-icon component with explicit color
     return html`<base-icon
       name=${action.icon}
       size=${size}
-      color="currentColor"
+      color=${iconColor}
     ></base-icon>`
   }
 
