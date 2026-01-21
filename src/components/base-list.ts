@@ -26,7 +26,10 @@ export class BaseList extends BaseElement {
 
   static styles = css`
     :host {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
       width: 100%;
       position: relative;
       overflow-y: auto;
