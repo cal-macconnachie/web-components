@@ -241,6 +241,16 @@ body {
 }
 
 @media (max-width: 768px) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    background-color: var(--color-bg-secondary);
+  }
+  html {
+    min-height: calc(100% + env(safe-area-inset-top));
+  }
   .page {
     padding: var(--space-2);
   }
