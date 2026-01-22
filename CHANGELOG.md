@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.6.8](https://github.com/cal-macconnachie/web-components/compare/v2.6.7...v2.6.8) (2026-01-22)
+
+
+### Bug Fixes
+
+* pwa insets ([c144539](https://github.com/cal-macconnachie/web-components/commit/c1445395b3393cfc53f9a9b918f73b0dc38da744))
+
 ### [2.6.7](https://github.com/cal-macconnachie/web-components/compare/v2.6.6...v2.6.7) (2026-01-22)
 
 
