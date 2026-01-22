@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.6.7](https://github.com/cal-macconnachie/web-components/compare/v2.6.6...v2.6.7) (2026-01-22)
+
+
+### Bug Fixes
+
+* proper inverse muted ([f011812](https://github.com/cal-macconnachie/web-components/commit/f01181264446d64e2617a3f4fa6cd5e5a8482800))
+
 ### [2.6.6](https://github.com/cal-macconnachie/web-components/compare/v2.6.5...v2.6.6) (2026-01-21)
 
 
