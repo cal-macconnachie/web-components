@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.6.9](https://github.com/cal-macconnachie/web-components/compare/v2.6.8...v2.6.9) (2026-01-23)
+
+
+### Bug Fixes
+
+* padding bottom on drawers ([923e334](https://github.com/cal-macconnachie/web-components/commit/923e3348d6eac49780c75356078f103d4516b979))
+
 ### [2.6.8](https://github.com/cal-macconnachie/web-components/compare/v2.6.7...v2.6.8) (2026-01-22)
 
 
