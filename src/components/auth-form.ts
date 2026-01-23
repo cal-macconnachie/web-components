@@ -212,6 +212,8 @@ export class AuthForm extends BaseElement {
       if (user) {
         this.handleAuthSuccess(user)
         log('Existing session detected, user logged in')
+      } else {
+        this.dispatchEvent(new CustomEvent('no-session'))
       }
     } catch (err) {
       // Session check failed, try to refresh tokens using the same global mechanism
@@ -226,6 +228,7 @@ export class AuthForm extends BaseElement {
           window.__authRefreshPromise = (async () => {
             try {
               await this.getApiService().refresh()
+
             } finally {
               window.__authRefreshPromise = null
             }
@@ -247,6 +250,8 @@ export class AuthForm extends BaseElement {
         // No valid session and refresh failed - this is expected for logged-out users
         // Silently fail without showing errors
         log('No existing session found and refresh failed')
+
+        this.dispatchEvent(new CustomEvent('no-session'))
       }
     }
   }
