@@ -641,6 +641,7 @@ export class BaseDrawer extends BaseElement {
       animation: slideUp var(--transition-slow);
       transform-origin: bottom center;
       transition: height var(--transition-slow) cubic-bezier(0.4, 0, 0.2, 1);
+      padding-bottom: env(safe-area-inset-bottom);
     }
 
     .modal-container--closing {
