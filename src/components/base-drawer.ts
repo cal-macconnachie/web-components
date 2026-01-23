@@ -11,7 +11,7 @@ export const registerBaseDrawer = () => register({
 export class BaseDrawer extends BaseElement {
   // Properties
   @property({ type: Boolean, reflect: true }) open = false
-  @property({ type: String, attribute: 'size' }) size: 'sm' | 'md' | 'lg' = 'sm'
+  @property({ type: String, attribute: 'size' }) size: 'sm' | 'md' | 'lg' | 'full' = 'sm'
   @property({
     type: Array,
     converter: {
@@ -698,6 +698,10 @@ export class BaseDrawer extends BaseElement {
 
     .drawer-content--lg {
       max-width: 900px;
+    }
+
+    .drawer-content--full {
+      max-width: 100%;
     }
 
     @keyframes fadeIn {
