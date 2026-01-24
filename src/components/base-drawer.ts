@@ -27,6 +27,7 @@ export class BaseDrawer extends BaseElement {
   })
   detents = [0, 85] // in dvh units
   @property({ type: Boolean, attribute: 'persist-on-overlay-click' }) persistOnOverlayClick = false
+  @property({ type: String, attribute: 'default-detent' }) defaultDetent = ''
 
   // State
   @state() private isClosing = false
@@ -76,7 +77,12 @@ export class BaseDrawer extends BaseElement {
       const activeDetents = this.getActiveDetents()
       // If zero detent is not present, start at smallest (first) detent
       // Otherwise start at largest (last) detent
-      this.currentDetentIndex = this.isClosable() ? Math.max(0, activeDetents.length - 1) : 0
+      if (this.defaultDetent) {
+        const defaultIndex = activeDetents.indexOf(Number(this.defaultDetent))
+        this.currentDetentIndex = defaultIndex !== -1 ? defaultIndex : (this.isClosable() ? Math.max(0, activeDetents.length - 1) : 0)
+      } else {
+        this.currentDetentIndex = this.isClosable() ? Math.max(0, activeDetents.length - 1) : 0
+      }
     }
   }
 
@@ -87,7 +93,12 @@ export class BaseDrawer extends BaseElement {
         const activeDetents = this.getActiveDetents()
         // If zero detent is not present, start at smallest (first) detent
         // Otherwise start at largest (last) detent
-        this.currentDetentIndex = this.isClosable() ? Math.max(0, activeDetents.length - 1) : 0
+        if (this.defaultDetent) {
+          const defaultIndex = activeDetents.indexOf(Number(this.defaultDetent))
+          this.currentDetentIndex = defaultIndex !== -1 ? defaultIndex : (this.isClosable() ? Math.max(0, activeDetents.length - 1) : 0)
+        } else {
+          this.currentDetentIndex = this.isClosable() ? Math.max(0, activeDetents.length - 1) : 0
+        }
         this.lockBodyScroll()
       } else if (this.isVisible) {
         this.handleClose()
@@ -457,7 +468,12 @@ export class BaseDrawer extends BaseElement {
     const activeDetents = this.getActiveDetents()
     // If zero detent is not present, start at smallest (first) detent
     // Otherwise start at largest (last) detent
-    this.currentDetentIndex = this.isClosable() ? Math.max(0, activeDetents.length - 1) : 0
+    if (this.defaultDetent) {
+      const defaultIndex = activeDetents.indexOf(Number(this.defaultDetent))
+      this.currentDetentIndex = defaultIndex !== -1 ? defaultIndex : (this.isClosable() ? Math.max(0, activeDetents.length - 1) : 0)
+    } else {
+      this.currentDetentIndex = this.isClosable() ? Math.max(0, activeDetents.length - 1) : 0
+    }
     this.dispatchEvent(
       new CustomEvent('drawer-open', {
         bubbles: true,
