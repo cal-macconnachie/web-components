@@ -75,11 +75,11 @@ export class BaseDrawer extends BaseElement {
     if (this.open) {
       this.isVisible = true
       const activeDetents = this.getActiveDetents()
-      // If zero detent is not present, start at smallest (first) detent
-      // Otherwise start at largest (last) detent
-      if (this.defaultDetent) {
-        const defaultIndex = activeDetents.indexOf(Number(this.defaultDetent))
-        this.currentDetentIndex = defaultIndex !== -1 ? defaultIndex : (this.isClosable() ? Math.max(0, activeDetents.length - 1) : 0)
+
+      if (this.defaultDetent != '') {
+        const targetHeight = Number(this.defaultDetent)
+        const defaultIndex = activeDetents.findIndex(d => d === targetHeight)
+        this.currentDetentIndex = defaultIndex !== -1 ? defaultIndex : 0
       } else {
         this.currentDetentIndex = this.isClosable() ? Math.max(0, activeDetents.length - 1) : 0
       }
@@ -91,11 +91,11 @@ export class BaseDrawer extends BaseElement {
       if (this.open) {
         this.isVisible = true
         const activeDetents = this.getActiveDetents()
-        // If zero detent is not present, start at smallest (first) detent
-        // Otherwise start at largest (last) detent
-        if (this.defaultDetent) {
-          const defaultIndex = activeDetents.indexOf(Number(this.defaultDetent))
-          this.currentDetentIndex = defaultIndex !== -1 ? defaultIndex : (this.isClosable() ? Math.max(0, activeDetents.length - 1) : 0)
+
+        if (this.defaultDetent != '') {
+          const targetHeight = Number(this.defaultDetent)
+          const defaultIndex = activeDetents.findIndex(d => d === targetHeight)
+          this.currentDetentIndex = defaultIndex !== -1 ? defaultIndex : 0
         } else {
           this.currentDetentIndex = this.isClosable() ? Math.max(0, activeDetents.length - 1) : 0
         }
@@ -466,11 +466,11 @@ export class BaseDrawer extends BaseElement {
     this.open = true
     this.isVisible = true
     const activeDetents = this.getActiveDetents()
-    // If zero detent is not present, start at smallest (first) detent
-    // Otherwise start at largest (last) detent
-    if (this.defaultDetent) {
-      const defaultIndex = activeDetents.indexOf(Number(this.defaultDetent))
-      this.currentDetentIndex = defaultIndex !== -1 ? defaultIndex : (this.isClosable() ? Math.max(0, activeDetents.length - 1) : 0)
+
+    if (this.defaultDetent != '') {
+      const targetHeight = Number(this.defaultDetent)
+      const defaultIndex = activeDetents.findIndex(d => d === targetHeight)
+      this.currentDetentIndex = defaultIndex !== -1 ? defaultIndex : 0
     } else {
       this.currentDetentIndex = this.isClosable() ? Math.max(0, activeDetents.length - 1) : 0
     }
