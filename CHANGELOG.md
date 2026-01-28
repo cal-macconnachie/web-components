@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.6.15](https://github.com/cal-macconnachie/web-components/compare/v2.6.14...v2.6.15) (2026-01-28)
+
+
+### Bug Fixes
+
+* list should use border box ([58ee68a](https://github.com/cal-macconnachie/web-components/commit/58ee68a672ef627709fd4984ccd51127db8a4985))
+
 ### [2.6.14](https://github.com/cal-macconnachie/web-components/compare/v2.6.13...v2.6.14) (2026-01-28)
 
 
