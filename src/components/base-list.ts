@@ -76,6 +76,7 @@ export class BaseList extends BaseElement {
       width: 100%;
       background-color: inherit;
       transition: transform var(--transition-normal);
+      box-sizing: border-box;
     }
 
     .base-list--pulling {
