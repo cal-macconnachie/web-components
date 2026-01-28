@@ -12,6 +12,11 @@ export interface SwipeAction {
   color?: string // Background color (use 'transparent' for no background)
   iconColor?: string // Icon color (defaults to currentColor)
   label?: string
+  desktopConfig?: {
+    showOnHover?: boolean // Whether to show the action button on hover (desktop only)
+    hoverChar?: string // Icon to show on hover state, defualts to ⋮
+    hoverDelay?: number // Time in ms to wait before showing hover action only relevant if showOnHover is true
+  }
 }
 
 export const registerBaseListItem = () => register({
@@ -40,6 +45,8 @@ export class BaseListItem extends BaseElement {
   private isDragging = false
   private swipeThreshold = 80
   private documentClickHandler = this.handleDocumentClick.bind(this)
+  private leftTimeout: number | null = null
+  private rightTimeout: number | null = null
 
   static styles = css`
     :host {
@@ -125,6 +132,16 @@ export class BaseListItem extends BaseElement {
       line-height: 1;
       padding: 0;
       color: var(--color-text-muted);
+    }
+
+    .desktop-plus-icon::after {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      cursor: pointer;
     }
 
     .desktop-plus-icon--left {
@@ -408,8 +425,10 @@ export class BaseListItem extends BaseElement {
     this.desktopActionSide = null
   }
 
-  private handleDesktopActionToggle(side: 'left' | 'right', event: Event) {
-    event.preventDefault()
+  private handleDesktopActionToggle(side: 'left' | 'right', event: Event = {} as Event) {
+    if ('preventDefault' in event) {
+      event.preventDefault()
+    }
     // Don't stop propagation - we need the document click handler to know
     // that the click was inside the component
 
@@ -468,7 +487,14 @@ export class BaseListItem extends BaseElement {
       <div class="list-item-wrapper">
         ${this.leftSwipeAction
           ? html`
-              <div class="swipe-actions swipe-actions--left">
+              <div
+              class="swipe-actions swipe-actions--left"
+              @mouseleave="${() => {
+                if (this.desktopActionsOpen && this.leftSwipeAction?.desktopConfig?.showOnHover) {
+                  this.desktopActionsOpen = false
+                  this.desktopActionSide = null
+                }
+              }}">
                 <button
                   class="swipe-action-button"
                   style="background-color: ${this.leftSwipeAction.color || 'var(--color-success)'}; color: ${this.leftSwipeAction.iconColor || 'white'}"
@@ -485,7 +511,15 @@ export class BaseListItem extends BaseElement {
 
         ${this.rightSwipeAction
           ? html`
-              <div class="swipe-actions swipe-actions--right">
+              <div
+              class="swipe-actions swipe-actions--right"
+              @mouseleave="${() => {
+                if (this.desktopActionsOpen && this.rightSwipeAction?.desktopConfig?.showOnHover) {
+                  this.desktopActionsOpen = false
+                  this.desktopActionSide = null
+                }
+              }}"
+              >
                 <button
                   class="swipe-action-button"
                   style="background-color: ${this.rightSwipeAction.color || 'var(--color-error)'}; color: ${this.rightSwipeAction.iconColor || 'white'}"
@@ -506,10 +540,27 @@ export class BaseListItem extends BaseElement {
               <button
                 class="desktop-plus-icon desktop-plus-icon--left"
                 @click=${(e: Event) => this.handleDesktopActionToggle('left', e)}
+                @mouseenter=${() => {
+                  // set timout for half a second before handleDesktopActionToggle left
+                  if (!this.leftSwipeAction?.desktopConfig?.showOnHover) {
+                    return
+                  }
+                  this.leftTimeout = window.setTimeout((e: Event) => {
+                    if (!this.desktopActionsOpen) {
+                      this.handleDesktopActionToggle('left', e)
+                    }
+                  }, this.leftSwipeAction?.desktopConfig?.hoverDelay || 0)
+                }}
+                @mouseleave=${() => {
+                  if (this.leftTimeout && this.leftSwipeAction?.desktopConfig?.showOnHover) {
+                    clearTimeout(this.leftTimeout)
+                    this.leftTimeout = null
+                  }
+                }}
                 title="Show action"
                 aria-label="Show action"
               >
-                ⋮
+                ${this.leftSwipeAction?.desktopConfig?.hoverChar ?? '⋮'}
               </button>
             `
           : ''}
@@ -518,10 +569,26 @@ export class BaseListItem extends BaseElement {
               <button
                 class="desktop-plus-icon desktop-plus-icon--right"
                 @click=${(e: Event) => this.handleDesktopActionToggle('right', e)}
+                @mouseenter=${() => {
+                  if (!this.rightSwipeAction?.desktopConfig?.showOnHover) {
+                    return
+                  }
+                  this.rightTimeout = window.setTimeout((e: Event) => {
+                    if (!this.desktopActionsOpen) {
+                      this.handleDesktopActionToggle('right', e)
+                    }
+                  }, this.rightSwipeAction?.desktopConfig?.hoverDelay || 0)
+                }}
+                @mouseleave=${() => {
+                  if (this.rightTimeout && this.rightSwipeAction?.desktopConfig?.showOnHover) {
+                    clearTimeout(this.rightTimeout)
+                    this.rightTimeout = null
+                  }
+                }}
                 title="Show action"
                 aria-label="Show action"
               >
-                ⋮
+                ${this.rightSwipeAction?.desktopConfig?.hoverChar ?? '⋮'}
               </button>
             `
           : ''}
