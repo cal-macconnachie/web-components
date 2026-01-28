@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.7.0](https://github.com/cal-macconnachie/web-components/compare/v2.6.15...v2.7.0) (2026-01-28)
+
+
+### Features
+
+* desktop config for list actions ([304f1ac](https://github.com/cal-macconnachie/web-components/commit/304f1acf64520339e39ad6cd5d07ee45164240ea))
+
 ### [2.6.15](https://github.com/cal-macconnachie/web-components/compare/v2.6.14...v2.6.15) (2026-01-28)
 
 
