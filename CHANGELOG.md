@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.6.14](https://github.com/cal-macconnachie/web-components/compare/v2.6.13...v2.6.14) (2026-01-28)
+
+
+### Bug Fixes
+
+* better base drawer ([3836610](https://github.com/cal-macconnachie/web-components/commit/38366104765bb131198fbab6e55eea57dba48f82))
+
 ### [2.6.13](https://github.com/cal-macconnachie/web-components/compare/v2.6.12...v2.6.13) (2026-01-24)
 
 
