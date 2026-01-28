@@ -40,11 +40,40 @@ export class BaseDrawer extends BaseElement {
   @state() private currentDetentIndex = 0
   @state() private dragCommitted = false
 
+  // Content drag state (for drag-from-anywhere functionality)
+  @state() private touchStartYForContent = 0
+  @state() private touchStartXForContent = 0
+  @state() private hasDeterminedDirection = false
+  @state() private isScrollableContentAtTop = true
+  @state() private contentDragTransferred = false
+
   // Refs
   @query('.modal-container') private modalContainer?: HTMLElement
   @query('.drawer-content') private drawerContent?: HTMLElement
 
   private transitionDuration = 300
+  private scrollEndTimeoutId: number | null = null
+
+  private preventBackgroundScroll = (event: TouchEvent) => {
+    // Only prevent scroll if NOT touching the modal container
+    // This allows drawer and its content to handle their own touches
+    if (!this.modalContainer) {
+      event.preventDefault()
+      return
+    }
+
+    const target = event.target as Node
+    const path = event.composedPath()
+
+    // Check if touch is on the modal container (drawer) or its descendants
+    const isTouchingDrawer = path.includes(this.modalContainer)
+
+    if (!isTouchingDrawer) {
+      // Touch is outside drawer, prevent background scroll
+      event.preventDefault()
+    }
+    // If touching drawer, let the touch through for content scrolling and dragging
+  }
 
   private boundKeyHandler = (event: KeyboardEvent) => {
     if (event.key === 'Escape' && this.isVisible && this.isClosable()) {
@@ -55,12 +84,18 @@ export class BaseDrawer extends BaseElement {
   connectedCallback() {
     super.connectedCallback()
     window.addEventListener('keyup', this.boundKeyHandler)
+
+    // Attach scroll listeners after component is fully updated
+    this.updateComplete.then(() => {
+      this.attachScrollListeners()
+    })
   }
 
   disconnectedCallback() {
     window.removeEventListener('keyup', this.boundKeyHandler)
     window.removeEventListener('mousemove', this.handleDragMove)
     window.removeEventListener('mouseup', this.handleDragEnd)
+    this.removeScrollListeners()
     this.unlockBodyScroll()
     super.disconnectedCallback()
   }
@@ -119,12 +154,15 @@ export class BaseDrawer extends BaseElement {
   private lockBodyScroll() {
     if (!this.persistOnOverlayClick) {
       document.body.style.overflow = 'hidden'
+      // Prevent touch scrolling on mobile (overflow:hidden isn't enough)
+      document.addEventListener('touchmove', this.preventBackgroundScroll, { passive: false })
     }
   }
 
   private unlockBodyScroll() {
     if (!this.persistOnOverlayClick) {
       document.body.style.overflow = ''
+      document.removeEventListener('touchmove', this.preventBackgroundScroll)
     }
   }
 
@@ -159,6 +197,131 @@ export class BaseDrawer extends BaseElement {
     const activeDetents = this.getActiveDetents()
     if (activeDetents.length === 0) return 85
     return activeDetents[this.currentDetentIndex] || activeDetents[activeDetents.length - 1]
+  }
+
+  /**
+   * Check if all scrollable content is at the top position
+   * Must check slotted content (light DOM), not shadow DOM
+   */
+  private isContentScrolledToTop(): boolean {
+    if (!this.drawerContent) return true
+
+    // Get the slot element and its assigned (slotted) content
+    const slot = this.drawerContent.querySelector('slot') as HTMLSlotElement
+    if (!slot) return true
+
+    const slottedElements = slot.assignedElements() as HTMLElement[]
+    if (slottedElements.length === 0) return true
+
+    const scrollableElements: HTMLElement[] = []
+
+    // Check each slotted element and its descendants
+    for (const slottedEl of slottedElements) {
+      // Check the slotted element itself
+      const computed = window.getComputedStyle(slottedEl)
+      const overflowY = computed.overflowY
+      if ((overflowY === 'auto' || overflowY === 'scroll') && slottedEl.scrollHeight > slottedEl.clientHeight) {
+        scrollableElements.push(slottedEl)
+      }
+
+      // Check all descendants of the slotted element
+      const descendants = Array.from(slottedEl.querySelectorAll('*')) as HTMLElement[]
+      for (const el of descendants) {
+        const elComputed = window.getComputedStyle(el)
+        const elOverflowY = elComputed.overflowY
+        if ((elOverflowY === 'auto' || elOverflowY === 'scroll') && el.scrollHeight > el.clientHeight) {
+          scrollableElements.push(el)
+        }
+      }
+    }
+
+    // If no scrollable elements found, we're at "top"
+    if (scrollableElements.length === 0) return true
+
+    // All scrollable elements must be at top (scrollTop === 0)
+    return scrollableElements.every(el => el.scrollTop === 0)
+  }
+
+  /**
+   * Handle scroll events on content with debouncing
+   */
+  private handleContentScroll = () => {
+    // Clear existing timeout
+    if (this.scrollEndTimeoutId !== null) {
+      window.clearTimeout(this.scrollEndTimeoutId)
+    }
+
+    // Set new timeout to update flag after scroll momentum ends
+    this.scrollEndTimeoutId = window.setTimeout(() => {
+      this.isScrollableContentAtTop = this.isContentScrolledToTop()
+      this.scrollEndTimeoutId = null
+    }, 100)
+  }
+
+  /**
+   * Attach scroll listeners to slotted drawer content
+   */
+  private attachScrollListeners() {
+    if (!this.drawerContent) return
+
+    const slot = this.drawerContent.querySelector('slot') as HTMLSlotElement
+    if (!slot) return
+
+    const slottedElements = slot.assignedElements() as HTMLElement[]
+
+    // Attach listeners to all scrollable slotted content
+    for (const slottedEl of slottedElements) {
+      // Check the slotted element itself
+      const computed = window.getComputedStyle(slottedEl)
+      if (computed.overflowY === 'auto' || computed.overflowY === 'scroll') {
+        slottedEl.addEventListener('scroll', this.handleContentScroll, { passive: true })
+      }
+
+      // Check all descendants
+      const descendants = Array.from(slottedEl.querySelectorAll('*')) as HTMLElement[]
+      for (const el of descendants) {
+        const elComputed = window.getComputedStyle(el)
+        if (elComputed.overflowY === 'auto' || elComputed.overflowY === 'scroll') {
+          el.addEventListener('scroll', this.handleContentScroll, { passive: true })
+        }
+      }
+    }
+  }
+
+  /**
+   * Remove scroll listeners from slotted drawer content
+   */
+  private removeScrollListeners() {
+    if (!this.drawerContent) return
+
+    const slot = this.drawerContent.querySelector('slot') as HTMLSlotElement
+    if (slot) {
+      const slottedElements = slot.assignedElements() as HTMLElement[]
+
+      // Remove listeners from all scrollable slotted content
+      for (const slottedEl of slottedElements) {
+        // Check the slotted element itself
+        const computed = window.getComputedStyle(slottedEl)
+        if (computed.overflowY === 'auto' || computed.overflowY === 'scroll') {
+          slottedEl.removeEventListener('scroll', this.handleContentScroll)
+        }
+
+        // Check all descendants
+        const descendants = Array.from(slottedEl.querySelectorAll('*')) as HTMLElement[]
+        for (const el of descendants) {
+          const elComputed = window.getComputedStyle(el)
+          if (elComputed.overflowY === 'auto' || elComputed.overflowY === 'scroll') {
+            el.removeEventListener('scroll', this.handleContentScroll)
+          }
+        }
+      }
+    }
+
+    // Clear timeout
+    if (this.scrollEndTimeoutId !== null) {
+      window.clearTimeout(this.scrollEndTimeoutId)
+      this.scrollEndTimeoutId = null
+    }
   }
 
   private handleClose = () => {
@@ -208,6 +371,8 @@ export class BaseDrawer extends BaseElement {
     this.dragStartTime = Date.now()
 
     if (event instanceof TouchEvent) {
+      // Prevent pull-to-refresh on mobile
+      event.preventDefault()
       this.dragStartY = event.touches[0].clientY
       this.dragCurrentY = event.touches[0].clientY
     } else {
@@ -223,6 +388,8 @@ export class BaseDrawer extends BaseElement {
     if (!this.isDragging || !this.modalContainer) return
 
     if (event instanceof TouchEvent) {
+      // Prevent pull-to-refresh on mobile
+      event.preventDefault()
       this.dragCurrentY = event.touches[0].clientY
     } else {
       this.dragCurrentY = event.clientY
@@ -289,10 +456,10 @@ export class BaseDrawer extends BaseElement {
 
     const activeDetents = this.getActiveDetents()
     const currentHeight = this.getCurrentDetentHeight()
-    const viewportHeight = window.innerHeight
+    const dragViewportHeight = window.innerHeight
 
     // Calculate the visual height after drag (in dvh units)
-    const dragDistanceSvh = (Math.abs(dragDistance) / viewportHeight) * 100
+    const dragDistanceSvh = (Math.abs(dragDistance) / dragViewportHeight) * 100
     let visualHeight: number
 
     if (dragDistance < 0) {
@@ -305,7 +472,6 @@ export class BaseDrawer extends BaseElement {
 
     // Find closest detent or determine if should close
     let targetDetentIndex = this.currentDetentIndex
-    const velocityThreshold = 0.5
     const highVelocityThreshold = 1.0
 
     // Check if closable
@@ -313,56 +479,31 @@ export class BaseDrawer extends BaseElement {
     const smallestDetent = activeDetents[0]
     const isAtSmallestDetent = this.currentDetentIndex === 0
 
-    // High velocity swipe
-    if (velocity > velocityThreshold && Math.abs(dragDistance) > 30) {
-      if (dragDistance > 0) {
-        // Swiped down fast
-        if (canClose) {
-          // Very high velocity downward swipe from smallest detent = close
-          if (velocity > highVelocityThreshold && isAtSmallestDetent && dragDistance > 50) {
-            targetDetentIndex = -1 // Signal to close
-          }
-          // High velocity downward swipe with visual height below smallest detent = close
-          else if (visualHeight < smallestDetent * 0.8) {
-            targetDetentIndex = -1 // Signal to close
-          }
-          // Otherwise move to smaller detent
-          else {
-            targetDetentIndex = Math.max(0, this.currentDetentIndex - 1)
-          }
-        } else {
-          // Not closable, just move to smaller detent
-          targetDetentIndex = Math.max(0, this.currentDetentIndex - 1)
-        }
-      } else {
-        // Swiped up fast - move to larger detent
-        targetDetentIndex = Math.min(activeDetents.length - 1, this.currentDetentIndex + 1)
+    // Find closest detent based on where drawer ended (visualHeight)
+    let closestIndex = 0
+    let closestDistance = Math.abs(visualHeight - activeDetents[0])
+
+    for (let i = 1; i < activeDetents.length; i++) {
+      const distance = Math.abs(visualHeight - activeDetents[i])
+      if (distance < closestDistance) {
+        closestDistance = distance
+        closestIndex = i
       }
-    } else {
-      // Low velocity - snap to closest detent
-      let closestIndex = 0
-      let closestDistance = Math.abs(visualHeight - activeDetents[0])
+    }
 
-      for (let i = 1; i < activeDetents.length; i++) {
-        const distance = Math.abs(visualHeight - activeDetents[i])
-        if (distance < closestDistance) {
-          closestDistance = distance
-          closestIndex = i
-        }
+    // High velocity: allow skipping detents by using closest
+    // Low velocity: also use closest (natural iOS behavior)
+    targetDetentIndex = closestIndex
+
+    // Check for closing
+    if (canClose) {
+      // Very high velocity downward swipe from smallest detent = close
+      if (velocity > highVelocityThreshold && isAtSmallestDetent && dragDistance > 50) {
+        targetDetentIndex = -1 // Signal to close
       }
-
-      targetDetentIndex = closestIndex
-
-      // More lenient closing threshold
-      if (canClose) {
-        // If at smallest detent, make it easier to close (only need to drag below 70% of smallest detent)
-        if (isAtSmallestDetent && visualHeight < smallestDetent * 0.7) {
-          targetDetentIndex = -1 // Signal to close
-        }
-        // From any detent, if dragged significantly past smallest, close
-        else if (visualHeight < smallestDetent - 5) {
-          targetDetentIndex = -1 // Signal to close
-        }
+      // Visual height significantly below smallest detent = close
+      else if (visualHeight < smallestDetent * 0.7) {
+        targetDetentIndex = -1 // Signal to close
       }
     }
 
@@ -371,19 +512,17 @@ export class BaseDrawer extends BaseElement {
     const container = this.modalContainer
     const targetHeight = shouldClose ? 0 : activeDetents[targetDetentIndex]
 
+    // Use standard ease timing to match opening animation
+    const springDuration = 300
+    const springCurve = 'ease' // Browser default, smooth and simple
+
     // Set starting state to match what it was during drag
     container.style.transition = 'none'
+    container.style.transform = 'translateY(0)' // Always clear transform first
 
-    if (dragDistance < 0) {
-      // Was dragging up: had increased height, no transform
-      const startHeight = Math.min(100, visualHeight)
-      container.style.height = `${startHeight}dvh`
-      container.style.transform = 'translateY(0)'
-    } else {
-      // Was dragging down: had transform, constant height
-      container.style.transform = `translateY(${dragDistance}px)`
-      container.style.height = `${currentHeight}dvh`
-    }
+    // Set starting height based on visual state after drag
+    const startHeight = Math.min(100, visualHeight)
+    container.style.height = `${startHeight}dvh`
 
     // Force reflow
     void container.offsetHeight
@@ -392,12 +531,11 @@ export class BaseDrawer extends BaseElement {
     requestAnimationFrame(() => {
       if (shouldClose) {
         // Animate drawer closing
-        container.style.transition = `transform ${this.transitionDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`
+        container.style.transition = `transform ${springDuration}ms ${springCurve}`
         container.style.transform = `translateY(100%)`
       } else {
-        // Animate to target detent: transform to 0 and height to target
-        container.style.transition = `transform ${this.transitionDuration}ms cubic-bezier(0.4, 0, 0.2, 1), height ${this.transitionDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`
-        container.style.transform = 'translateY(0)'
+        // Animate ONLY height to target - no transform animation
+        container.style.transition = `height ${springDuration}ms ${springCurve}`
         container.style.height = `${targetHeight}dvh`
       }
     })
@@ -442,7 +580,122 @@ export class BaseDrawer extends BaseElement {
           })
         )
       }
-    }, this.transitionDuration)
+    }, springDuration)
+  }
+
+  /**
+   * Handle touch start on drawer content for drag-from-anywhere
+   */
+  private handleContentTouchStart = (event: TouchEvent) => {
+    // Store initial touch position
+    const touch = event.touches[0]
+    this.touchStartYForContent = touch.clientY
+    this.touchStartXForContent = touch.clientX
+    this.hasDeterminedDirection = false
+    this.contentDragTransferred = false
+
+    // Update current scroll state
+    this.isScrollableContentAtTop = this.isContentScrolledToTop()
+
+    // Don't prevent default yet - let the browser handle it initially
+  }
+
+  /**
+   * Handle touch move on drawer content with direction detection
+   */
+  private handleContentTouchMove = (event: TouchEvent) => {
+    // If already transferred to main drag, delegate
+    if (this.contentDragTransferred) {
+      this.handleDragMove(event)
+      return
+    }
+
+    // If we've already determined this is not a drawer drag, bail
+    if (this.hasDeterminedDirection && !this.contentDragTransferred) {
+      return
+    }
+
+    const touch = event.touches[0]
+    const deltaY = touch.clientY - this.touchStartYForContent
+    const deltaX = touch.clientX - this.touchStartXForContent
+
+    // Wait for significant movement (>3px) before determining direction
+    const absX = Math.abs(deltaX)
+    const absY = Math.abs(deltaY)
+
+    if (absX < 3 && absY < 3) {
+      return // Not enough movement yet
+    }
+
+    // Determine direction on first significant movement
+    if (!this.hasDeterminedDirection) {
+      this.hasDeterminedDirection = true
+
+      // Horizontal movement - allow swipe actions, don't drag drawer
+      if (absX > absY) {
+        return // Let horizontal swipes through for list items, etc.
+      }
+
+      // Vertical movement - check if we should enable drawer drag
+      const isDraggingDown = deltaY > 0
+      const isDraggingUp = deltaY < 0
+
+      // Check LIVE scroll position, not cached value
+      const isCurrentlyAtTop = this.isContentScrolledToTop()
+
+      // Enable drawer drag if:
+      // 1. Dragging down AND content is at top
+      // 2. Dragging up AND content is at top AND not at largest detent
+      const activeDetents = this.getActiveDetents()
+      const isAtLargestDetent = this.currentDetentIndex === activeDetents.length - 1
+
+      if (isDraggingDown && isCurrentlyAtTop) {
+        // Transfer to drawer drag (collapse/drag down)
+        event.preventDefault() // Prevent pull-to-refresh
+        this.contentDragTransferred = true
+
+        // Initialize main drag system with current touch
+        this.dragStartY = touch.clientY
+        this.dragCurrentY = touch.clientY
+        this.dragStartTime = Date.now()
+        this.isDragging = true
+        this.dragCommitted = false
+
+        return
+      } else if (isDraggingUp && isCurrentlyAtTop && !isAtLargestDetent) {
+        // Allow drawer expansion - ONLY when content is at top
+        event.preventDefault() // Prevent pull-to-refresh
+        this.contentDragTransferred = true
+
+        // Initialize main drag system
+        this.dragStartY = touch.clientY
+        this.dragCurrentY = touch.clientY
+        this.dragStartTime = Date.now()
+        this.isDragging = true
+        this.dragCommitted = false
+
+        return
+      }
+
+      // Otherwise, allow content scroll normally (already handled by browser)
+      return
+    }
+  }
+
+  /**
+   * Handle touch end on drawer content
+   */
+  private handleContentTouchEnd = (event: TouchEvent) => {
+    // If transferred to main drag, delegate to main handler
+    if (this.contentDragTransferred) {
+      this.handleDragEnd()
+    }
+
+    // Reset state
+    this.touchStartYForContent = 0
+    this.touchStartXForContent = 0
+    this.hasDeterminedDirection = false
+    this.contentDragTransferred = false
   }
 
   private handleHandleClick = (event: MouseEvent) => {
@@ -512,6 +765,10 @@ export class BaseDrawer extends BaseElement {
 
     const container = this.modalContainer
 
+    // Use standard ease timing to match opening animation
+    const springDuration = 300
+    const springCurve = 'ease' // Browser default, smooth and simple
+
     // Set current height explicitly
     container.style.height = `${currentHeight}dvh`
     container.style.transition = 'none'
@@ -521,7 +778,7 @@ export class BaseDrawer extends BaseElement {
 
     // Start animation
     requestAnimationFrame(() => {
-      container.style.transition = `height ${this.transitionDuration}ms cubic-bezier(0.4, 0, 0.2, 1)`
+      container.style.transition = `height ${springDuration}ms ${springCurve}`
       container.style.height = `${targetHeight}dvh`
     })
 
@@ -544,7 +801,7 @@ export class BaseDrawer extends BaseElement {
           }
         })
       )
-    }, this.transitionDuration)
+    }, springDuration)
   }
 
   render() {
@@ -600,7 +857,13 @@ export class BaseDrawer extends BaseElement {
           ` : nothing}
 
           <!-- Drawer Content Wrapper -->
-          <div class="drawer-content drawer-content--${this.size}">
+          <div
+            class="drawer-content drawer-content--${this.size}"
+            @touchstart=${this.handleContentTouchStart}
+            @touchmove=${this.handleContentTouchMove}
+            @touchend=${this.handleContentTouchEnd}
+            @touchcancel=${this.handleContentTouchEnd}
+          >
             <slot></slot>
           </div>
         </div>
@@ -702,6 +965,7 @@ export class BaseDrawer extends BaseElement {
       flex-direction: column;
       overflow: hidden;
       height: 100%;
+      touch-action: pan-y;
     }
 
     .drawer-content--sm {
