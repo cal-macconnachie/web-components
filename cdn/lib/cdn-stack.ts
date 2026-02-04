@@ -12,11 +12,12 @@ import {
   ResponseHeadersPolicy,
   ViewerProtocolPolicy
 } from 'aws-cdk-lib/aws-cloudfront'
-import { FunctionUrlOrigin, HttpOrigin, S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins'
+import { HttpOrigin, S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins'
 import { Architecture, Code, Function as LambdaFunction, FunctionUrlAuthType, Runtime } from 'aws-cdk-lib/aws-lambda'
 import { BlockPublicAccess, Bucket, HttpMethods } from 'aws-cdk-lib/aws-s3'
 import { Construct } from 'constructs'
 import * as path from 'path'
+import { FunctionUrlParser } from './function-url-parser'
 
 export class CdnStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -156,14 +157,30 @@ export class CdnStack extends cdk.Stack {
       }
     })
 
-    // CloudFront distribution for MCP - use default CloudFront domain first
+    // Parse Function URL domain using Custom Resource to avoid CloudFormation validation bug
+    const urlParser = new FunctionUrlParser(this, 'mcp-url-parser', {
+      functionUrl: mcpFunctionUrl
+    })
+
+    // Certificate for MCP subdomain
+    const mcpCertificate = new Certificate(this, 'mcp-certificate', {
+      domainName: 'mcp.cdn.cals-api.com',
+      validation: CertificateValidation.fromDns()
+    })
+
+    // CloudFront distribution for MCP
     const mcpDistribution = new Distribution(this, 'mcp-distribution', {
       defaultBehavior: {
-        origin: new FunctionUrlOrigin(mcpFunctionUrl),
+        origin: new HttpOrigin(urlParser.domainName, {
+          protocolPolicy: cdk.aws_cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
+          originSslProtocols: [cdk.aws_cloudfront.OriginSslPolicy.TLS_V1_2],
+        }),
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         allowedMethods: cdk.aws_cloudfront.AllowedMethods.ALLOW_ALL,
         cachePolicy: cdk.aws_cloudfront.CachePolicy.CACHING_DISABLED,
       },
+      domainNames: ['mcp.cdn.cals-api.com'],
+      certificate: mcpCertificate,
       priceClass: PriceClass.PRICE_CLASS_100,
     })
 
@@ -181,9 +198,15 @@ export class CdnStack extends cdk.Stack {
     })
 
     new cdk.CfnOutput(this, 'McpEndpoint', {
-      value: `https://${mcpDistribution.distributionDomainName}`,
-      description: 'MCP Server endpoint (CloudFront domain)',
+      value: 'https://mcp.cdn.cals-api.com',
+      description: 'MCP Server endpoint',
       exportName: 'cals-wcl-mcp-endpoint',
+    })
+
+    new cdk.CfnOutput(this, 'McpCloudFrontDomain', {
+      value: mcpDistribution.distributionDomainName,
+      description: 'MCP CloudFront distribution domain (for DNS CNAME)',
+      exportName: 'cals-wcl-mcp-cf-domain',
     })
   }
 }
