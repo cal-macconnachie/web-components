@@ -5,7 +5,7 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc && node esbuild.config.js",
+    "build": "tsc && node esbuild.config.mjs",
     "clean": "rm -rf dist"
   },
   "dependencies": {},
