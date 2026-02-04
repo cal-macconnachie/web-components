@@ -1,4 +1,4 @@
-import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda'
 import { executeTool, tools, type ToolCallInput } from './tools.js'
 
 interface MCPRequest {
@@ -26,7 +26,7 @@ const SERVER_INFO = {
   description: 'MCP server for Cal\'s Web Components Library'
 }
 
-function createResponse(statusCode: number, body: any): APIGatewayProxyResult {
+function createResponse(statusCode: number, body: any): APIGatewayProxyResultV2 {
   return {
     statusCode,
     headers: {
@@ -121,14 +121,17 @@ function handleMCPRequest(request: MCPRequest): MCPResponse {
   }
 }
 
-export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const handler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2> => {
+  const method = event.requestContext.http.method
+  const path = event.requestContext.http.path
+
   // Handle OPTIONS for CORS preflight
-  if (event.httpMethod === 'OPTIONS') {
+  if (method === 'OPTIONS') {
     return createResponse(200, {})
   }
 
   // Handle GET for server info
-  if (event.httpMethod === 'GET') {
+  if (method === 'GET') {
     return createResponse(200, {
       ...SERVER_INFO,
       protocolVersion: MCP_VERSION,
@@ -145,7 +148,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
   }
 
   // Handle health check
-  if (event.path === '/health') {
+  if (path === '/health') {
     return createResponse(200, {
       status: 'healthy',
       server: SERVER_INFO,
@@ -154,7 +157,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
   }
 
   // Handle MCP JSON-RPC requests
-  if (event.httpMethod === 'POST') {
+  if (method === 'POST') {
     try {
       if (!event.body) {
         return createResponse(400, createMCPError(undefined, -32700, 'Parse error: No body'))
