@@ -12,7 +12,7 @@ import {
   ResponseHeadersPolicy,
   ViewerProtocolPolicy
 } from 'aws-cdk-lib/aws-cloudfront'
-import { HttpOrigin, S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins'
+import { FunctionUrlOrigin, HttpOrigin, S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins'
 import { Architecture, Code, Function as LambdaFunction, FunctionUrlAuthType, Runtime } from 'aws-cdk-lib/aws-lambda'
 import { BlockPublicAccess, Bucket, HttpMethods } from 'aws-cdk-lib/aws-s3'
 import { Construct } from 'constructs'
@@ -156,13 +156,10 @@ export class CdnStack extends cdk.Stack {
       }
     })
 
-    // Parse Function URL to get the domain for CloudFront origin
-    const functionUrlDomain = cdk.Fn.select(2, cdk.Fn.split('/', mcpFunctionUrl.url))
-
-    // Certificate for MCP subdomain
+    // Certificate for MCP subdomain (CDK automatically deploys in us-east-1 for CloudFront)
     const mcpCertificate = new Certificate(this, 'mcp-certificate', {
       domainName: 'mcp.cdn.cals-api.com',
-      validation: CertificateValidation.fromDns(),
+      validation: CertificateValidation.fromDns()
     })
 
     // Cache policy for MCP (no caching for dynamic API)
@@ -204,9 +201,7 @@ export class CdnStack extends cdk.Stack {
     // CloudFront distribution for MCP subdomain
     const mcpDistribution = new Distribution(this, 'mcp-distribution', {
       defaultBehavior: {
-        origin: new HttpOrigin(functionUrlDomain, {
-          protocolPolicy: cdk.aws_cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
-        }),
+        origin: new FunctionUrlOrigin(mcpFunctionUrl),
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         responseHeadersPolicy: mcpResponseHeadersPolicy,
         cachePolicy: mcpCachePolicy,
