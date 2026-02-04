@@ -147,11 +147,12 @@ export class CdnStack extends cdk.Stack {
     })
 
     // Create Function URL for the Lambda
+    // Note: AllowedMethods must be 6 chars max. OPTIONS (7 chars) triggers PropertyValidation error
     const mcpFunctionUrl = mcpLambda.addFunctionUrl({
       authType: FunctionUrlAuthType.NONE,
       cors: {
         allowedOrigins: ['*'],
-        allowedMethods: [cdk.aws_lambda.HttpMethod.GET, cdk.aws_lambda.HttpMethod.POST, cdk.aws_lambda.HttpMethod.OPTIONS],
+        allowedMethods: [cdk.aws_lambda.HttpMethod.GET, cdk.aws_lambda.HttpMethod.POST, cdk.aws_lambda.HttpMethod.PUT, cdk.aws_lambda.HttpMethod.DELETE],
         allowedHeaders: ['*'],
         maxAge: cdk.Duration.hours(1)
       }
