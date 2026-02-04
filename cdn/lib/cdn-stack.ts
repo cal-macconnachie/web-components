@@ -88,6 +88,38 @@ export class CdnStack extends cdk.Stack {
       validation: CertificateValidation.fromDns(),
     })
 
+    // MCP Server Lambda Function
+    const mcpLambda = new LambdaFunction(this, 'mcp-server-lambda', {
+      functionName: 'cals-wcl-mcp-server',
+      runtime: Runtime.NODEJS_20_X,
+      architecture: Architecture.ARM_64,
+      handler: 'bundle.handler',
+      code: Code.fromAsset(path.join(__dirname, '../lambda/dist')),
+      timeout: cdk.Duration.seconds(30),
+      memorySize: 512,
+      environment: {
+        NODE_ENV: 'production'
+      },
+      description: 'MCP Server for Cal\'s Web Components Library'
+    })
+
+    // Create Function URL for the Lambda
+    // Note: AllowedMethods must be 6 chars max. OPTIONS (7 chars) triggers PropertyValidation error
+    const mcpFunctionUrl = mcpLambda.addFunctionUrl({
+      authType: FunctionUrlAuthType.NONE,
+      cors: {
+        allowedOrigins: ['*'],
+        allowedMethods: [cdk.aws_lambda.HttpMethod.GET, cdk.aws_lambda.HttpMethod.POST, cdk.aws_lambda.HttpMethod.PUT, cdk.aws_lambda.HttpMethod.DELETE],
+        allowedHeaders: ['*'],
+        maxAge: cdk.Duration.hours(1)
+      }
+    })
+
+    // Parse Function URL domain using Custom Resource
+    const urlParser = new FunctionUrlParser(this, 'mcp-url-parser', {
+      functionUrl: mcpFunctionUrl
+    })
+
     const distribution = new Distribution(this, 'cals-wcl-distribution', {
       defaultBehavior: {
         origin: S3BucketOrigin.withOriginAccessIdentity(bucket, {
@@ -97,6 +129,17 @@ export class CdnStack extends cdk.Stack {
         responseHeadersPolicy,
         cachePolicy,
         compress: true, // Enable gzip/brotli compression
+      },
+      additionalBehaviors: {
+        '/mcp/*': {
+          origin: new HttpOrigin(urlParser.domainName, {
+            protocolPolicy: cdk.aws_cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
+            originSslProtocols: [cdk.aws_cloudfront.OriginSslPolicy.TLS_V1_2],
+          }),
+          viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+          allowedMethods: cdk.aws_cloudfront.AllowedMethods.ALLOW_ALL,
+          cachePolicy: cdk.aws_cloudfront.CachePolicy.CACHING_DISABLED,
+        }
       },
       domainNames: ['cdn.cals-api.com'],
       certificate: certificate,
@@ -131,38 +174,17 @@ export class CdnStack extends cdk.Stack {
       exportName: 'cals-wcl-distribution-id',
     })
 
-    // MCP Server Lambda Function - minimal deployment first
-    const mcpLambda = new LambdaFunction(this, 'mcp-server-lambda', {
-      functionName: 'cals-wcl-mcp-server',
-      runtime: Runtime.NODEJS_20_X,
-      architecture: Architecture.ARM_64,
-      handler: 'bundle.handler',
-      code: Code.fromAsset(path.join(__dirname, '../lambda/dist')),
-      timeout: cdk.Duration.seconds(30),
-      memorySize: 512,
-      environment: {
-        NODE_ENV: 'production'
-      },
-      description: 'MCP Server for Cal\'s Web Components Library'
-    })
-
-    // Create Function URL for the Lambda
-    // Note: AllowedMethods must be 6 chars max. OPTIONS (7 chars) triggers PropertyValidation error
-    const mcpFunctionUrl = mcpLambda.addFunctionUrl({
-      authType: FunctionUrlAuthType.NONE,
-      cors: {
-        allowedOrigins: ['*'],
-        allowedMethods: [cdk.aws_lambda.HttpMethod.GET, cdk.aws_lambda.HttpMethod.POST, cdk.aws_lambda.HttpMethod.PUT, cdk.aws_lambda.HttpMethod.DELETE],
-        allowedHeaders: ['*'],
-        maxAge: cdk.Duration.hours(1)
-      }
-    })
-
-    // Output Function URL - will add CloudFront separately after Lambda deploys
+    // MCP Server outputs
     new cdk.CfnOutput(this, 'McpFunctionUrl', {
       value: mcpFunctionUrl.url,
       description: 'MCP Lambda Function URL',
       exportName: 'cals-wcl-mcp-function-url',
+    })
+
+    new cdk.CfnOutput(this, 'McpEndpoint', {
+      value: 'https://cdn.cals-api.com/mcp/',
+      description: 'MCP Server endpoint (via CloudFront)',
+      exportName: 'cals-wcl-mcp-endpoint',
     })
   }
 }
