@@ -131,7 +131,7 @@ export class CdnStack extends cdk.Stack {
       exportName: 'cals-wcl-distribution-id',
     })
 
-    // MCP Server Lambda Function
+    // MCP Server Lambda Function - minimal deployment first
     const mcpLambda = new LambdaFunction(this, 'mcp-server-lambda', {
       functionName: 'cals-wcl-mcp-server',
       runtime: Runtime.NODEJS_20_X,
@@ -157,56 +157,11 @@ export class CdnStack extends cdk.Stack {
       }
     })
 
-    // Parse Function URL domain using Custom Resource to avoid CloudFormation validation bug
-    const urlParser = new FunctionUrlParser(this, 'mcp-url-parser', {
-      functionUrl: mcpFunctionUrl
-    })
-
-    // Certificate for MCP subdomain
-    const mcpCertificate = new Certificate(this, 'mcp-certificate', {
-      domainName: 'mcp.cdn.cals-api.com',
-      validation: CertificateValidation.fromDns()
-    })
-
-    // CloudFront distribution for MCP
-    const mcpDistribution = new Distribution(this, 'mcp-distribution', {
-      defaultBehavior: {
-        origin: new HttpOrigin(urlParser.domainName, {
-          protocolPolicy: cdk.aws_cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
-          originSslProtocols: [cdk.aws_cloudfront.OriginSslPolicy.TLS_V1_2],
-        }),
-        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        allowedMethods: cdk.aws_cloudfront.AllowedMethods.ALLOW_ALL,
-        cachePolicy: cdk.aws_cloudfront.CachePolicy.CACHING_DISABLED,
-      },
-      domainNames: ['mcp.cdn.cals-api.com'],
-      certificate: mcpCertificate,
-      priceClass: PriceClass.PRICE_CLASS_100,
-    })
-
-    // Outputs for MCP server
+    // Output Function URL - will add CloudFront separately after Lambda deploys
     new cdk.CfnOutput(this, 'McpFunctionUrl', {
       value: mcpFunctionUrl.url,
       description: 'MCP Lambda Function URL',
       exportName: 'cals-wcl-mcp-function-url',
-    })
-
-    new cdk.CfnOutput(this, 'McpDistributionId', {
-      value: mcpDistribution.distributionId,
-      description: 'MCP CloudFront distribution ID',
-      exportName: 'cals-wcl-mcp-distribution-id',
-    })
-
-    new cdk.CfnOutput(this, 'McpEndpoint', {
-      value: 'https://mcp.cdn.cals-api.com',
-      description: 'MCP Server endpoint',
-      exportName: 'cals-wcl-mcp-endpoint',
-    })
-
-    new cdk.CfnOutput(this, 'McpCloudFrontDomain', {
-      value: mcpDistribution.distributionDomainName,
-      description: 'MCP CloudFront distribution domain (for DNS CNAME)',
-      exportName: 'cals-wcl-mcp-cf-domain',
     })
   }
 }
