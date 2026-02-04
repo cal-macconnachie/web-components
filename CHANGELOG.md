@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.8.11](https://github.com/cal-macconnachie/web-components/compare/v2.8.10...v2.8.11) (2026-02-04)
+
+
+### Bug Fixes
+
+* use npm over cdn ([fe902c3](https://github.com/cal-macconnachie/web-components/commit/fe902c39f2cd1edd1047b1db0053166c6e5038ba))
+
 ### [2.8.10](https://github.com/cal-macconnachie/web-components/compare/v2.8.9...v2.8.10) (2026-02-04)
 
 
