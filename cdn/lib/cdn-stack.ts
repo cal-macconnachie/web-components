@@ -12,9 +12,11 @@ import {
   ResponseHeadersPolicy,
   ViewerProtocolPolicy
 } from 'aws-cdk-lib/aws-cloudfront'
-import { S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins'
+import { HttpOrigin, S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins'
+import { Architecture, Code, Function as LambdaFunction, FunctionUrlAuthType, Runtime } from 'aws-cdk-lib/aws-lambda'
 import { BlockPublicAccess, Bucket, HttpMethods } from 'aws-cdk-lib/aws-s3'
 import { Construct } from 'constructs'
+import * as path from 'path'
 
 export class CdnStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -126,6 +128,113 @@ export class CdnStack extends cdk.Stack {
       value: distribution.distributionId,
       description: 'CloudFront distribution ID',
       exportName: 'cals-wcl-distribution-id',
+    })
+
+    // MCP Server Lambda Function
+    const mcpLambda = new LambdaFunction(this, 'mcp-server-lambda', {
+      functionName: 'cals-wcl-mcp-server',
+      runtime: Runtime.NODEJS_20_X,
+      architecture: Architecture.ARM_64,
+      handler: 'bundle.handler',
+      code: Code.fromAsset(path.join(__dirname, '../lambda/dist')),
+      timeout: cdk.Duration.seconds(30),
+      memorySize: 512,
+      environment: {
+        NODE_ENV: 'production'
+      },
+      description: 'MCP Server for Cal\'s Web Components Library'
+    })
+
+    // Create Function URL for the Lambda
+    const mcpFunctionUrl = mcpLambda.addFunctionUrl({
+      authType: FunctionUrlAuthType.NONE,
+      cors: {
+        allowedOrigins: ['*'],
+        allowedMethods: [cdk.aws_lambda.HttpMethod.GET, cdk.aws_lambda.HttpMethod.POST, cdk.aws_lambda.HttpMethod.OPTIONS],
+        allowedHeaders: ['*'],
+        maxAge: cdk.Duration.hours(1)
+      }
+    })
+
+    // Parse Function URL to get the domain for CloudFront origin
+    const functionUrlDomain = cdk.Fn.select(2, cdk.Fn.split('/', mcpFunctionUrl.url))
+
+    // Certificate for MCP subdomain
+    const mcpCertificate = new Certificate(this, 'mcp-certificate', {
+      domainName: 'mcp.cdn.cals-api.com',
+      validation: CertificateValidation.fromDns(),
+    })
+
+    // Cache policy for MCP (no caching for dynamic API)
+    const mcpCachePolicy = new CachePolicy(this, 'mcp-cache-policy', {
+      cachePolicyName: 'cals-wcl-mcp-cache',
+      comment: 'No caching for MCP server (dynamic API)',
+      defaultTtl: cdk.Duration.seconds(0),
+      maxTtl: cdk.Duration.seconds(0),
+      minTtl: cdk.Duration.seconds(0),
+      enableAcceptEncodingGzip: true,
+      enableAcceptEncodingBrotli: true,
+      headerBehavior: CacheHeaderBehavior.allowList('Authorization', 'Content-Type'),
+      queryStringBehavior: CacheQueryStringBehavior.all(),
+    })
+
+    // Response headers policy for MCP
+    const mcpResponseHeadersPolicy = new ResponseHeadersPolicy(this, 'mcp-response-headers', {
+      responseHeadersPolicyName: 'cals-wcl-mcp-headers',
+      comment: 'CORS and security headers for MCP server',
+      corsBehavior: {
+        accessControlAllowOrigins: ['*'],
+        accessControlAllowHeaders: ['*'],
+        accessControlAllowMethods: ['GET', 'POST', 'OPTIONS'],
+        accessControlAllowCredentials: false,
+        accessControlMaxAge: cdk.Duration.hours(1),
+        originOverride: true,
+      },
+      securityHeadersBehavior: {
+        contentTypeOptions: { override: true },
+        referrerPolicy: { referrerPolicy: HeadersReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN, override: true },
+        strictTransportSecurity: {
+          accessControlMaxAge: cdk.Duration.days(365),
+          includeSubdomains: true,
+          override: true,
+        },
+      },
+    })
+
+    // CloudFront distribution for MCP subdomain
+    const mcpDistribution = new Distribution(this, 'mcp-distribution', {
+      defaultBehavior: {
+        origin: new HttpOrigin(functionUrlDomain, {
+          protocolPolicy: cdk.aws_cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
+        }),
+        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        responseHeadersPolicy: mcpResponseHeadersPolicy,
+        cachePolicy: mcpCachePolicy,
+        allowedMethods: cdk.aws_cloudfront.AllowedMethods.ALLOW_ALL,
+        compress: true,
+      },
+      domainNames: ['mcp.cdn.cals-api.com'],
+      certificate: mcpCertificate,
+      priceClass: PriceClass.PRICE_CLASS_100,
+    })
+
+    // Outputs for MCP server
+    new cdk.CfnOutput(this, 'McpFunctionUrl', {
+      value: mcpFunctionUrl.url,
+      description: 'MCP Lambda Function URL',
+      exportName: 'cals-wcl-mcp-function-url',
+    })
+
+    new cdk.CfnOutput(this, 'McpDistributionId', {
+      value: mcpDistribution.distributionId,
+      description: 'MCP CloudFront distribution ID',
+      exportName: 'cals-wcl-mcp-distribution-id',
+    })
+
+    new cdk.CfnOutput(this, 'McpEndpoint', {
+      value: 'https://mcp.cdn.cals-api.com',
+      description: 'MCP Server endpoint',
+      exportName: 'cals-wcl-mcp-endpoint',
     })
   }
 }

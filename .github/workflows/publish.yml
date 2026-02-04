@@ -58,6 +58,19 @@ jobs:
       - name: Build playground SPA with environment variables
         run: yarn build:playground
 
+      - name: Build MCP schemas
+        run: yarn build:mcp-schemas
+
+      - name: Install Lambda dependencies
+        run: |
+          cd cdn/lambda
+          yarn install --frozen-lockfile
+
+      - name: Build MCP Lambda
+        run: |
+          cd cdn/lambda
+          yarn build
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:

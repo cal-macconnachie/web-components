@@ -52,6 +52,7 @@
     "build": "vite build",
     "build:components": "node build-components.ts",
     "build:playground": "vite build --config vite.config.playground.ts",
+    "build:mcp-schemas": "tsx scripts/generate-mcp-schemas.ts",
     "minify:css": "node -e \"require('fs').mkdirSync('dist/stylesheets',{recursive:true})\" && postcss src/stylesheets/*.css --dir dist/stylesheets --no-map",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
@@ -76,6 +77,7 @@
     "postcss": "^8.4.49",
     "postcss-cli": "^11.0.0",
     "standard-version": "^9.5.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vite": "^7.2.4",
     "vite-plugin-dts": "^4.5.4"
