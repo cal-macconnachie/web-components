@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.8.0](https://github.com/cal-macconnachie/web-components/compare/v2.7.0...v2.8.0) (2026-02-04)
+
+
+### Features
+
+* attempt 1 at mcp ([917137d](https://github.com/cal-macconnachie/web-components/commit/917137d5c4260cdb34c578f8bfc1d3764f41c344))
+
 ## [2.7.0](https://github.com/cal-macconnachie/web-components/compare/v2.6.15...v2.7.0) (2026-01-28)
 
 
