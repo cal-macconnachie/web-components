@@ -156,14 +156,7 @@ export class CdnStack extends cdk.Stack {
       }
     })
 
-    // Certificate for MCP subdomain
-    // With crossRegionReferences: true, CDK handles us-east-1 requirement for CloudFront
-    const mcpCertificate = new Certificate(this, 'mcp-certificate', {
-      domainName: 'mcp.cdn.cals-api.com',
-      validation: CertificateValidation.fromDns()
-    })
-
-    // CloudFront distribution for MCP subdomain - use minimal config first
+    // CloudFront distribution for MCP - use default CloudFront domain first
     const mcpDistribution = new Distribution(this, 'mcp-distribution', {
       defaultBehavior: {
         origin: new FunctionUrlOrigin(mcpFunctionUrl),
@@ -171,8 +164,6 @@ export class CdnStack extends cdk.Stack {
         allowedMethods: cdk.aws_cloudfront.AllowedMethods.ALLOW_ALL,
         cachePolicy: cdk.aws_cloudfront.CachePolicy.CACHING_DISABLED,
       },
-      domainNames: ['mcp.cdn.cals-api.com'],
-      certificate: mcpCertificate,
       priceClass: PriceClass.PRICE_CLASS_100,
     })
 
@@ -190,8 +181,8 @@ export class CdnStack extends cdk.Stack {
     })
 
     new cdk.CfnOutput(this, 'McpEndpoint', {
-      value: 'https://mcp.cdn.cals-api.com',
-      description: 'MCP Server endpoint',
+      value: `https://${mcpDistribution.distributionDomainName}`,
+      description: 'MCP Server endpoint (CloudFront domain)',
       exportName: 'cals-wcl-mcp-endpoint',
     })
   }
