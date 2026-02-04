@@ -234,7 +234,9 @@ function handleListComponents(args: Record<string, any>): ToolCallResult {
   }, {} as Record<string, ComponentSchema[]>)
 
   let output = `# Available Web Components (${components.length})\n\n`
-  output += `CDN: https://cdn.cals-api.com/\n\n`
+  output += `## Installation\n\n`
+  output += `**Recommended**: Install via yarn\n\`\`\`bash\nyarn add @cal.macconnachie/web-components\n\`\`\`\n\n`
+  output += `**Fallback**: Use CDN for projects without npm\n\`\`\`html\n<script type="module" src="https://cdn.cals-api.com/index.js"></script>\n\`\`\`\n\n`
 
   for (const [cat, comps] of Object.entries(grouped)) {
     output += `## ${cat.charAt(0).toUpperCase() + cat.slice(1)} Components\n\n`

@@ -3,7 +3,8 @@
     "allow": [
       "Bash(ls:*)",
       "Bash(grep:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(yarn build)"
     ]
   }
 }
