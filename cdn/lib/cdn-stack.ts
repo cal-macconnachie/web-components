@@ -156,57 +156,20 @@ export class CdnStack extends cdk.Stack {
       }
     })
 
-    // Certificate for MCP subdomain (CDK automatically deploys in us-east-1 for CloudFront)
+    // Certificate for MCP subdomain
+    // With crossRegionReferences: true, CDK handles us-east-1 requirement for CloudFront
     const mcpCertificate = new Certificate(this, 'mcp-certificate', {
       domainName: 'mcp.cdn.cals-api.com',
       validation: CertificateValidation.fromDns()
     })
 
-    // Cache policy for MCP (no caching for dynamic API)
-    const mcpCachePolicy = new CachePolicy(this, 'mcp-cache-policy', {
-      cachePolicyName: 'cals-wcl-mcp-cache',
-      comment: 'No caching for MCP server (dynamic API)',
-      defaultTtl: cdk.Duration.seconds(0),
-      maxTtl: cdk.Duration.seconds(0),
-      minTtl: cdk.Duration.seconds(0),
-      enableAcceptEncodingGzip: true,
-      enableAcceptEncodingBrotli: true,
-      headerBehavior: CacheHeaderBehavior.allowList('Authorization', 'Content-Type'),
-      queryStringBehavior: CacheQueryStringBehavior.all(),
-    })
-
-    // Response headers policy for MCP
-    const mcpResponseHeadersPolicy = new ResponseHeadersPolicy(this, 'mcp-response-headers', {
-      responseHeadersPolicyName: 'cals-wcl-mcp-headers',
-      comment: 'CORS and security headers for MCP server',
-      corsBehavior: {
-        accessControlAllowOrigins: ['*'],
-        accessControlAllowHeaders: ['*'],
-        accessControlAllowMethods: ['GET', 'POST', 'OPTIONS'],
-        accessControlAllowCredentials: false,
-        accessControlMaxAge: cdk.Duration.hours(1),
-        originOverride: true,
-      },
-      securityHeadersBehavior: {
-        contentTypeOptions: { override: true },
-        referrerPolicy: { referrerPolicy: HeadersReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN, override: true },
-        strictTransportSecurity: {
-          accessControlMaxAge: cdk.Duration.days(365),
-          includeSubdomains: true,
-          override: true,
-        },
-      },
-    })
-
-    // CloudFront distribution for MCP subdomain
+    // CloudFront distribution for MCP subdomain - use minimal config first
     const mcpDistribution = new Distribution(this, 'mcp-distribution', {
       defaultBehavior: {
         origin: new FunctionUrlOrigin(mcpFunctionUrl),
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        responseHeadersPolicy: mcpResponseHeadersPolicy,
-        cachePolicy: mcpCachePolicy,
         allowedMethods: cdk.aws_cloudfront.AllowedMethods.ALLOW_ALL,
-        compress: true,
+        cachePolicy: cdk.aws_cloudfront.CachePolicy.CACHING_DISABLED,
       },
       domainNames: ['mcp.cdn.cals-api.com'],
       certificate: mcpCertificate,
