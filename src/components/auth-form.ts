@@ -916,7 +916,8 @@ export class AuthForm extends BaseElement {
       event.preventDefault()
     }
 
-    if (event.key.length === 1 && /\D/.test(event.key)) {
+    // Don't prevent paste shortcuts (Cmd+V or Ctrl+V)
+    if (event.key.length === 1 && /\D/.test(event.key) && !event.metaKey && !event.ctrlKey) {
       event.preventDefault()
     }
   }
@@ -1155,7 +1156,11 @@ export class AuthForm extends BaseElement {
       return html`
         <div class="otp-section">
           <label class="otp-label">Enter 6-digit code</label>
-          <div class="otp-inputs" role="group" aria-label="One time code">
+          <div
+            class="otp-inputs"
+            role="group"
+            aria-label="One time code"
+          >
             ${repeat(
               Array.from({ length: 6 }, (_, i) => i),
               (i) => i,
@@ -1226,7 +1231,11 @@ export class AuthForm extends BaseElement {
 
         <div class="otp-section">
           <label class="otp-label">Enter 6-digit code</label>
-          <div class="otp-inputs" role="group" aria-label="One time code">
+          <div
+            class="otp-inputs"
+            role="group"
+            aria-label="One time code"
+          >
             ${repeat(
               Array.from({ length: 6 }, (_, i) => i),
               (i) => i,
@@ -1624,6 +1633,7 @@ export class AuthForm extends BaseElement {
       display: flex;
       gap: var(--space-2);
       justify-content: center;
+      max-width: 100vw;
     }
 
     .otp-input {

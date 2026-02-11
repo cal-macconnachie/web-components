@@ -13,7 +13,7 @@ import {
   ViewerProtocolPolicy
 } from 'aws-cdk-lib/aws-cloudfront'
 import { HttpOrigin, S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins'
-import { Architecture, Code, Function as LambdaFunction, FunctionUrlAuthType, Runtime } from 'aws-cdk-lib/aws-lambda'
+import { Architecture, Code, FunctionUrlAuthType, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda'
 import { BlockPublicAccess, Bucket, HttpMethods } from 'aws-cdk-lib/aws-s3'
 import { Construct } from 'constructs'
 import * as path from 'path'
@@ -95,7 +95,7 @@ export class CdnStack extends cdk.Stack {
       architecture: Architecture.ARM_64,
       handler: 'bundle.handler',
       code: Code.fromAsset(path.join(__dirname, '../lambda/dist')),
-      timeout: cdk.Duration.seconds(30),
+      timeout: cdk.Duration.seconds(10),
       memorySize: 512,
       environment: {
         NODE_ENV: 'production'
