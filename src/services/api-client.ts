@@ -108,16 +108,10 @@ export const createApiClient = ({ baseUrl, useToasts = true }: ApiClientConfig):
       ) {
         log('Authentication failed (401), attempting token refresh...')
 
-        // If we already know there's no refresh token, don't try again
+        // If we already know there's no refresh token, don't try again.
+        // Silently reject — no toast or event since there was never a session.
         if (hasNoRefreshToken) {
           log('No refresh token available (previously determined), skipping refresh')
-          window.dispatchEvent(
-            new CustomEvent('auth-refresh-failed', {
-              bubbles: true,
-              composed: true,
-              detail: { error: 'No refresh token available' }
-            })
-          )
           return Promise.reject(new AuthRefreshError('No refresh token available'))
         }
 
@@ -209,17 +203,24 @@ export const createApiClient = ({ baseUrl, useToasts = true }: ApiClientConfig):
             })
           }
 
-          window.dispatchEvent(
-            new CustomEvent('auth-refresh-failed', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                error: refreshError instanceof Error ? refreshError.message : 'Authentication refresh failed'
-              }
-            })
-          )
+          // Only dispatch auth-refresh-failed if there was an actual session.
+          // If no refresh token existed, the user was never logged in (e.g. during
+          // OAuth callback or initial page load) — silently reject instead.
+          if (!hasNoRefreshToken) {
+            window.dispatchEvent(
+              new CustomEvent('auth-refresh-failed', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                  error: refreshError instanceof Error ? refreshError.message : 'Authentication refresh failed'
+                }
+              })
+            )
+          }
 
-          return Promise.reject(new AuthRefreshError('Authentication refresh failed'))
+          return Promise.reject(new AuthRefreshError(
+            hasNoRefreshToken ? 'No refresh token available' : 'Authentication refresh failed'
+          ))
         }
       }
 
