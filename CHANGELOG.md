@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.8.13](https://github.com/cal-macconnachie/web-components/compare/v2.8.12...v2.8.13) (2026-04-09)
+
+
+### Bug Fixes
+
+* toasts ([ab27e02](https://github.com/cal-macconnachie/web-components/commit/ab27e020aaac0c529fd5fda84b7b1d6e5f83cb4d))
+* toasts ([d0fa03d](https://github.com/cal-macconnachie/web-components/commit/d0fa03d104515448dbb1b02dfd70235f37eb5111))
+
 ### [2.8.12](https://github.com/cal-macconnachie/web-components/compare/v2.8.11...v2.8.12) (2026-02-11)
 
 
