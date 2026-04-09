@@ -199,7 +199,10 @@ export const createApiClient = ({ baseUrl, useToasts = true }: ApiClientConfig):
           return client.request(originalRequest)
         } catch (refreshError) {
           log('Token refresh failed, user needs to re-authenticate')
-          if (useToasts) {
+          // Only show "session expired" toast if a refresh token actually existed
+          // (i.e. the user had a session). If there was no refresh token, the user
+          // was never logged in, so the message is misleading.
+          if (useToasts && !hasNoRefreshToken) {
             showToast({
               message: 'Session expired. Please log in again.',
               variant: 'danger',
