@@ -84,6 +84,7 @@ export class BaseDatePicker extends BaseElement {
 
     .date-display {
       width: 100%;
+      min-width: 0;
       font-family: var(--font-family-sans);
       background-color: var(--color-bg-primary);
       border: var(--picker-display-border, 1px solid var(--color-border));
@@ -95,6 +96,9 @@ export class BaseDatePicker extends BaseElement {
       display: flex;
       align-items: center;
       box-sizing: border-box;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .date-display:hover:not(.date-disabled) {

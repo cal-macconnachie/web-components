@@ -270,11 +270,11 @@ function extractPropsFromComponent(filePath: string, componentName: string): Pro
   }
 
   // Extract @property decorators and their definitions
-  const propRegex = /@property\(\{([^}]+)\}\)\s+(\w+)(?::\s*([^=\n]+?))?(?:\s*=\s*([^;\n]+))?[;\n]/g
+  const propRegex = /@property\(\{([^}]+)\}\)\s+(\w+)(\?)?(?::\s*([^=\n]+?))?(?:\s*=\s*([^;\n]+))?[;\n]/g
   let match
 
   while ((match = propRegex.exec(content)) !== null) {
-    const [, decoratorArgs, propName, propType, defaultValue] = match
+    const [, decoratorArgs, propName, optionalMarker, propType, defaultValue] = match
 
     // Parse decorator arguments
     const typeMatch = decoratorArgs.match(/type:\s*(\w+)/)
@@ -319,7 +319,7 @@ function extractPropsFromComponent(filePath: string, componentName: string): Pro
     props.push({
       name: attributeName,
       type,
-      required: parsedDefault === undefined && type !== 'boolean',
+      required: !optionalMarker && parsedDefault === undefined && type !== 'boolean',
       default: parsedDefault,
       description,
       options

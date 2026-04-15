@@ -68,6 +68,7 @@ export class BaseTimePicker extends BaseElement {
 
     .time-display {
       width: 100%;
+      min-width: 0;
       font-family: var(--font-family-sans);
       background-color: var(--color-bg-primary);
       border: var(--picker-display-border, 1px solid var(--color-border));
@@ -79,6 +80,9 @@ export class BaseTimePicker extends BaseElement {
       display: flex;
       align-items: center;
       box-sizing: border-box;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .time-display:hover:not(.time-disabled) {
@@ -310,6 +314,13 @@ export class BaseTimePicker extends BaseElement {
   }
 
   private get displayValue(): string {
+    if (this.isOpen) {
+      if (this.format === '12') {
+        return `${this.selectedHour}:${String(this.selectedMinute).padStart(2, '0')} ${this.selectedPeriod}`
+      }
+      return `${String(this.selectedHour).padStart(2, '0')}:${String(this.selectedMinute).padStart(2, '0')}`
+    }
+
     if (!this.value) return ''
 
     const [hours, minutes] = this.value.split(':').map(Number)
@@ -471,7 +482,7 @@ export class BaseTimePicker extends BaseElement {
     const displayClasses = {
       'time-display': true,
       'time-display--open': this.isOpen,
-      'time-display--empty': !this.value,
+      'time-display--empty': !this.value && !this.isOpen,
       'time-disabled': this.disabled,
     }
 

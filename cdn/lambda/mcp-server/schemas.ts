@@ -191,6 +191,12 @@ export const componentSchemas: ComponentSchema[] = [
         "required": false,
         "default": "list",
         "description": "role property"
+      },
+      {
+        "name": "pull-action-icon",
+        "type": "string",
+        "required": false,
+        "description": "pullActionIcon property"
       }
     ],
     "slots": [
@@ -254,6 +260,18 @@ export const componentSchemas: ComponentSchema[] = [
         "required": false,
         "default": "listitem",
         "description": "role property"
+      },
+      {
+        "name": "left-swipe-action",
+        "type": "object",
+        "required": false,
+        "description": "leftSwipeAction property"
+      },
+      {
+        "name": "right-swipe-action",
+        "type": "object",
+        "required": false,
+        "description": "rightSwipeAction property"
       }
     ],
     "slots": [
@@ -446,6 +464,12 @@ export const componentSchemas: ComponentSchema[] = [
         "description": "Component value"
       },
       {
+        "name": "label",
+        "type": "string",
+        "required": false,
+        "description": "Label text displayed"
+      },
+      {
         "name": "placeholder",
         "type": "string",
         "required": false,
@@ -467,6 +491,18 @@ export const componentSchemas: ComponentSchema[] = [
         "description": "Whether the component is disabled"
       },
       {
+        "name": "error",
+        "type": "string",
+        "required": false,
+        "description": "Error message to display"
+      },
+      {
+        "name": "hint",
+        "type": "string",
+        "required": false,
+        "description": "Help text displayed"
+      },
+      {
         "name": "size",
         "type": "string",
         "required": false,
@@ -477,6 +513,18 @@ export const componentSchemas: ComponentSchema[] = [
           "md",
           "lg"
         ]
+      },
+      {
+        "name": "minDate",
+        "type": "string",
+        "required": false,
+        "description": "minDate property"
+      },
+      {
+        "name": "maxDate",
+        "type": "string",
+        "required": false,
+        "description": "maxDate property"
       }
     ],
     "examples": [
@@ -495,6 +543,12 @@ export const componentSchemas: ComponentSchema[] = [
         "required": false,
         "default": "",
         "description": "Component value"
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "required": false,
+        "description": "Label text displayed"
       },
       {
         "name": "placeholder",
@@ -518,6 +572,18 @@ export const componentSchemas: ComponentSchema[] = [
         "description": "Whether the component is disabled"
       },
       {
+        "name": "error",
+        "type": "string",
+        "required": false,
+        "description": "Error message to display"
+      },
+      {
+        "name": "hint",
+        "type": "string",
+        "required": false,
+        "description": "Help text displayed"
+      },
+      {
         "name": "size",
         "type": "string",
         "required": false,
@@ -528,6 +594,18 @@ export const componentSchemas: ComponentSchema[] = [
           "md",
           "lg"
         ]
+      },
+      {
+        "name": "minDate",
+        "type": "string",
+        "required": false,
+        "description": "minDate property"
+      },
+      {
+        "name": "maxDate",
+        "type": "string",
+        "required": false,
+        "description": "maxDate property"
       },
       {
         "name": "format",
@@ -559,6 +637,18 @@ export const componentSchemas: ComponentSchema[] = [
         "description": "Component value"
       },
       {
+        "name": "label",
+        "type": "string",
+        "required": false,
+        "description": "Label text displayed"
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "required": false,
+        "description": "Placeholder text"
+      },
+      {
         "name": "type",
         "type": "string",
         "required": false,
@@ -585,6 +675,24 @@ export const componentSchemas: ComponentSchema[] = [
         "required": false,
         "default": false,
         "description": "Whether the component is disabled"
+      },
+      {
+        "name": "error",
+        "type": "string",
+        "required": false,
+        "description": "Error message to display"
+      },
+      {
+        "name": "hint",
+        "type": "string",
+        "required": false,
+        "description": "Help text displayed"
+      },
+      {
+        "name": "autocomplete",
+        "type": "string",
+        "required": false,
+        "description": "HTML autocomplete attribute"
       },
       {
         "name": "size",
@@ -640,6 +748,12 @@ export const componentSchemas: ComponentSchema[] = [
         "description": "Allow multiple selections"
       },
       {
+        "name": "label",
+        "type": "string",
+        "required": false,
+        "description": "Label text displayed"
+      },
+      {
         "name": "placeholder",
         "type": "string",
         "required": false,
@@ -673,6 +787,18 @@ export const componentSchemas: ComponentSchema[] = [
         "required": false,
         "default": false,
         "description": "Allow creating new options"
+      },
+      {
+        "name": "error",
+        "type": "string",
+        "required": false,
+        "description": "Error message to display"
+      },
+      {
+        "name": "hint",
+        "type": "string",
+        "required": false,
+        "description": "Help text displayed"
       },
       {
         "name": "size",
@@ -712,6 +838,18 @@ export const componentSchemas: ComponentSchema[] = [
         "description": "Component value"
       },
       {
+        "name": "label",
+        "type": "string",
+        "required": false,
+        "description": "Label text displayed"
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "required": false,
+        "description": "Placeholder text"
+      },
+      {
         "name": "required",
         "type": "boolean",
         "required": false,
@@ -724,6 +862,18 @@ export const componentSchemas: ComponentSchema[] = [
         "required": false,
         "default": false,
         "description": "Whether the component is disabled"
+      },
+      {
+        "name": "error",
+        "type": "string",
+        "required": false,
+        "description": "Error message to display"
+      },
+      {
+        "name": "hint",
+        "type": "string",
+        "required": false,
+        "description": "Help text displayed"
       },
       {
         "name": "size",
@@ -743,6 +893,12 @@ export const componentSchemas: ComponentSchema[] = [
         "required": false,
         "default": 4,
         "description": "Number of visible rows"
+      },
+      {
+        "name": "maxlength",
+        "type": "number",
+        "required": false,
+        "description": "maxlength property"
       },
       {
         "name": "resize",
@@ -776,6 +932,12 @@ export const componentSchemas: ComponentSchema[] = [
         "description": "Component value"
       },
       {
+        "name": "label",
+        "type": "string",
+        "required": false,
+        "description": "Label text displayed"
+      },
+      {
         "name": "placeholder",
         "type": "string",
         "required": false,
@@ -795,6 +957,18 @@ export const componentSchemas: ComponentSchema[] = [
         "required": false,
         "default": false,
         "description": "Whether the component is disabled"
+      },
+      {
+        "name": "error",
+        "type": "string",
+        "required": false,
+        "description": "Error message to display"
+      },
+      {
+        "name": "hint",
+        "type": "string",
+        "required": false,
+        "description": "Help text displayed"
       },
       {
         "name": "size",
@@ -895,6 +1069,18 @@ export const componentSchemas: ComponentSchema[] = [
         "required": false,
         "default": "",
         "description": "Label text displayed"
+      },
+      {
+        "name": "badge",
+        "type": "number",
+        "required": false,
+        "description": "badge property"
+      },
+      {
+        "name": "icon",
+        "type": "string",
+        "required": false,
+        "description": "icon property"
       },
       {
         "name": "active",
