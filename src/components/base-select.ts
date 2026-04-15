@@ -225,47 +225,91 @@ export class BaseSelect extends BaseElement {
 
     /* Sizes */
     .select--xs .select-input,
-    .select--xs .select-display {
+    .select--xs .select-display,
+    .select--xs .chips-wrapper {
       padding: var(--space-1) var(--space-2);
       font-size: var(--font-size-xs);
     }
 
     .select--xs .select-input,
-    .select--xs .select-display {
+    .select--xs .select-display,
+    .select--xs .chips-wrapper {
       padding-right: var(--space-6);
     }
 
     .select--sm .select-input,
-    .select--sm .select-display {
+    .select--sm .select-display,
+    .select--sm .chips-wrapper {
       padding: var(--space-2) var(--space-3);
       font-size: var(--font-size-sm);
     }
 
     .select--sm .select-input,
-    .select--sm .select-display {
+    .select--sm .select-display,
+    .select--sm .chips-wrapper {
       padding-right: var(--space-8);
     }
 
     .select--md .select-input,
-    .select--md .select-display {
+    .select--md .select-display,
+    .select--md .chips-wrapper {
       padding: var(--space-3) var(--space-4);
       font-size: var(--font-size-base);
     }
 
     .select--md .select-input,
-    .select--md .select-display {
+    .select--md .select-display,
+    .select--md .chips-wrapper {
       padding-right: var(--space-10);
     }
 
     .select--lg .select-input,
-    .select--lg .select-display {
+    .select--lg .select-display,
+    .select--lg .chips-wrapper {
       padding: var(--space-4) var(--space-5);
       font-size: var(--font-size-lg);
     }
 
     .select--lg .select-input,
-    .select--lg .select-display {
+    .select--lg .select-display,
+    .select--lg .chips-wrapper {
       padding-right: var(--space-12);
+    }
+
+    .select--xs .dropdown-option,
+    .select--xs .dropdown-no-results,
+    .select--xs .dropdown-create-button,
+    .select--xs .chips-search-input,
+    .select--xs .chips-placeholder,
+    .select--xs .chip {
+      font-size: var(--font-size-xs);
+    }
+
+    .select--sm .dropdown-option,
+    .select--sm .dropdown-no-results,
+    .select--sm .dropdown-create-button,
+    .select--sm .chips-search-input,
+    .select--sm .chips-placeholder,
+    .select--sm .chip {
+      font-size: var(--font-size-sm);
+    }
+
+    .select--md .dropdown-option,
+    .select--md .dropdown-no-results,
+    .select--md .dropdown-create-button,
+    .select--md .chips-search-input,
+    .select--md .chips-placeholder,
+    .select--md .chip {
+      font-size: var(--font-size-base);
+    }
+
+    .select--lg .dropdown-option,
+    .select--lg .dropdown-no-results,
+    .select--lg .dropdown-create-button,
+    .select--lg .chips-search-input,
+    .select--lg .chips-placeholder,
+    .select--lg .chip {
+      font-size: var(--font-size-lg);
     }
 
     /* States */
@@ -309,7 +353,6 @@ export class BaseSelect extends BaseElement {
     /* Multiple select chips */
     .chips-wrapper {
       width: 100%;
-      min-height: 42px;
       font-family: var(--font-family-sans);
       background-color: var(--color-bg-primary);
       border: 1px solid var(--color-border);
@@ -318,8 +361,6 @@ export class BaseSelect extends BaseElement {
       color: var(--color-text-primary);
       box-sizing: border-box;
       cursor: pointer;
-      padding: var(--space-2);
-      padding-right: var(--space-10);
       display: flex;
       align-items: flex-start;
       position: relative;
@@ -327,6 +368,22 @@ export class BaseSelect extends BaseElement {
 
     .chips-wrapper--has-clear {
       padding-right: var(--space-12);
+    }
+
+    .select--xs .chips-wrapper--has-clear {
+      padding-right: var(--space-8);
+    }
+
+    .select--sm .chips-wrapper--has-clear {
+      padding-right: var(--space-10);
+    }
+
+    .select--md .chips-wrapper--has-clear {
+      padding-right: var(--space-12);
+    }
+
+    .select--lg .chips-wrapper--has-clear {
+      padding-right: var(--space-16);
     }
 
     .chips-wrapper:hover:not(.select-disabled) {
@@ -370,7 +427,6 @@ export class BaseSelect extends BaseElement {
       color: var(--color-text-primary);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-md);
-      font-size: var(--font-size-sm);
       line-height: 1.5;
       font-weight: var(--font-weight-medium);
       transition: all var(--transition-fast);
@@ -423,12 +479,11 @@ export class BaseSelect extends BaseElement {
 
     .chips-search-input {
       flex: 1;
-      min-width: 120px;
+      min-width: 0;
       border: none;
       outline: none;
       background: transparent;
       font-family: var(--font-family-sans);
-      font-size: var(--font-size-base);
       color: var(--color-text-primary);
       padding: var(--space-1) var(--space-2);
       box-sizing: border-box;
@@ -479,6 +534,22 @@ export class BaseSelect extends BaseElement {
       display: block;
       width: 14px;
       height: 14px;
+    }
+
+    .select--xs .clear-all-button {
+      right: var(--space-5);
+    }
+
+    .select--sm .clear-all-button {
+      right: var(--space-6);
+    }
+
+    .select--md .clear-all-button {
+      right: var(--space-8);
+    }
+
+    .select--lg .clear-all-button {
+      right: var(--space-10);
     }
 
     /* Dropdown */
@@ -557,7 +628,6 @@ export class BaseSelect extends BaseElement {
       width: 100%;
       text-align: left;
       font-family: var(--font-family-sans);
-      font-size: var(--font-size-base);
     }
 
     .dropdown-create-button:hover {
