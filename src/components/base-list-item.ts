@@ -4,7 +4,7 @@ import { classMap } from 'lit/directives/class-map.js'
 import { BaseElement } from '../base-element'
 import { register } from '../helpers/register'
 
-type ListItemSize = 'sm' | 'md' | 'lg'
+type ListItemSize = 'xs' | 'sm' | 'md' | 'lg'
 
 export interface SwipeAction {
   icon: string // Icon name or custom SVG string
@@ -215,6 +215,12 @@ export class BaseListItem extends BaseElement {
     }
 
     /* Size variants */
+    .base-list-item--xs {
+      padding: var(--space-1) var(--space-2);
+      font-size: var(--font-size-xs);
+      line-height: var(--line-height-tight);
+    }
+
     .base-list-item--sm {
       padding: var(--space-2) var(--space-3);
       font-size: var(--font-size-sm);

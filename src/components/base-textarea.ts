@@ -5,7 +5,7 @@ import { ifDefined } from 'lit/directives/if-defined.js'
 import { BaseElement } from '../base-element'
 import { register } from '../helpers/register'
 
-type TextareaSize = 'sm' | 'md' | 'lg'
+type TextareaSize = 'xs' | 'sm' | 'md' | 'lg'
 type ResizeMode = 'none' | 'both' | 'horizontal' | 'vertical'
 export const registerBaseTextarea = () => register({
   name: 'base-textarea',
@@ -120,6 +120,11 @@ export class BaseTextarea extends BaseElement {
     }
 
     /* Sizes */
+    .base-textarea--xs {
+      padding: var(--space-1) var(--space-2);
+      font-size: var(--font-size-xs);
+    }
+
     .base-textarea--sm {
       padding: var(--space-2) var(--space-3);
       font-size: var(--font-size-sm);

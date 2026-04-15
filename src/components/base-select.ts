@@ -10,7 +10,7 @@ export interface SelectOption {
   value: string
 }
 
-type SelectSize = 'sm' | 'md' | 'lg'
+type SelectSize = 'xs' | 'sm' | 'md' | 'lg'
 
 export const registerBaseSelect = () => register({
   name: 'base-select',
@@ -224,6 +224,17 @@ export class BaseSelect extends BaseElement {
     }
 
     /* Sizes */
+    .select--xs .select-input,
+    .select--xs .select-display {
+      padding: var(--space-1) var(--space-2);
+      font-size: var(--font-size-xs);
+    }
+
+    .select--xs .select-input,
+    .select--xs .select-display {
+      padding-right: var(--space-6);
+    }
+
     .select--sm .select-input,
     .select--sm .select-display {
       padding: var(--space-2) var(--space-3);

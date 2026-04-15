@@ -15,7 +15,7 @@ export const registerBaseToast = () => register({
 export class BaseToast extends BaseElement {
   @property({ type: String, attribute: 'variant', reflect: true }) variant: ToastVariant = 'default'
   @property({ type: String, attribute: 'padding', reflect: true }) padding: ToastPadding = 'sm'
-  @property({ type: String, attribute: 'size', reflect: true }) size: 'sm' | 'md' | 'lg' = 'sm'
+  @property({ type: String, attribute: 'size', reflect: true }) size: 'xs' | 'sm' | 'md' | 'lg' = 'sm'
   @property({ type: String, attribute: 'dismiss', reflect: true }) dismiss: DismissBehavior = '2s'
   @property({ type: String, attribute: 'position', reflect: true }) position: ToastPosition = 'bottom-center'
 
@@ -463,11 +463,14 @@ export class BaseToast extends BaseElement {
     }
 
     /* Size variants */
+    :host([size="xs"]) .toast-container {
+      font-size: var(--font-size-xs);
+    }
     :host([size="sm"]) .toast-container {
       font-size: var(--font-size-sm);
     }
     :host([size="md"]) .toast-container {
-      font-size: var(--font-size-md);
+      font-size: var(--font-size-base);
     }
     :host([size="lg"]) .toast-container {
       font-size: var(--font-size-lg);

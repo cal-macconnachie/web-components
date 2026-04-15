@@ -4,7 +4,7 @@ import { classMap } from 'lit/directives/class-map.js'
 import { BaseElement } from '../base-element'
 import { register } from '../helpers/register'
 
-type ListSize = 'sm' | 'md' | 'lg'
+type ListSize = 'xs' | 'sm' | 'md' | 'lg'
 type ListVariant = 'default' | 'bordered' | 'divided'
 
 export const registerBaseList = () => register({
@@ -104,6 +104,10 @@ export class BaseList extends BaseElement {
     }
 
     /* Size variants - affects spacing between items for default variant only */
+    .base-list--xs.base-list--default {
+      gap: 0;
+    }
+
     .base-list--sm.base-list--default {
       gap: var(--space-1);
     }

@@ -5,7 +5,7 @@ import { ifDefined } from 'lit/directives/if-defined.js'
 import { BaseElement } from '../base-element'
 import { register } from '../helpers/register'
 
-type DatePickerSize = 'sm' | 'md' | 'lg'
+type DatePickerSize = 'xs' | 'sm' | 'md' | 'lg'
 export const registerBaseDatePicker = () => register({
   name: 'base-date-picker',
   element: BaseDatePicker
@@ -115,6 +115,12 @@ export class BaseDatePicker extends BaseElement {
     }
 
     /* Sizes */
+    .date-picker--xs .date-display {
+      padding: var(--space-1) var(--space-2);
+      padding-right: var(--space-6);
+      font-size: var(--font-size-xs);
+    }
+
     .date-picker--sm .date-display {
       padding: var(--space-2) var(--space-3);
       padding-right: var(--space-8);

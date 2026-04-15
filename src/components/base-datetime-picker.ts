@@ -9,7 +9,7 @@ import { BaseDatePicker } from './base-date-picker'
 import './base-time-picker'
 import { BaseTimePicker } from './base-time-picker'
 
-type DateTimePickerSize = 'sm' | 'md' | 'lg'
+type DateTimePickerSize = 'xs' | 'sm' | 'md' | 'lg'
 type TimeFormat = '12' | '24'
 type Step = 'date' | 'time'
 
@@ -121,6 +121,12 @@ export class BaseDateTimePicker extends BaseElement {
 
     .datetime-display--empty {
       color: var(--color-text-muted);
+    }
+
+    .datetime-picker--xs .datetime-display {
+      padding: var(--space-1) var(--space-2);
+      padding-right: var(--space-6);
+      font-size: var(--font-size-xs);
     }
 
     .datetime-picker--sm .datetime-display {

@@ -6,7 +6,7 @@ import { BaseElement } from '../base-element'
 import { register } from '../helpers/register'
 
 type InputType = 'text' | 'email' | 'password' | 'tel' | 'url'
-type InputSize = 'sm' | 'md' | 'lg'
+type InputSize = 'xs' | 'sm' | 'md' | 'lg'
 
 export const registerBaseInput = () => register({
   name: 'base-input',
@@ -117,6 +117,11 @@ export class BaseInput extends BaseElement {
     }
 
     /* Sizes */
+    .base-input--xs {
+      padding: var(--space-1) var(--space-2);
+      font-size: var(--font-size-xs);
+    }
+
     .base-input--sm {
       padding: var(--space-2) var(--space-3);
       font-size: var(--font-size-sm);

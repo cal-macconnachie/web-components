@@ -20,7 +20,7 @@ export const registerThemeToggle = () => {
   })
 }
 export class ThemeToggle extends BaseElement {
-  @property({ type: String, attribute: 'size' }) size: 'sm' | 'md' | 'lg' = 'sm'
+  @property({ type: String, attribute: 'size' }) size: 'xs' | 'sm' | 'md' | 'lg' = 'sm'
   @property({ type: String, attribute: 'variant' }) variant: 'ghost' | 'outline' | 'solid' = 'ghost'
   @property({ type: Object, attribute: 'themes' }) themes: ThemeInput[] = [
     { theme: 'light', icon: 'sun' },
@@ -64,6 +64,7 @@ export class ThemeToggle extends BaseElement {
 
   private getSizeClass() {
     const sizes = {
+      xs: 'btn--xs',
       sm: 'btn--sm',
       md: 'btn--md',
       lg: 'btn--lg',
@@ -82,6 +83,7 @@ export class ThemeToggle extends BaseElement {
 
   private getIconSize() {
     const sizes = {
+      xs: '18px',
       sm: '22px',
       md: '24px',
       lg: '28px',
@@ -151,6 +153,10 @@ export class ThemeToggle extends BaseElement {
     }
 
     /* Size variants */
+    .btn--xs {
+      padding: 0.375rem;
+    }
+
     .btn--sm {
       padding: 0.5rem;
     }

@@ -299,6 +299,12 @@ function extractPropsFromComponent(filePath: string, componentName: string): Pro
     if (tsType && typeMap[tsType]) {
       options = typeMap[tsType]
       type = 'string' // Union types are strings
+    } else if (tsType) {
+      const inlineOptions = parseTypeUnion(tsType)
+      if (inlineOptions.length > 0) {
+        options = inlineOptions
+        type = 'string'
+      }
     }
 
     // Parse default value

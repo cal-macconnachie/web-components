@@ -5,7 +5,7 @@ import { ifDefined } from 'lit/directives/if-defined.js'
 import { BaseElement } from '../base-element'
 import { register } from '../helpers/register'
 
-type TimePickerSize = 'sm' | 'md' | 'lg'
+type TimePickerSize = 'xs' | 'sm' | 'md' | 'lg'
 type TimeFormat = '12' | '24'
 
 export const registerBaseTimePicker = () => register({
@@ -99,6 +99,12 @@ export class BaseTimePicker extends BaseElement {
     }
 
     /* Sizes */
+    .time-picker--xs .time-display {
+      padding: var(--space-1) var(--space-2);
+      padding-right: var(--space-6);
+      font-size: var(--font-size-xs);
+    }
+
     .time-picker--sm .time-display {
       padding: var(--space-2) var(--space-3);
       padding-right: var(--space-8);

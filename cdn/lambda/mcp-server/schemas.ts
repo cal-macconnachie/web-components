@@ -117,7 +117,14 @@ export const componentSchemas: ComponentSchema[] = [
         "type": "string",
         "required": false,
         "default": "sm",
-        "description": "Size of the component"
+        "description": "Size of the component",
+        "options": [
+          "xs",
+          "sm",
+          "md",
+          "lg",
+          "full"
+        ]
       },
       {
         "name": "persist-on-overlay-click",
@@ -161,6 +168,7 @@ export const componentSchemas: ComponentSchema[] = [
         "default": "md",
         "description": "Size of the component",
         "options": [
+          "xs",
           "sm",
           "md",
           "lg"
@@ -221,6 +229,7 @@ export const componentSchemas: ComponentSchema[] = [
         "default": "md",
         "description": "Size of the component",
         "options": [
+          "xs",
           "sm",
           "md",
           "lg"
@@ -432,7 +441,12 @@ export const componentSchemas: ComponentSchema[] = [
         "type": "string",
         "required": false,
         "default": "button",
-        "description": "Component type"
+        "description": "Component type",
+        "options": [
+          "button",
+          "submit",
+          "reset"
+        ]
       }
     ],
     "slots": [
@@ -509,6 +523,7 @@ export const componentSchemas: ComponentSchema[] = [
         "default": "md",
         "description": "Size of the component",
         "options": [
+          "xs",
           "sm",
           "md",
           "lg"
@@ -590,6 +605,7 @@ export const componentSchemas: ComponentSchema[] = [
         "default": "md",
         "description": "Size of the component",
         "options": [
+          "xs",
           "sm",
           "md",
           "lg"
@@ -701,6 +717,7 @@ export const componentSchemas: ComponentSchema[] = [
         "default": "md",
         "description": "Size of the component",
         "options": [
+          "xs",
           "sm",
           "md",
           "lg"
@@ -807,6 +824,7 @@ export const componentSchemas: ComponentSchema[] = [
         "default": "md",
         "description": "Size of the component",
         "options": [
+          "xs",
           "sm",
           "md",
           "lg"
@@ -882,6 +900,7 @@ export const componentSchemas: ComponentSchema[] = [
         "default": "md",
         "description": "Size of the component",
         "options": [
+          "xs",
           "sm",
           "md",
           "lg"
@@ -977,6 +996,7 @@ export const componentSchemas: ComponentSchema[] = [
         "default": "md",
         "description": "Size of the component",
         "options": [
+          "xs",
           "sm",
           "md",
           "lg"
@@ -1226,7 +1246,13 @@ export const componentSchemas: ComponentSchema[] = [
         "type": "string",
         "required": false,
         "default": "sm",
-        "description": "Size of the component"
+        "description": "Size of the component",
+        "options": [
+          "xs",
+          "sm",
+          "md",
+          "lg"
+        ]
       },
       {
         "name": "dismiss",
@@ -1269,14 +1295,25 @@ export const componentSchemas: ComponentSchema[] = [
         "type": "string",
         "required": false,
         "default": "sm",
-        "description": "Size of the component"
+        "description": "Size of the component",
+        "options": [
+          "xs",
+          "sm",
+          "md",
+          "lg"
+        ]
       },
       {
         "name": "variant",
         "type": "string",
         "required": false,
         "default": "ghost",
-        "description": "Visual style variant"
+        "description": "Visual style variant",
+        "options": [
+          "ghost",
+          "outline",
+          "solid"
+        ]
       },
       {
         "name": "themes",

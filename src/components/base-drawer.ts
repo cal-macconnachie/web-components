@@ -11,7 +11,7 @@ export const registerBaseDrawer = () => register({
 export class BaseDrawer extends BaseElement {
   // Properties
   @property({ type: Boolean, reflect: true }) open = false
-  @property({ type: String, attribute: 'size' }) size: 'sm' | 'md' | 'lg' | 'full' = 'sm'
+  @property({ type: String, attribute: 'size' }) size: 'xs' | 'sm' | 'md' | 'lg' | 'full' = 'sm'
   @property({
     type: Array,
     converter: {
@@ -966,6 +966,10 @@ export class BaseDrawer extends BaseElement {
       overflow: hidden;
       height: 100%;
       touch-action: pan-y;
+    }
+
+    .drawer-content--xs {
+      max-width: 320px;
     }
 
     .drawer-content--sm {
