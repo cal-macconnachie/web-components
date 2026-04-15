@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.8.14](https://github.com/cal-macconnachie/web-components/compare/v2.8.13...v2.8.14) (2026-04-15)
+
+
+### Bug Fixes
+
+* datetime pickers ([f3dde78](https://github.com/cal-macconnachie/web-components/commit/f3dde782f65059cf3555c4477808e4970851ab1d))
+
 ### [2.8.13](https://github.com/cal-macconnachie/web-components/compare/v2.8.12...v2.8.13) (2026-04-09)
 
 
