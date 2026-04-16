@@ -19,6 +19,7 @@ interface ApiClientConfig {
 declare global {
   interface Window {
     __authRefreshPromise?: Promise<void> | null
+    __authNoRefreshToken?: boolean
   }
 }
 
@@ -31,8 +32,10 @@ export const createApiClient = ({ baseUrl, useToasts = true }: ApiClientConfig):
     withCredentials: true, // Send HttpOnly cookies with every request
   })
 
-  // Track if we've determined there are no refresh tokens available
-  let hasNoRefreshToken = false
+  // "No refresh token" state lives on window so api.ts's refresh can also
+  // signal it. Otherwise when api.ts's refresh rejects via the shared
+  // __authRefreshPromise, the interceptor can't tell it was a 400 and shows
+  // a misleading "session expired" toast.
 
   // Response interceptor - handle 401 errors with automatic token refresh
   client.interceptors.response.use(
@@ -110,7 +113,7 @@ export const createApiClient = ({ baseUrl, useToasts = true }: ApiClientConfig):
 
         // If we already know there's no refresh token, don't try again.
         // Silently reject — no toast or event since there was never a session.
-        if (hasNoRefreshToken) {
+        if (window.__authNoRefreshToken) {
           log('No refresh token available (previously determined), skipping refresh')
           return Promise.reject(new AuthRefreshError('No refresh token available'))
         }
@@ -154,7 +157,7 @@ export const createApiClient = ({ baseUrl, useToasts = true }: ApiClientConfig):
               if (response.status === 400) {
                 // 400 means no refresh token present in cookies
                 log('Refresh returned 400 - no refresh token in cookies, marking as unavailable')
-                hasNoRefreshToken = true
+                window.__authNoRefreshToken = true
                 const errorBody = await response.text()
                 log('400 response body:', errorBody)
                 throw new Error('No refresh token available')
@@ -196,7 +199,7 @@ export const createApiClient = ({ baseUrl, useToasts = true }: ApiClientConfig):
           // Only show "session expired" toast if a refresh token actually existed
           // (i.e. the user had a session). If there was no refresh token, the user
           // was never logged in, so the message is misleading.
-          if (useToasts && !hasNoRefreshToken) {
+          if (useToasts && !window.__authNoRefreshToken) {
             showToast({
               message: 'Session expired. Please log in again.',
               variant: 'danger',
@@ -206,7 +209,7 @@ export const createApiClient = ({ baseUrl, useToasts = true }: ApiClientConfig):
           // Only dispatch auth-refresh-failed if there was an actual session.
           // If no refresh token existed, the user was never logged in (e.g. during
           // OAuth callback or initial page load) — silently reject instead.
-          if (!hasNoRefreshToken) {
+          if (!window.__authNoRefreshToken) {
             window.dispatchEvent(
               new CustomEvent('auth-refresh-failed', {
                 bubbles: true,
@@ -219,7 +222,7 @@ export const createApiClient = ({ baseUrl, useToasts = true }: ApiClientConfig):
           }
 
           return Promise.reject(new AuthRefreshError(
-            hasNoRefreshToken ? 'No refresh token available' : 'Authentication refresh failed'
+            window.__authNoRefreshToken ? 'No refresh token available' : 'Authentication refresh failed'
           ))
         }
       }

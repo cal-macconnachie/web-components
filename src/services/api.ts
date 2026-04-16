@@ -74,6 +74,11 @@ export const api = ({
       },
       credentials: 'include',
     })
+    if (response.status === 400) {
+      // Shared with api-client.ts interceptor, which awaits the same
+      // __authRefreshPromise and otherwise can't tell this was a 400.
+      window.__authNoRefreshToken = true
+    }
     if (!response.ok) {
       const errorData = await response.json()
       throw new Error(errorData.message || errorData.error || 'Failed to refresh token')
