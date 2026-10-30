@@ -15,6 +15,8 @@ import {
 import { HttpOrigin, S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins'
 import { Architecture, Code, FunctionUrlAuthType, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda'
 import { BlockPublicAccess, Bucket, HttpMethods } from 'aws-cdk-lib/aws-s3'
+import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53'
+import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets'
 import { Construct } from 'constructs'
 import * as path from 'path'
 import { FunctionUrlParser } from './function-url-parser'
@@ -25,7 +27,7 @@ export class CdnStack extends cdk.Stack {
 
     // S3 bucket with CORS configuration
     const bucket = new Bucket(this, 'cals-wcl', {
-      bucketName: 'cals-wcl',
+      bucketName: `cals-wcl-${this.account}`,
       versioned: true,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL, // Keep bucket private
       cors: [
@@ -83,9 +85,16 @@ export class CdnStack extends cdk.Stack {
       },
     })
 
+    const hostedZone = HostedZone.fromLookup(this, 'cals-api-zone', { domainName: 'cals-api.com' })
+
+    // cdn-staging is the temporary name the new distribution is created with; cdn.cals-api.com is
+    // then moved onto it with `aws cloudfront associate-alias`, since one name can't be on two
+    // distributions. Deploy with `-c staging=true` until that move is done.
+    const staging = this.node.tryGetContext('staging') === 'true'
     const certificate = new Certificate(this, 'domain-certificate', {
       domainName: 'cdn.cals-api.com',
-      validation: CertificateValidation.fromDns(),
+      subjectAlternativeNames: ['cdn-staging.cals-api.com'],
+      validation: CertificateValidation.fromDns(hostedZone),
     })
 
     // MCP Server Lambda Function
@@ -141,7 +150,7 @@ export class CdnStack extends cdk.Stack {
           cachePolicy: cdk.aws_cloudfront.CachePolicy.CACHING_DISABLED,
         }
       },
-      domainNames: ['cdn.cals-api.com'],
+      domainNames: staging ? ['cdn-staging.cals-api.com'] : ['cdn.cals-api.com', 'cdn-staging.cals-api.com'],
       certificate: certificate,
       priceClass: PriceClass.PRICE_CLASS_100, // US, Canada, Europe only
       defaultRootObject: 'index.html',
@@ -162,6 +171,12 @@ export class CdnStack extends cdk.Stack {
     })
 
     // Export bucket name and distribution ID for CI/CD
+    new ARecord(this, 'cdn-staging-record', {
+      zone: hostedZone,
+      recordName: 'cdn-staging',
+      target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
+    })
+
     new cdk.CfnOutput(this, 'BucketName', {
       value: bucket.bucketName,
       description: 'S3 bucket name for web components',
